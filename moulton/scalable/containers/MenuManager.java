@@ -205,13 +205,13 @@ public abstract class MenuManager {
 		if(clicked instanceof TextBox){
 			TextBox box = (TextBox) clicked;
 			//if it is a valid looking character, just append it
-			if (key>31){
-				box.appendMessage(key+"");
-			}else if(key == 8 || key == 127){ //backspace OR delete
+			if(key == 8 || key == 127){ //backspace OR delete
 				box.removeMessage(1, key == 8);
 			}else if(key == 10){ //enter
 				//remove focus
 				setClicked(null,-1,-1);
+			}else if (key>31){
+				box.appendMessage(key+"");
 			}
 		}
 	}
