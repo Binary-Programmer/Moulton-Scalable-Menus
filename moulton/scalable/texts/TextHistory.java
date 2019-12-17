@@ -34,6 +34,12 @@ public class TextHistory extends MenuComponent{
 	 * @see #setMaxMessages(int)
 	 * @see #getMaxMessages()*/
 	protected int maxMessages;
+	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text history,
+	 * encountering and end of line will force previous characters (until a break) to the next line.
+	 * Break characters include space, new line, and hyphens. Defaults to false.
+	 * @see #allowsWordSplitting()
+	 * @see #allowWordSplitting(boolean)*/
+	protected boolean wordSplitting = false;
 
 	public TextHistory(Panel parent, int x, int y, Font font, boolean addToTop, int maxMessages) {
 		super(parent, x, y);
@@ -113,24 +119,51 @@ public class TextHistory extends MenuComponent{
 				LinkedList<String> thisText = new LinkedList<>();
 				while(textNumber < numberOfLinesShown && textIndex>-1){
 					thisText.clear();
-					String line = history.get(textIndex);
-					while(line.length()>0){
-						int ii = line.length();
-						String word = line;
-						while(ii>-1 && metrics.stringWidth(word)>w){
-							word = line.substring(0,ii);
-							ii--;
-						}
-						if(ii==line.length()) { //the whole text could fit
+					String text = history.get(textIndex);
+					//create lines until this entire text is shown
+					String line = "";
+					while(!text.isEmpty()) {
+						line += text.charAt(0);
+						text = text.substring(1);
+						if(metrics.stringWidth(line)>w || line.charAt(line.length()-1) == '\n') {
+							boolean wordSplit = allowsWordSplitting();
+							if(!wordSplit) {
+								int ii=line.length()-1;
+								for(; ii>-1; ii--) {
+									char c = line.charAt(ii);
+									if(c == '\n' || c == ' ') {
+										//add it back to the remainder
+										text = line.substring(ii+1) + text;
+										line = line.substring(0,ii);
+										break;
+									}else if(c == '-') {
+										if(ii<line.length()-1) {
+											//keep the - on this line
+											text = line.substring(ii+1) + text;
+											line = line.substring(0, ii+1);
+										}else {
+											text = line.substring(ii) + text;
+											line = line.substring(0, ii);
+										}
+										break;
+									}
+								}
+								if(ii==-1) //couldn't find break char
+									wordSplit = true;
+							}if(wordSplit) {
+								int length = line.length();
+								text = line.charAt(length-1) + text;
+								line = line.substring(0, length-1);
+							}
+							//add the result and reset the line
 							thisText.add(line);
 							line = "";
-						}else if(ii<line.length()) { //it didn't fit, split it up
-							thisText.add(word);
-							//ii is one less than it should be since it is decremented after the word was gotten
-							line = line.substring(++ii);
 						}
 					}
-					//add from thisText
+					if(!line.isEmpty())
+						thisText.add(line);
+					
+					//add from thisText onto the rendering array
 					int textLength = thisText.size();
 					for(int i=0; i<textLength; i++) {
 						if(addToTop)
@@ -268,6 +301,21 @@ public class TextHistory extends MenuComponent{
 	 */
 	public int getMaxMessages() {
 		return maxMessages;
+	}
+	
+	/**
+	 * Sets whether word splitting on ends of lines is allowed
+	 * @param allowSplit sets {@link #wordSplitting}
+	 */
+	public void allowWordSplitting(boolean allowSplit) {
+		this.wordSplitting = allowSplit;
+	}
+	/**
+	 * Returns whether word splitting is allowed for this text history
+	 * @return the value of {@link #wordSplitting}
+	 */
+	public boolean allowsWordSplitting() {
+		return wordSplitting;
 	}
 
 }

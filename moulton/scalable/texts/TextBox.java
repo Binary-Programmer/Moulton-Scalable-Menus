@@ -48,8 +48,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #setTouchedColor(Color)*/
 	protected Color colorTouched = null;
 	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text box,
-	 * encountering and end of line will force all characters prior until a space to the next line. Defaults
-	 * to false.*/
+	 * encountering and end of line will force previous characters (until a break) to the next line.
+	 * Break characters include space, new line, and hyphens. Defaults to false.
+	 * @see #allowsWordSplitting()
+	 * @see #allowWordSplitting(boolean)*/
 	protected boolean wordSplitting = false;
 	
 	/**Whether or not to show the blinker. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
@@ -88,7 +90,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**The pixel point of the last mouse click.*/
 	protected int[] mouseClickXY = new int[2];
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
-	 * <p>See {@link #isHotkeyEnabled()} and {@link #setHotkeyEnabled(boolean)}.*/
+	 * @see #isHotkeyEnabled()
+	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
 	
 	//last font metrics used
@@ -233,28 +236,38 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						if(text.charAt(text.length()-1) == '\n')
 							wwidth += insideWidth;
 					}
-					if(!rem.isEmpty() && !allowsWordSplitting() && rows>1) { //the width is too long
-						int ii=text.length()-1;
-						for(; ii>-1; ii--) {
-							char c = text.charAt(ii);
-							if(c == '\n' || c == ' ') {
-								//add it back to the remainder
-								rem = text.substring(ii+1) + rem;
-								text = text.substring(0,ii);
-								if(i!=row)
-									sum++; //make up for the consumed char
-								break;
-							}else if(c == '-') {
-								if(ii<text.length()-1) {
-									//keep the - on this line
+					if(!rem.isEmpty() && rows>1) { //the width is too long
+						boolean wordSplit = allowsWordSplitting();
+						if(!wordSplit) {
+							int ii=text.length()-1;
+							for(; ii>-1; ii--) {
+								char c = text.charAt(ii);
+								if(c == '\n' || c == ' ') {
+									//add it back to the remainder
 									rem = text.substring(ii+1) + rem;
-									text = text.substring(0, ii+1);
-								}else {
-									rem = text.substring(ii) + rem;
-									text = text.substring(0, ii);
+									text = text.substring(0,ii);
+									if(i!=row)
+										sum++; //make up for the consumed char
+									break;
+								}else if(c == '-') {
+									if(ii<text.length()-1) {
+										//keep the - on this line
+										rem = text.substring(ii+1) + rem;
+										text = text.substring(0, ii+1);
+									}else {
+										rem = text.substring(ii) + rem;
+										text = text.substring(0, ii);
+									}
+									break;
 								}
-								break;
 							}
+							if(ii == -1) { //no break character found, split the word
+								wordSplit = true;
+							}
+						}if(wordSplit){
+							int length = text.length();
+							rem = text.charAt(length-1) + rem;
+							text = text.substring(0, length-1);
 						}
 					}
 					
@@ -276,7 +289,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				here += ww/2 - (fontMetrics.stringWidth(line))/2;
 				break;
 			case RIGHT_ALIGNMENT:
-				here += ww - fontMetrics.stringWidth(line)+underscoreWidth/2;
+				here += ww - fontMetrics.stringWidth(line)-underscoreWidth/2;
 				break;
 			}
 			for(int j=i; j>-1; j--) {
@@ -535,7 +548,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 				
 			}
-			//if the blinker hasn't been set yet, it is farther in the message
+			//if the blinker hasn't been set yet, it is further in the message
 			if(!setBlinker && getClicked() && !rem.isEmpty()) {
 				if(texts.length>1) {
 					//shift all rows up
