@@ -78,8 +78,6 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * {@link #clickBoundary}. This will always return false if the component is not editable.
 	 * @param x the x value of the mouse when clicked
 	 * @param y the y value of the mouse when clicked
-	 * @param contWidth the rectangular width of the component
-	 * @param contHeight the rectangular height of the component
 	 * @return whether the component was decided to be clicked based on the params
 	 */
 	public boolean clickableAt(int x, int y) {
@@ -125,7 +123,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	/**
 	 * Whether a component is touched at (x,y) or clicked at that location is the same.
-	 * @see {@link #clickableAt(int, int)}
+	 * @see #clickableAt(int, int)
 	 */
 	@Override
 	public boolean isTouchedAt(int x, int y) {
@@ -133,7 +131,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * @return whether the component is touched by the mouse: {@link #touched}.
+	 * @param touched whether the component is touched by the mouse: {@link #touched}.
 	 */
 	@Override
 	public void setTouched(boolean touched) {

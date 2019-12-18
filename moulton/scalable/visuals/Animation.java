@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class Animation {
 	/**How many times the animation should loop. Default set at 0. Upon reaching the end time for the last frame,
-	 * the {@link #showIndex} will return to 0 if loop > 0, then loop will be decremented. A loop value of -1
+	 * the {@link #showIndex} will return to 0 if loop is greater than 0, then loop will be decremented. A loop value of -1
 	 * indicates infinite looping.
 	 * @see #setLoop(int)*/
 	protected int loop = 0;
@@ -26,7 +26,7 @@ public class Animation {
 	
 	/**
 	 * The index of the lists that the animation is currently showing. Upon a timeout for the last index, the index
-	 * will return to 0 if loop>0. If not, the animation will stop playing (as determined by {@link #playing}.
+	 * will return to 0 if loop is greater than 0. If not, the animation will stop playing (as determined by {@link #playing}.
 	 * However, a loop value of -1 is infinite looping.
 	 */
 	protected int showIndex = 0;

@@ -21,7 +21,7 @@ public abstract class MenuComponent {
 	protected String x,y;
 	/**The default value for {@link #text_resize_factor}. */
 	public static final int DEFAULT_ORIGINAL_TEXT_SIZE = 370;
-	/**A value that determines the size of text components when resized through {@link #getTextVertResize(int, int)}.
+	/**A value that determines the size of text components when resized through {@link #getTextVertResize(int)}.
 	 * When the container height is equal to this, then the original font size will be used.
 	 * @see #setTextResizeFactor(int)*/
 	protected static int text_resize_factor = DEFAULT_ORIGINAL_TEXT_SIZE;
@@ -140,9 +140,8 @@ public abstract class MenuComponent {
 	
 	/**When text should be resized based on the vertical size, as indicated in {@link MenuComponent#textResize()},
 	 * most components with a textual element will resize their text font to have the size returned by this method. <p>
-	 * It is calculated to be in inverse proportion to {@link text_original_size}.
+	 * It is calculated to be in inverse proportion to {@link #text_resize_factor}.
 	 * @param originalFontSize the original size of the font, most commonly defined in the creation of the component
-	 * @param contHeight the size of the bounding height for this component.
 	 * @return the new value of the font size for this render
 	 */
 	protected int getTextVertResize(int originalFontSize) {

@@ -90,7 +90,7 @@ public class PolygonalButton extends RadioButton{
 	
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
-	 * @param touchedColor
+	 * @param touchedColor the color to set as {@link RadioButton#colorTouched}
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {

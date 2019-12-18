@@ -122,8 +122,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @param parent the panel that this text box will reside upon
 	 * @param x the x coordinate of this text box in its parent's grid
 	 * @param y the y coordinate of this text box in its parent's grid
-	 * @param width the width of the component, given in menu component value format
-	 * @param height the height of the component, given in menu component value format
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
@@ -1035,7 +1033,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
-	 * @param touchedColor
+	 * @param touchedColor saved as {@link #colorTouched}
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {

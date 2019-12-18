@@ -15,14 +15,28 @@ import moulton.scalable.containers.Panel;
 public class StaticTextBox extends TextBox {
 	
 	/**
-	 * See {@link TextBox#TextBox(String, String, Panel, int, int, Font, Color)}
+	 * @param id a unique string designed to identify this component when an event occurs.
+	 * @param message the string displayed in the box
+	 * @param parent the panel that this text box will reside upon
+	 * @param x the x coordinate of this text box in its parent's grid
+	 * @param y the y coordinate of this text box in its parent's grid
+	 * @param font the font for the box
+	 * @param color the background color for the box when editable
 	 */
 	public StaticTextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
 		super(id, message, parent, x, y, font, color);
 		blinkTime = -1;
 	}
 	/**
-	 * See {@link TextBox#TextBox(String, String, Panel, String, String, String, String, Font, Color)}.
+	 * @param id a unique string designed to identify this component when an event occurs.
+	 * @param message the string displayed in the box
+	 * @param parent the panel that this text box will reside upon
+	 * @param x the x coordinate on the screen, given in menu component value format
+	 * @param y the y coordinate on the screen, given in menu component value format
+	 * @param width the width of the component, given in menu component value format
+	 * @param height the height of the component, given in menu component value format
+	 * @param font the font for the box
+	 * @param color the background color for the box when editable
 	 */
 	public StaticTextBox(String id, String message, Panel parent, String x, String y, String width, String height,
 			Font font, Color color) {

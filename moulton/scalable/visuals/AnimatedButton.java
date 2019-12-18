@@ -67,7 +67,7 @@ public class AnimatedButton extends RadioButton {
 	}
 	/**
 	 * Sets the animation that this button will display on its face when touched.
-	 * @param img {@link #touchedAnimation}
+	 * @param animation {@link #touchedAnimation}
 	 */
 	public void setTouchedAnimation(Animation animation) {
 		//if it was relying on the outline toggle right now
