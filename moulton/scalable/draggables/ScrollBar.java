@@ -8,8 +8,8 @@ import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
 
 /**
- * The scroll bar class is a Draggable component that handles mouse draggging
- * and notifies a component to be scrolled.
+ * The scroll bar class is a Draggable component that handles mouse draggging and notifies a component to be
+ * scrolled. That component should implement {@link ScrollableComponent}.
  * @author Matthew Moulton
  */
 public class ScrollBar extends Clickable implements DraggableComponent {

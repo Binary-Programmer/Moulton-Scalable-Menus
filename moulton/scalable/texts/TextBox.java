@@ -10,13 +10,14 @@ import moulton.scalable.clickables.Clickable;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
+import moulton.scalable.draggables.ScrollableComponent;
 
 /**
  * This is a text box that users can enter data into, the available characters for which is defined by {@link TextFormat}. This class also has
  * the functionality of mouse dragging to select multiple characters to be manipulated, and thereby offers support for copy, cut, and paste functions.
  * @author Matthew Moulton
  */
-public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent {
+public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent, ScrollableComponent {
 	/**The display string of the text box.
 	 * @see #getMessage()
 	 * @see #setMessage(String)*/
@@ -547,7 +548,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				
 			}
 			//if the blinker hasn't been set yet, it is further in the message
-			if(!setBlinker && getClicked() && !rem.isEmpty()) {
+			if(!setBlinker && allowsVirtualSpace() && getClicked() && !rem.isEmpty()) {
 				if(texts.length>1) {
 					//shift all rows up
 					int ii=1;
@@ -808,7 +809,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(start>0)
 				newMessage += message.substring(0, start);
 			if(end<message.length())
-				newMessage += message.substring(end+1);
+				newMessage += message.substring(end);
 			setMessage(newMessage);
 			//set the new index where the deletion starts
 			index = start;
@@ -1123,5 +1124,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	public boolean allowsWordSplitting() {
 		return wordSplitting;
+	}
+	@Override
+	public ScrollBar getWidthScrollBar() {
+		return textScroller;
+	}
+	@Override
+	public ScrollBar getHeightScrollBar() {
+		return textScroller;
 	}
 }

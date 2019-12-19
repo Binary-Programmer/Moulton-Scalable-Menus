@@ -8,6 +8,7 @@ import java.util.ConcurrentModificationException;
 
 import moulton.scalable.clickables.Clickable;
 import moulton.scalable.draggables.ScrollBar;
+import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
@@ -16,7 +17,7 @@ import moulton.scalable.utils.MenuComponent;
  * full width and height of the parent panel rather than just the shown ones.
  * @author Matthew Moulton
  */
-public class PanelPlus extends Panel{
+public class PanelPlus extends Panel implements ScrollableComponent{
 	/**
 	 * The full width and full height values are the minimum values of the actual sizes of the panel. That is,
 	 * at render time, if the regular width (shownWidth) or regular height (shownHeight) of this panel is less
@@ -222,6 +223,14 @@ public class PanelPlus extends Panel{
 			widthBarTotalOffsets = totalOffs;
 		else
 			heightBarTotalOffsets = totalOffs;
+	}
+	@Override
+	public ScrollBar getWidthScrollBar() {
+		return widthBar;
+	}
+	@Override
+	public ScrollBar getHeightScrollBar() {
+		return heightBar;
 	}
 
 }
