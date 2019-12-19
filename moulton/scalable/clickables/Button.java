@@ -7,11 +7,12 @@ import java.awt.Graphics;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.containers.MenuManager;
 
 /**
  * A menu component that is a simple rectangular button and is a subclass of {@link RadioButton}. Although it is a sublass
  * of RadioButton it is only used as a radio button when the {@link RadioButton#group} is set to a not-null value.<p>
- * If this button is registered on the {@link MenuManagerPlus}'s touch check list, then it will be responsive to mouse
+ * If this button is registered on the {@link MenuManager}'s touch check list, then it will be responsive to mouse
  * touching. By default, upon mouse touch the outline will toggle, but if {@link RadioButton#colorTouched} is set from
  * non-null, then the fill color of the button will change instead.
  * @author Matthew Moulton
@@ -142,7 +143,7 @@ public class Button extends RadioButton {
 	
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
-	 * @param touchedColor
+	 * @param touchedColor the color to be set as {@link #colorTouched}
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {

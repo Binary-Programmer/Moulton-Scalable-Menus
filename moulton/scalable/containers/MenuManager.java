@@ -39,7 +39,7 @@ public abstract class MenuManager {
 	/**The container for the menus to manage.*/
 	protected Container cont;
 	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
-	 * @see #setClicked(Clickable)*/
+	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
 	/**
 	 * mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
@@ -205,13 +205,13 @@ public abstract class MenuManager {
 		if(clicked instanceof TextBox){
 			TextBox box = (TextBox) clicked;
 			//if it is a valid looking character, just append it
-			if (key>31){
-				box.appendMessage(key+"");
-			}else if(key == 8 || key == 127){ //backspace OR delete
+			if(key == 8 || key == 127){ //backspace OR delete
 				box.removeMessage(1, key == 8);
 			}else if(key == 10){ //enter
 				//remove focus
 				setClicked(null,-1,-1);
+			}else if (key>31){
+				box.appendMessage(key+"");
 			}
 		}
 	}
@@ -236,7 +236,8 @@ public abstract class MenuManager {
 	
 	/**
 	 * This will report to the selected Draggable how much the mouse has moved since the draggable was first clicked.
-	 * When the draggable uses some of the change, it can update the mouse coordinates by {@link #changeMouseXY(int, int)}.
+	 * When the draggable uses some of the change, it can update the mouse coordinates by returning an array of how
+	 * much was used. (Index 0 for x, index 1 for y.)
 	 * @param x the mouse x coordinate in pixels
 	 * @param y the mouse y coordinate in pixels
 	 */
@@ -286,7 +287,9 @@ public abstract class MenuManager {
 	/**
 	 * Sets {@link #clicked} to defined. If <code>clicked</code> was non-null before the change, the clickable
 	 * will be updated with its new non-clicked status, and any losing focus events will be triggered.
-	 * @param clicked
+	 * @param clicked the component that has been clicked. Saved as {@link #clicked}
+	 * @param x the x-location of the mouse when clicked. Measured in pixels.
+	 * @param y the y-location of the mouse when clicked. Measured in pixels.
 	 */
 	public void setClicked(Clickable clicked, int x, int y) {
 		if(this.clicked != null) {//tell the old clicked that it has been replaced

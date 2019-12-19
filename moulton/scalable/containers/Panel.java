@@ -84,7 +84,6 @@ public class Panel extends MenuComponent {
 	 * @param parent the panel this panel will reside upon. Null if this is being set to {@link MenuManager#menu}.
 	 * @param x the integer x coordinate this panel should appear on its parent panel
 	 * @param y the integer y coordinate this panel should appear on its parent panel
-	 * @param parent the panel that this panel will reside upon
 	 * @param color the background color for the box when editable
 	 */
 	public Panel(Panel parent, int x, int y,  Color color){
@@ -336,7 +335,7 @@ public class Panel extends MenuComponent {
 	/**
 	 * Returns a list of all of the child components that this panel holds. By default, {@link #grid} is added to
 	 * the list, then {@link #comps}.
-	 * @return
+	 * @return the array of all held menu components
 	 */
 	public ArrayList<MenuComponent> getAllHeldComponents(){
 		ArrayList<MenuComponent> both = new ArrayList<>(grid.values().size() + comps.size());
@@ -363,6 +362,8 @@ public class Panel extends MenuComponent {
 	}
 	
 	/**Deletes the component found at the location (x,y) in {@link #grid}.
+	 * @param x the x-value of the component to remove
+	 * @param y the y-value of the component to remove
 	 * @param resize whether the grid should check for a resize after the deletion.
 	 * @return whether a component was removed at (x,y)
 	 */

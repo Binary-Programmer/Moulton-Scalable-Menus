@@ -76,7 +76,6 @@ public class RadioGroup {
 	
 	/**
 	 * The radio button in this group that is currently selected. Only one button is allowed to be selected at a time.
-	 * After the clicked button loses focus, it becomes the "last selected", gotten through {@link #getLastSelected()}.
 	 * @return the presently selected button in the group
 	 */
 	public RadioButton getSelected(){

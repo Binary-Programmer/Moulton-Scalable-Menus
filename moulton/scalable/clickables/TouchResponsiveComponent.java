@@ -1,5 +1,7 @@
 package moulton.scalable.clickables;
 
+import moulton.scalable.containers.MenuManager;
+
 /**
  * Interface for components that should be responsive to being touched, meaning having the mouse cursor on part of
  * them that would in most cases be clickable. A notable class that implements this is {@link Clickable} and thus

@@ -8,8 +8,8 @@ import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
 
 /**
- * The scroll bar class is a Draggable component that handles mouse draggging
- * and notifies a component to be scrolled.
+ * The scroll bar class is a Draggable component that handles mouse draggging and notifies a component to be
+ * scrolled. That component should implement {@link ScrollableComponent}.
  * @author Matthew Moulton
  */
 public class ScrollBar extends Clickable implements DraggableComponent {
@@ -181,8 +181,8 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	/**
 	 * Sets the buttons to be linked to this scroll bar. The scroll bar will set these to editable or uneditable when necessary,
 	 * but will not provide any other function.
-	 * @param scrollNeg
-	 * @param scrollPos
+	 * @param scrollNeg a button that when pressed, should make this bar scroll in the negative direction
+	 * @param scrollPos a button that when pressed, should make this bar scroll in the positive direction
 	 */
 	public void setScrollButtons(RadioButton scrollNeg, RadioButton scrollPos) {
 		this.scrollNeg = scrollNeg;
@@ -223,7 +223,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	/**
 	 * Sets the offset of the scroll bar. If the offset provided is out of range, the closest value to provided will be used.
 	 * Additionally, this will update the editability of {@link #scrollNeg} and {@link #scrollPos} if they are not null.
-	 * @param offset
+	 * @param offset the new value for {@link #offset}
 	 */
 	public void setOffset(int offset) {
 		if(offset<0)

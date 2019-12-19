@@ -30,7 +30,7 @@ public class ExpressionSolver {
 	
 	/**
 	 * Solves the equation as expected.
-	 * @param equation the equation to solve
+	 * @param expression the equation to solve
 	 * @return the answer in double precision
 	 */
 	public double solveString(String expression){
