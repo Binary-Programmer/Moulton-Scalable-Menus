@@ -18,6 +18,7 @@ import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.texts.HotkeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
+import moulton.scalable.texts.TextInputComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
@@ -171,8 +172,9 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Handles any key typed transactions. If the clicked is a {@link TextBox}, the event is passed to it.
-	 * This will not occur automatically when a key is typed, rather, it needs to be called externally. 
+	 * Handles any key typed transactions. If the clicked is a {@link TextInputComponent}, the event is
+	 * passed to it. This will not occur automatically when a key is typed, rather, it needs to be called
+	 * externally. 
 	 * @param key the key that was pressed
 	 */
 	public void keyTyped(char key){
@@ -202,16 +204,16 @@ public abstract class MenuManager {
 			}
 		}
 		//if none of the hotkeys were valid, continue with normal functioning
-		if(clicked instanceof TextBox){
-			TextBox box = (TextBox) clicked;
+		if(clicked instanceof TextInputComponent){
+			TextInputComponent textInputComp = (TextInputComponent) clicked;
 			//if it is a valid looking character, just append it
 			if(key == 8 || key == 127){ //backspace OR delete
-				box.removeMessage(1, key == 8);
+				textInputComp.removeMessage(1, key == 8);
 			}else if(key == 10){ //enter
 				//remove focus
 				setClicked(null,-1,-1);
 			}else if (key>31){
-				box.appendMessage(key+"");
+				textInputComp.appendMessage(key+"");
 			}
 		}
 	}

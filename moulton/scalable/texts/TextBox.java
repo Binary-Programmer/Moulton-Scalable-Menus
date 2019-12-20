@@ -760,6 +760,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * the string will be excluded.
 	 * @param string the String to append on
 	 */
+	@Override
 	public synchronized void appendMessage(String string) {
 		//deletes the selection if there is one
 		if(selection) {
@@ -794,6 +795,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * these characters will be used to delete it.
 	 * @param leftDelete whether to delete left or right from the starting index
 	 */
+	@Override
 	public void removeMessage(int chars, boolean leftDelete) {
 		//deletes the selection if there is one
 		if(selection) {

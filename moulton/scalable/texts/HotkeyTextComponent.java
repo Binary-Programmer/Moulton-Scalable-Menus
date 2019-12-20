@@ -12,7 +12,7 @@ import moulton.scalable.utils.MenuComponent;
  * {@link #paste(String)}.
  * @author Matthew Moulton
  */
-public interface HotkeyTextComponent {
+public interface HotkeyTextComponent extends TextInputComponent{
 	
 	/**Called by the {@link MenuManager} when it registers a copy request from the user.
 	 * @return the text from this component that should be copied to the clipboard
