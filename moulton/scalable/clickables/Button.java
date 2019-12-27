@@ -108,8 +108,13 @@ public class Button extends RadioButton {
 				g.setFont(font);
 			FontMetrics fm = g.getFontMetrics();
 			int fontWidth = fm.stringWidth(text);
+			String shownText = text;
+			while(fontWidth > w && shownText.length()>0) {
+				shownText = shownText.substring(0, shownText.length()-1); //decrease size
+				fontWidth = fm.stringWidth(shownText);
+			}
 			int fontHeight = fm.getHeight();
-			g.drawString(text, x + w/2 - fontWidth/2, (int) (y + h/2 + fontHeight/2.8));
+			g.drawString(shownText, x + w/2 - fontWidth/2, (int) (y + h/2 + fontHeight/2.8));
 		}
 	}
 	

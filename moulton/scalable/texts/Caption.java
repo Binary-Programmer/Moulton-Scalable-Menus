@@ -26,7 +26,7 @@ public class Caption extends MenuComponent{
 	/**The alignment of the text to be rendered*/
 	protected Alignment alignment;
 	/**The text will center and draw from x to x+width if specified*/
-	protected String width = null;
+	protected String width = null; //TODO implements for other alignments
 	/**Whether or not to center the text on the y-axis while rendering.
 	 * @see #getYCentered()
 	 * @see #setYCentered(boolean)*/
@@ -78,7 +78,7 @@ public class Caption extends MenuComponent{
 	}
 
 	@Override
-	public void render(Graphics g, int xx, int yy, int ww, int hh) {
+	public void render(Graphics g, int xx, int yy, int ww, int hh) { //TODO split by width if specified
 		//count how many enters there
 		String [] texts = text.split("\n");
 		

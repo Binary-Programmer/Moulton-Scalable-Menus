@@ -36,14 +36,15 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getTextFormat()
 	 * @see #setTextResizeFactor(int)*/
 	protected TextFormat format = null;
-	/**The maximum number of characters that can be held in the text box. -1 indictates no limit.
+	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
+	 * the default.
 	 * @see #setCharLimit(int)*/
 	protected int charMax = -1;
 	/**Whether input can be put outside of the visible box.
 	 * @see #allowsVirtualSpace()
 	 * @see #allowVirtualSpace(boolean)*/
 	protected boolean virtualSpace = true;
-	/**The alignment of the text to be rendered */
+	/**The alignment of the text to be rendered. Defaults to left alignment.*/
 	protected Alignment alignment = Alignment.LEFT_ALIGNMENT;
 	/**The color of the box when touched.
 	 * @see #setTouchedColor(Color)*/
@@ -221,7 +222,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			int underscoreWidth = fontMetrics.stringWidth("_");
 			/*The inside width is the difference of the pixel width of the box and the underscore width.
 			 *This leaves spacing for half an underscore on both sides. */
-			int insideWidth = ww - underscoreWidth;
+			int insideWidth = ww - underscoreWidth/2;
 			if(rem != null && !rem.isEmpty()){
 				//it only needs to go to row because that is the data we need
 				for(int i=-shift; i<=row; i++){
@@ -235,6 +236,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						if(text.charAt(text.length()-1) == '\n')
 							wwidth += insideWidth;
 					}
+					
 					if(!rem.isEmpty() && rows>1) { //the width is too long
 						boolean wordSplit = allowsWordSplitting();
 						if(!wordSplit) {
@@ -668,7 +670,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			clickPlace = 0;
 		}else if(!setClick) { //it hasn't been set, so maximum
 			clickRow = texts.length-1;
-			clickPlace = texts[clickRow].length()-1;
+			if(texts[clickRow] != null)
+				clickPlace = (texts[clickRow] != null)? texts[clickRow].length(): 0;
 		}
 		
 		/* A start point and end point needs to be defined for the selection. Although clickIndex is where the click began, backwards dragging is

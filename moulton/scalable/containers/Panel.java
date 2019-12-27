@@ -56,15 +56,16 @@ public class Panel extends MenuComponent {
 	 * @see #setFrame(String, String)
 	 * @see #xFrame*/
 	protected String yFrame = null;
-	/**Whether or not text components should increase in size relative to height. -1 is unset, 0 is true, 1 is false. When text size
-	 * must be determined, if this panel has its value unset, it will defer to its parent panel. If no preference has been set, text
-	 * will not resize relatively.
+	/**Whether or not text components should increase in size relative to height. When text size must be 
+	 * determined, if this panel has not set its value (defaults to null), it will defer to its parent panel.
+	 * If no preference has been set, text will not resize relatively.
 	 * @see #textResize
 	 * @see #setTextResize(boolean)
 	 * @see #setTextResizeFactor(int)*/
-	private byte textResize = -1;
-	/**The height of the panel (in pixels) at last render*/
-	private int lastHeight = 0;
+	private Boolean textResize = null;
+	/**The height of the panel (in pixels) at last render. Used by {@link MenuComponent} to know how much
+	 * the text should resize for child components.*/
+	protected int lastHeight = 0;
 	
 	/**
 	 * @param parent the panel this panel will reside upon. Null if this is being set to {@link MenuManager#menu}.
@@ -302,26 +303,22 @@ public class Panel extends MenuComponent {
 	 * Overwrites the value of {@link #textResize}.
 	 * @param resize Sets whether or not this panel and its descendants should resize text by height.
 	 */
-	public void setTextResize(boolean resize) {
-		if(resize)
-			this.textResize = 0;
-		else
-			this.textResize = 1;
+	public void setTextResize(Boolean resize) {
+		this.textResize = resize;
 	}
 	/**
-	 * @return if text should resize by height. This is found by seeing if this panel has set a preference by {@link #setTextResize(boolean)}.
+	 * @return if text should resize by height. This is found by seeing if this panel has set a preference in {@link #textResize}
 	 * If a preference has been set, that is returned. Otherwise, the parent is queried to see if it has been set.
 	 */
 	@Override
 	public boolean textResize() {
-		if(textResize == -1) {
+		if(textResize == null) {
 			if(parent == null)
-				return false;
+				return false; //defaults to not resize
 			else
 				return parent.textResize();
-		}else {
-			return textResize==0;
-		}
+		}else
+			return textResize;
 	}
 	
 	/**

@@ -263,14 +263,11 @@ public abstract class MenuManager {
 	/**
 	 * Renders the menu that is being managed ({@link #menu}).
 	 * @param g the Graphics to render on
-	 * @return whether or not there was a menu to use for rendering
 	 */
-	public boolean render(Graphics g){
+	public void render(Graphics g){
 		if(menu != null){
 			menu.render(g, 0, 0, cont.getMenuWidth(), cont.getMenuHeight());
-			return true;
-		}else
-			return false;
+		}
 	}
 	
 	/**

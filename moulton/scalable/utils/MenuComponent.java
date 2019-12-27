@@ -26,7 +26,8 @@ public abstract class MenuComponent {
 	 * @see #setTextResizeFactor(int)*/
 	protected static int text_resize_factor = DEFAULT_ORIGINAL_TEXT_SIZE;
 	/**Visibility of component. Invisible components are uneditable.
-	 * @see #isVisible()*/
+	 * @see #isVisible()
+	 * @see #setVisible(boolean)*/
 	protected boolean visible = true;
 	/**The coordinates of this component on {@link #parent}'s grid. Null when this component is not using the panel
 	 * grid functionality, but rather uses the free-form where the coordinates are derived from {@link #x} and {@link #y}.  */
@@ -124,8 +125,19 @@ public abstract class MenuComponent {
 		this.parent = parent;
 	}
 	
+	/**
+	 * Returns whether this component should be drawn by the parent panel during rendering.
+	 * @return {@link #visible}
+	 */
 	public boolean isVisible() {
 		return visible;
+	}
+	/**
+	 * Sets the visibility of this component.
+	 * @param visibility replaces the value of {@link #visible}
+	 */
+	public void setVisible(boolean visibility) {
+		visible = visibility;
 	}
 	
 	/**
