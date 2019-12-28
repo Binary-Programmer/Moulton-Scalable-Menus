@@ -25,8 +25,8 @@ public class Caption extends MenuComponent{
 	protected Color color = Color.BLACK;
 	/**The alignment of the text to be rendered*/
 	protected Alignment alignment;
-	/**The text will center and draw from x to x+width if specified*/
-	protected String width = null; //TODO implements for other alignments
+	/**The text will center and draw from x to x+width if specified and alignment is center*/
+	protected String centerWidth = null;
 	/**Whether or not to center the text on the y-axis while rendering.
 	 * @see #getYCentered()
 	 * @see #setYCentered(boolean)*/
@@ -58,7 +58,7 @@ public class Caption extends MenuComponent{
 		super(parent,x,y);
 		this.text = text;
 		this.font = font;
-		this.width = width;
+		this.centerWidth = width;
 		this.alignment = Alignment.CENTER_ALIGNMENT;
 	}
 	/**
@@ -74,11 +74,11 @@ public class Caption extends MenuComponent{
 		this.text = text;
 		this.font = font;
 		this.alignment = alignment;
-		this.width = ""; //not null so rendering will handle with width
+		this.centerWidth = ""; //not null so rendering will handle with width
 	}
 
 	@Override
-	public void render(Graphics g, int xx, int yy, int ww, int hh) { //TODO split by width if specified
+	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		//count how many enters there
 		String [] texts = text.split("\n");
 		
@@ -111,16 +111,16 @@ public class Caption extends MenuComponent{
 				g.drawString(texts[i], x, y+(i*fontHeight));
 			break;
 		case CENTER_ALIGNMENT:
-			if(this.width!=null){
+			if(this.centerWidth!=null){
 				//check for x2 variant
-				if(this.width.length()>0){
-					if(this.width.charAt(0)=='?'){
-						int x2 = solveString(this.width.substring(1), ww, hh);
+				if(this.centerWidth.length()>0){
+					if(this.centerWidth.charAt(0)=='?'){
+						int x2 = solveString(this.centerWidth.substring(1), ww, hh);
 						w = x2-x;
 					}else
-						w = solveString(this.width, ww, hh);
+						w = solveString(this.centerWidth, ww, hh);
 				}else if (parent==null) //if panel is not null w was already defined in earlier panel check
-					w = solveString(this.width,ww,hh);
+					w = solveString(this.centerWidth,ww,hh);
 				//redefine center by using x and endBound as opposite edges to center by
 				x += w/2;
 				//continue on to draw the string based on redefined values

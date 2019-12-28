@@ -1,5 +1,6 @@
 package moulton.scalable.visuals;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -16,12 +17,16 @@ public class AnimatedView extends MenuComponent {
 	 * @see #setAnimation(Animation)
 	 * @see #getAnimation()*/
 	protected Animation animation = null;
-	/**The expressional dimensions of the component*/
+	/**The expression dimensions of the component*/
 	protected String width, height;
 	/**Whether or not the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
 	 * @see #setMaintainAspectRatio(boolean)
 	 * @see #isMaintainAspectRatio()*/
 	protected boolean maintainAspectRatio = true;
+	/**Whether or not this component should render a black outline on the border of the component.
+	 * @see #setOutline(boolean)
+	 * @see #getOutline()*/
+	protected boolean outline = false;
 	
 	/**
 	 * @param animation The animation that will be drawn onto the coordinates provided
@@ -89,6 +94,10 @@ public class AnimatedView extends MenuComponent {
 				}
 			}else
 				g.drawImage(img, x, y, w, h, null);
+			if(outline) {
+				g.setColor(Color.BLACK);
+				g.drawRect(x, y, w, h);
+			}
 		}
 	}
 	
@@ -107,10 +116,33 @@ public class AnimatedView extends MenuComponent {
 		return animation;
 	}
 	
+	/**
+	 * Sets whether this view should keep the aspect ratio of the {@link Animation} that it displays.
+	 * @param mar sets the value of {@link #maintainAspectRatio}
+	 */
 	public void setMaintainAspectRatio(boolean mar){
 		maintainAspectRatio = mar;
 	}
+	/**
+	 * Returns whether this view will keep the aspect ratio of the {@link Animation} it displays.
+	 * @return the value of {@link #maintainAspectRatio}
+	 */
 	public boolean isMaintainAspectRatio(){
 		return maintainAspectRatio;
+	}
+	
+	/**
+	 * Sets whether or not the clickable should display a black outline on its border.
+	 * @param outline {@link #outline}
+	 */
+	public void setOutline(boolean outline){
+		this.outline = outline;
+	}
+	/**
+	 * Returns whether or not the clickable is displaying a black outline on its border
+	 * @return {@link #outline}
+	 */
+	public boolean getOutline(){
+		return outline;
 	}
 }

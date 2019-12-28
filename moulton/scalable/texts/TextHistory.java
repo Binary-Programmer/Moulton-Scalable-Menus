@@ -45,6 +45,13 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 * @see #setTextDemarkation(boolean)
 	 * @see #getTextDemarkation()*/
 	protected boolean textDemarkation = false;
+	/**Whether or not this component should render a black outline on the border of the component.
+	 * @see #setOutline(boolean)
+	 * @see #getOutline()*/
+	protected boolean outline = false;
+	/**The color with which the messages in {@link #history} are printed.
+	 * @see #setTextColor(Color)*/
+	protected Color textColor = Color.BLACK;
 
 	/**
 	 * Creates a new TextHistory component and adds it to the parent panel by {@link MenuComponent#MenuComponent(Panel,
@@ -245,7 +252,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			}
 			
 			//print now
-			g.setColor(Color.BLACK);
+			g.setColor(textColor);
 			int remainderSpace = (h - numberOfLinesShown*metrics.getHeight())/2;
 			for(int i=0; i<textMax+1; i++){
 				String write = texts[i];
@@ -253,17 +260,22 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 					g.drawString(write, x, y+ i*metrics.getHeight() +metrics.getAscent() +remainderSpace);
 					if(lineSeparate[i]) {
 						int lineY = y+i*metrics.getHeight() + remainderSpace;
-						g.drawLine(xx, lineY, xx+ww, lineY);
+						g.drawLine(x, lineY, x+w, lineY);
 					}
 				}else {
 					g.drawString(write, x, y+ (numberOfLinesShown-1-i)*metrics.getHeight() +
 							metrics.getAscent() + remainderSpace);
 					if(lineSeparate[i]) {
 						int lineY = y+ (numberOfLinesShown-i)*metrics.getHeight() + remainderSpace;
-						g.drawLine(xx, lineY, xx+ww, lineY);
+						g.drawLine(x, lineY, x+w, lineY);
 					}
 				}
 			}
+		}
+		//draw the outline
+		if(outline) {
+			g.setColor(Color.BLACK);
+			g.drawRect(x, y, w, h);
 		}
 	}
 
@@ -392,6 +404,27 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			line = line.substring(0, length-1);
 		}
 		return new String[] {line, remainder};
+	}
+	
+	/**
+	 * Sets whether or not the clickable should display a black outline on its border.
+	 * @param outline {@link #outline}
+	 */
+	public void setOutline(boolean outline){
+		this.outline = outline;
+	}
+	/**
+	 * Returns whether or not the clickable is displaying a black outline on its border
+	 * @return {@link #outline}
+	 */
+	public boolean getOutline(){
+		return outline;
+	}
+	
+	/**Sets the color that messages are printed with in {@link #render(Graphics, int, int, int, int)}.
+	 * @param color the color to replace {@link #textColor}*/
+	public void setTextColor(Color color) {
+		textColor = color;
 	}
 
 }

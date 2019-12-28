@@ -1,5 +1,6 @@
 package moulton.scalable.visuals;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -21,6 +22,10 @@ public class View extends MenuComponent {
 	 * @see #isMaintainAspectRatio()
 	 * @see #setMaintainAspectRatio(boolean)*/
 	protected boolean maintainAspectRatio = true;
+	/**Whether or not this component should render a black outline on the border of the component.
+	 * @see #setOutline(boolean)
+	 * @see #getOutline()*/
+	protected boolean outline = false;
 	
 	/**
 	 * @param img The image that will be drawn onto the coordinates provided
@@ -88,6 +93,10 @@ public class View extends MenuComponent {
 				}
 			}else
 				g.drawImage(getImage(), x, y, w, h, null);
+			if(outline) {
+				g.setColor(Color.BLACK);
+				g.drawRect(x, y, w, h);
+			}
 		}
 	}
 	
@@ -120,5 +129,20 @@ public class View extends MenuComponent {
 	 */
 	public boolean isMaintainAspectRatio(){
 		return maintainAspectRatio;
+	}
+	
+	/**
+	 * Sets whether or not the clickable should display a black outline on its border.
+	 * @param outline {@link #outline}
+	 */
+	public void setOutline(boolean outline){
+		this.outline = outline;
+	}
+	/**
+	 * Returns whether or not the clickable is displaying a black outline on its border
+	 * @return {@link #outline}
+	 */
+	public boolean getOutline(){
+		return outline;
 	}
 }
