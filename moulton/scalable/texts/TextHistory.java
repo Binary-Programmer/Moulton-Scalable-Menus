@@ -93,23 +93,24 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		int x, y, w, h;
-		if(getGridLocation()==null){
+		if(getGridLocation()==null) {
 			x = xx + solveString(this.x, ww, hh);
 			y = yy + solveString(this.y, ww, hh);
-
 			// variant for input ending points instead of widths indicated by a starting question
-			if (width.charAt(0) == '?') {
-				int x2 = solveString(width.substring(1), ww, hh);
+			if (this.width.charAt(0) == '?') {
+				//solve for the ending point
+				int x2 = xx + solveString(this.width.substring(1), ww, hh);
+				//deduce the width
 				w = x2 - x;
 			} else
-				w = solveString(width, ww, hh);
-
-			if (height.charAt(0) == '?') {
-				int y2 = solveString(height.substring(1), ww, hh);
+				w = xx + solveString(this.width, ww, hh);
+			
+			if (this.height.charAt(0) == '?') {
+				int y2 = yy + solveString(this.height.substring(1), ww, hh);
 				h = y2 - y;
 			} else
-				h = solveString(height, ww, hh);
-		}else{
+				h = yy + solveString(this.height, ww, hh);
+		}else {
 			x = xx;
 			y = yy;
 			w = ww;
