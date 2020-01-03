@@ -344,13 +344,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//deduce the width
 				w = x2 - x;
 			} else
-				w = xx + solveString(this.width, ww, hh);
+				w = solveString(this.width, ww, hh);
 			
 			if (this.height.charAt(0) == '?') {
 				int y2 = yy + solveString(this.height.substring(1), ww, hh);
 				h = y2 - y;
 			} else
-				h = yy + solveString(this.height, ww, hh);
+				h = solveString(this.height, ww, hh);
 		}else {
 			x = xx;
 			y = yy;

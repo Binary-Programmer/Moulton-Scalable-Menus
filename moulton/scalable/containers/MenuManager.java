@@ -148,7 +148,8 @@ public abstract class MenuManager {
 			}
 			//check if it lost focus
 			//If release deselects- deselect. If not, no deselect even if unsuccessful click
-			if(clicked.isDeselectedOnRelease()) {
+			//sometimes the click action changes the clicked obj, so check again
+			if(clicked!=null && clicked.isDeselectedOnRelease()) {
 				setClicked(null,x,y);
 			}
 		}

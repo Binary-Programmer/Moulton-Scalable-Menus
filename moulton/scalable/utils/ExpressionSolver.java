@@ -1,6 +1,6 @@
 package moulton.scalable.utils;
 
-/*2 October 2019
+/*1 Jan 2020
  * This is a modification of my ExpressionSolver class altered to better suit
  * Moulton Scalable Menus.
  */
@@ -58,29 +58,22 @@ public class ExpressionSolver {
 		}
 	}
 	
-	private double solve(String expression) throws NumberFormatException{
+	private double solve(String expression){
 		if(expression==null || expression.isEmpty())
 			return 0;
 		//while there are parentheses
 		while(expression.indexOf('(')!=-1){ //P
-			//if there is a start paren, look for its end
-			int start = expression.indexOf('(');
-			int end = start + 1;
-			int nestedParan = 0;
-			for(; end<expression.length(); end++) {
-				if(expression.charAt(end) == '(')
-					nestedParan++;
-				if(expression.charAt(end) == ')') {
-					nestedParan--;
-					if(nestedParan<0) //so if that was its pair
-						break;
-				}
-			}//print expression here if you want a step by step run-down of what happened
+			//the last ( and the first ) after go together
+			int start = expression.lastIndexOf('(');
+			int end = expression.indexOf(')');
+			if(end == -1) //if it wasn't found, just use the end of the expression
+				end = expression.length();
 			
 			//make the equation what it was before but insert the solved parentheses expression
-			expression = rebuildEquation(expression.substring(0, expression.indexOf('(')),
-					solve(expression.substring(expression.indexOf('(')+1, end)),
-					expression.substring(end<expression.length()?end+1:expression.length()), true);
+			expression = rebuildEquation(expression.substring(0, start),
+						 solve(expression.substring(start+1, end)),
+						 //if the end is longer than the expression, just give an empty string
+						 end<expression.length()?expression.substring(end+1):"", true);
 		}//perform the functions
 		expression = performOperation(expression, "cos", true);
 		expression = performOperation(expression, "sin", true);
@@ -101,8 +94,14 @@ public class ExpressionSolver {
 	
 	private String performOperation(String expression, String operation, boolean afterOnly) {
 		int i = expression.indexOf(operation);
-		//while there is an instance of the operation, exception of a leading -, which would just indicate a negation
-		while(i != -1 && !(operation.equals("-") && expression.indexOf('-',1)==-1)) {
+		//while there is an instance of the operation, but with two exceptions:
+		while(i != -1) {
+			//1. a leading -, which would just indicate a negation
+			if(operation.equals("-") && i==0)
+				break;
+			//2. a - preceded by an E, for 10^(negative exponent)
+			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E')
+				break;
 			//if we have the operation at index i, then we need to divide up the expression at that point,
 			//remove the operation, and perform the action between the two component parts
 			//try to find the number on the second end of the operation
@@ -112,27 +111,28 @@ public class ExpressionSolver {
 				char c = expression.charAt(b);
 				if(c == '-' && b==i+operation.length()) //negation assumed only if it is the first character
 					continue;
-				else if(!(Character.isDigit(c) || c=='.')) //if the character is not a digit or a ., then we have found the end
+				else if(!isNumber(c)) //if the character is not a digit or a ., then we have found the end
 					break;
 			}
 			double second = Double.parseDouble(expression.substring(i+operation.length(), b));
 			//try to find the first half if needed
-			int a = i-1;
+			int a = i; //the end is exclusive
 			double first = 0.0;
 			//some operations, notably trig ones, only have a relevant value after the operation sign
 			if(!afterOnly) {
-				for(; a>-1; a--) {
+				for(a=i-1; a>-1; a--) {
 					char c = expression.charAt(a);
 					if(c == '-') //negation of the first number
 						break;
-					else if(!(Character.isDigit(c) || c=='.')) { //if the character is not a digit or a ., then we have found the end
+					else if(!isNumber(c)) { //if the character is not a digit or a ., then we have found the end
 						a++; //the first number component begins with the next character
 						break;
 					}
 				}
+				if(a<0)
+					a = 0;
 				first = Double.parseDouble(expression.substring((a<0)? 0:a, i));
-			}//repair a if necessary
-			if(a == -1)
+			}else if(a<0)
 				a = 0;
 			
 			double value = 0.0;
@@ -202,35 +202,61 @@ public class ExpressionSolver {
 			//work as before with adding
 			int i= bgn.length()-1;
 			if(i>-1) {
-				//look for a plus
+				//look for a plus or minus
 				char c = bgn.charAt(i);
-				if(c=='+'){
-					//found a plus
-					if(number<0)
+				if(c=='-') {
+					if(isNegative(number)) //two negatives make a positive
+						return bgn.substring(0,i) + '+' + (-number) + end;
+					else
+						return bgn + number + end;
+				}if(c=='+') {
+					if(isNegative(number)) //remove the + since it is replaced by a -
 						return bgn.substring(0, i) + number + end;
 					else
 						return bgn + number + end;
-				}//anything other than a space means there is no plus
-					if(number<0)
-						return bgn + number + end;
-					else
-						return bgn + '+' + number + end;
+				}//otherwise
+				if(number<0)
+					return bgn + number + end;
+				else
+					return bgn + '+' + number + end;
 			}//the bgn string must be empty
 			return number + end;
 		}else{ //the value of number should be multiplied to any adjacent elements
 			//if the element immediately preceding this is a number value, add on a "*", so it will calculate correctly
 			if(bgn.length()>0) {
 				char c = bgn.charAt(bgn.length()-1);
-				if(Character.isDigit(c) || c=='.' || c=='(' || c==')')
+				if(isNumber(c))
 					bgn+="*";
 			}//similarly, if the element immediately proceeding is a number value, add the "*".
 			if(end.length()>0) {
 				char c = end.charAt(0);
-				if(Character.isDigit(c) || c=='.' || c=='(' || c==')')
+				if(isNumber(c))
 					end = '*' + end;
 			}
 			return bgn + number + end;
 		}
+	}
+	
+	/**
+	 * Returns whether this character could be part of a number. Also defined as whether the character is a
+	 * decimal point ('.') or {@link Character#isDigit(char)}.
+	 * @param testChar the character to test
+	 * @return whether the test character could be part of a number
+	 */
+	protected static boolean isNumber(char testChar) {
+		if (testChar == '.')
+			return true;
+		return Character.isDigit(testChar);
+	}
+	
+	/**
+	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and is not
+	 * < 0.0. Therefore, this method will determine if there is a leading negation sign.
+	 * @param d the double to test
+	 * @return whether the double to test is negative.
+	 */
+	protected static boolean isNegative(double d) {
+	     return Double.doubleToRawLongBits(d) < 0;
 	}
 	
 }
