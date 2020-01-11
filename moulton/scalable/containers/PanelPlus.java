@@ -167,7 +167,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 					//render each component onto the image with full dimensions.
 					int[] self = {-xOffs, -yOffs, fullW, fullH};
 					if(mc.getGridLocation() != null)
-						self = getGriddedComponentCoordinates(mc, self);
+						self = grid.findCompCoordinates(mc, self);
 					
 					mc.render(show, self[0], self[1], self[2], self[3]);
 					adjustClickBoundaries(mc, x, y, w, h);

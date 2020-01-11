@@ -83,7 +83,7 @@ public abstract class MenuComponent {
 	 * @return the integer value associated with the code
 	 */
 	protected int solveString(String code, int contWidth, int contHeight){
-		if(code.isEmpty()) return 0;
+		if(code==null || code.isEmpty()) return 0;
 		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
 		return (int)solver.solveString(code);
 	}

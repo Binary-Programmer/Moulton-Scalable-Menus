@@ -71,9 +71,7 @@ public class PartitionPanel extends Panel {
 		return;
 	}
 	@Override
-	public boolean removeFromGrid(int x, int y, boolean resize) {
-		return false;
-	}
+	public void removeFromGrid(int x, int y, boolean resize) {}
 	/**This method is overridden and does nothing because PartitionPanel requires components to be added
 	 * in a very specific way. Each component held must be in the top, bottom, left, or right sector.
 	 * @see #setLeft(MenuComponent)

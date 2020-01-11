@@ -1,15 +1,13 @@
 package moulton.scalable.containers;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import moulton.scalable.clickables.TouchResponsiveComponent;
+import moulton.scalable.utils.GridFormatter;
 import moulton.scalable.utils.MenuComponent;
 
 /** 
@@ -32,31 +30,11 @@ public class Panel extends MenuComponent {
 	 * @see #setOutline(boolean)
 	 * @see #getOutline()*/
 	protected boolean outline = false;
-	/**The components held in the grid form. The x and y of these components are determined at render time from this own panel's coordinates based
-	 * on this panel's x, y, width, and height. The width of this panel is split evenly into {@link #gridDim}.x pieces. Likewise, the height of this
-	 * panel is split evenly into {@link #gridDim}.y pieces. */
-	protected HashMap<Point, MenuComponent> grid = new HashMap<Point, MenuComponent>();
 	/**A list of the components held in free-form. The coordinates of the components held here are found by using this panel's coordinates at render
 	 * time and then solving the algebraic expressions in the component that defines its location.*/
 	protected LinkedList<MenuComponent> comps = new LinkedList<MenuComponent>();
-	/**The maximum x and y values of the child components of the grid. At run-time, the grid is split evenly into that many pieces for the x and y axes.*/
-	protected Dimension gridDim = new Dimension(0,0);
-	/**The width of the x margin for the grid. Defaults to null.
-	 * @see #setMargin(String, String)
-	 * @see #yMargin*/
-	protected String xMargin = null;
-	/**The height of the y margin for the grid. Defaults to null.
-	 * @see #setMargin(String, String)
-	 * @see #xMargin*/
-	protected String yMargin = null;
-	/**The outside border of the x for grid. Defaults to null.
-	 * @see #setFrame(String, String)
-	 * @see #yFrame*/
-	protected String xFrame = null;
-	/**The outside border of the y for grid. Defaults to null.
-	 * @see #setFrame(String, String)
-	 * @see #xFrame*/
-	protected String yFrame = null;
+	
+	protected GridFormatter grid = new GridFormatter();
 	/**Whether or not text components should increase in size relative to height. When text size must be 
 	 * determined, if this panel has not set its value (defaults to null), it will defer to its parent panel.
 	 * If no preference has been set, text will not resize relatively.
@@ -143,10 +121,10 @@ public class Panel extends MenuComponent {
 		
 		try{
 			//now draw any components in the grid
-			for(MenuComponent mc: grid.values()){
+			for(MenuComponent mc: grid.getHeldComponents()){
 				if(mc!=null && mc.isVisible()) {
 					int[] selfDim = {x,y,w,h};
-					int dimDetails[] = getGriddedComponentCoordinates(mc, selfDim);
+					int dimDetails[] = grid.findCompCoordinates(mc, selfDim);
 					//gridded components have a very specific space where they should be
 					mc.render(g, dimDetails[0], dimDetails[1], dimDetails[2], dimDetails[3]);
 				}
@@ -166,84 +144,24 @@ public class Panel extends MenuComponent {
 	/**
 	 * Called by the constructor of supported MenuComponents to add the
 	 * component to this panel's grid. Once the component has been added, the
-	 * panel will take care of rendering and placement of the component.
+	 * panel will take care of rendering and placing the component.
 	 * 
 	 * @param comp the component to be added to this panel's grid
 	 * @param x the x position on the grid for the component
 	 * @param y the y position on the grid for the component
 	 */
 	public void addToGrid(MenuComponent comp, int x, int y) {
-		if (x >= gridDim.getWidth())
-			gridDim.setSize(x+1, gridDim.getHeight());
-		if (y >= gridDim.getHeight())
-			gridDim.setSize(gridDim.getWidth(), y+1);
-		grid.put(new Point(x, y), comp);
+		grid.addComponent(comp, x, y);
 	}
 	
-	/**
-	 * Finds the specified component in the grid and returns its pixel coordinates. If it cannot be found,
-	 * null is returned.
-	 * @param comp the component to look for in the grid
-	 * @param self the location and dimension of this panel in the render. Ordered as x, y, width, and height.
-	 * @return the pixel coordinates for the specified component to be rendered. Ordered as x, y, width, and height.
+	/**Deletes the component found at the location (x,y) in {@link #grid}.
+	 * @param x the x-value of the component to remove
+	 * @param y the y-value of the component to remove
+	 * @param resize whether the grid should check for a resize after the deletion.
+	 * @return whether a component was removed at (x,y)
 	 */
-	protected int[] getGriddedComponentCoordinates(MenuComponent comp, int[] self) {
-		Point gridPoint = comp.getGridLocation();
-		//The component must be in a grid for the following calculations to work!
-		if(gridPoint!=null){
-			int details[] = { 0, 0, 0, 0 };
-			//search through grid for this component
-			if (grid.get(gridPoint) != comp) // not found!
-				return details;
-			//found @ gridPoint
-			
-			//find children components from self
-			double wwidth = 0, hheight = 0;
-			int wholeWidth = self[2];
-			int wholeHeight = self[3];
-			//frame
-			if(xFrame!=null){
-				int frame = solveString(xFrame,wholeWidth,wholeHeight);
-				self[0] += frame;
-				self[2] -= frame*2;
-			}
-			if(yFrame!=null){
-				int frame = solveString(yFrame,wholeWidth,wholeHeight);
-				self[1] += frame;
-				self[3] -= frame*2;
-			}
-			//margins
-			boolean margin = false;
-			if(xMargin!=null) {
-				int marginX = solveString(xMargin,wholeWidth,wholeHeight);
-				if(marginX>=1){
-					int margins = gridDim.width-1;
-					wwidth = (self[2]-(margins*marginX))/gridDim.getWidth();
-					details[0] = self[0] + (gridPoint.x)*marginX + (int)(wwidth*gridPoint.x);
-					margin = true;
-				}
-			}//this should run if margin is null or if margin results to 0 or negative
-			if(!margin){
-				wwidth = self[2]/gridDim.getWidth();
-				details[0] = self[0] + (int)(wwidth*gridPoint.x);
-			}details[2] = (int)(wwidth*(gridPoint.x+1)) - (int)(wwidth*gridPoint.x);
-			
-			margin = false;
-			if(yMargin!=null) {
-				int marginY = solveString(yMargin,wholeWidth,wholeHeight);
-				if(marginY>=1){
-					int margins = gridDim.height-1;
-					hheight = (self[3]-(margins*marginY))/gridDim.getHeight();
-					details[1] = self[1] + (gridPoint.y)*marginY + (int)(hheight*gridPoint.y);
-					margin = true;
-				}
-			}if(!margin){
-				hheight= self[3]/gridDim.getHeight();
-				details[1] = self[1] + (int)(hheight*gridPoint.y);
-			}details[3] = (int)(hheight*(gridPoint.y+1)) - (int)(hheight*gridPoint.y);
-			return details;
-		}
-		return null;
+	public void removeFromGrid(int x, int y, boolean resize) {
+		grid.removeComponent(x, y, resize);
 	}
 	
 	/**
@@ -274,32 +192,6 @@ public class Panel extends MenuComponent {
 	 */
 	public boolean getOutline(){
 		return outline;
-	}
-	
-	/**
-	 * Sets the {@link #xMargin} and {@link #yMargin} for this panel. The margins will
-	 * be used to separate components in the grid. Thus the number of marginal dimensions
-	 * for the width of a panel is (number of x components)-1, where the number of x 
-	 * components is at least one. A null value indicates no margin. The margin is measured
-	 * from the dimensions of this panel.
-	 * @param xMargin the width of the margin on the x-axis
-	 * @param yMargin the height of the margin on the y-axis
-	 */
-	public void setMargin(String xMargin, String yMargin) {
-		this.xMargin = xMargin;
-		this.yMargin = yMargin;
-	}
-	
-	/**
-	 * Sets the {@link #xFrame} and {@link #yFrame} for this panel. Unlike margins, the frame
-	 * will only be on the outside of the panel, not between individual components. A null
-	 * value indicates no frame. The frame is measured from the dimensions of this panel.
-	 * @param xFrame the algebraic expression for the width of the frame
-	 * @param yFrame the algebraic expression for the height of the frame.
-	 */
-	public void setFrame(String xFrame, String yFrame){
-		this.xFrame = xFrame;
-		this.yFrame = yFrame;
 	}
 	
 	/**
@@ -338,10 +230,20 @@ public class Panel extends MenuComponent {
 	 * @return the array of all held menu components
 	 */
 	public ArrayList<MenuComponent> getAllHeldComponents(){
-		ArrayList<MenuComponent> both = new ArrayList<>(grid.values().size() + comps.size());
-		both.addAll(grid.values());
+		ArrayList<MenuComponent> gridComps = new ArrayList<>();
+		gridComps.addAll(grid.getHeldComponents());
+		ArrayList<MenuComponent> both = new ArrayList<>(gridComps.size() + comps.size());
+		both.addAll(gridComps);
 		both.addAll(comps);
 		return both;
+	}
+	
+	/**
+	 * Returns the formatter for this panel's grid components. Very useful to set margins, borders, or weights.
+	 * @return the value of {@link #grid}
+	 * */
+	public GridFormatter getGridFormatter() {
+		return grid;
 	}
 	
 	/**Searches through this component's {@link #comps} to delete the component.
@@ -359,33 +261,6 @@ public class Panel extends MenuComponent {
 	 */
 	public boolean addFreeComponent(MenuComponent comp) {
 		return comps.add(comp);
-	}
-	
-	/**Deletes the component found at the location (x,y) in {@link #grid}.
-	 * @param x the x-value of the component to remove
-	 * @param y the y-value of the component to remove
-	 * @param resize whether the grid should check for a resize after the deletion.
-	 * @return whether a component was removed at (x,y)
-	 */
-	public boolean removeFromGrid(int x, int y, boolean resize) {
-		if(resize && gridDim.width>x && gridDim.height>y) {
-			int maxX=0, maxY=0;
-			boolean resized = true;
-			for(Point p:grid.keySet()) {
-				if(p.x > maxX) maxX = p.x;
-				if(p.y > maxY) maxY = p.y;
-				//if components are found to have higher xs and ys, then the deletion of this object was in the middle
-				if(maxX>x && maxY>y) { 
-					resized = false;
-					break;
-				}
-			}
-			if(resized) {
-				gridDim.width = maxX;
-				gridDim.height = maxY;
-			}
-		}
-		return grid.remove(new Point(x,y)) != null;
 	}
 	
 	/**
