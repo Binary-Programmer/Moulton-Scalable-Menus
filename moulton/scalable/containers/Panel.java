@@ -9,6 +9,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /** 
@@ -385,6 +386,21 @@ public class Panel extends MenuComponent {
 			}
 		}
 		return grid.remove(new Point(x,y)) != null;
+	}
+	
+	/**
+	 * Recursive method to remove all held components from the specified manager's list of touch responsive
+	 * components. This is very useful if this panel will no longer be used or shown.
+	 * @param manager the manager to remove {@link #getAllHeldComponents()} from with 
+	 * {@link MenuManager#removeTouchResponsiveComponent(TouchResponsiveComponent)}.
+	 */
+	public void removeTouchResponsiveness(MenuManager manager) {
+		for(MenuComponent comp: getAllHeldComponents()) {
+			if(comp instanceof TouchResponsiveComponent)
+				manager.removeTouchResponsiveComponent((TouchResponsiveComponent)comp);
+			else if(comp instanceof Panel)
+				((Panel)comp).removeTouchResponsiveness(manager);
+		}
 	}
 	
 }

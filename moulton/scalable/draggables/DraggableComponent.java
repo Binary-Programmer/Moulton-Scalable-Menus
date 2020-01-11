@@ -17,5 +17,5 @@ public interface DraggableComponent{
 	 * will be saved in the MenuManager and summed with new change when it occurs. This makes it possible that if the mouse hasn't
 	 * changed enough to cause a change in the state of the draggable the first time, it will add up over several occurrences.
 	 */
-	public abstract int[] drag(int dx, int dy);
+	public abstract double[] drag(double dx, double dy);
 }

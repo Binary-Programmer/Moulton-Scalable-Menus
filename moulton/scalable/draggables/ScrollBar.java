@@ -302,19 +302,19 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 
 	@Override
-	public int[] drag(int deltaX, int deltaY) {
-		int[] change = {0,0};
+	public double[] drag(double deltaX, double deltaY) {
+		double[] change = {0,0};
 		if(!isEditable()) {
 			return change;
 		}
 		int bool = inverseRender?-1:1;
 		//perform the calculations, using lastLength as the reference (for calculating how many pixels cause a shift)
-		int dragged = (vertical)? deltaY:deltaX; //the shift in direction scroll bar measures
+		double dragged = (vertical)? deltaY:deltaX; //the shift in direction scroll bar measures
 		int dir = (dragged>0)? 1:-1;
 		dragged *= dir; //make it positive
 		
 		//an interval is lastLength/totalOffs. Therefore, the amount dragged/interval = how many possible shifts
-		int shifts = (dragged*totalOffs)/lastLength;
+		int shifts = (int)((dragged*totalOffs)/lastLength);
 		if(shifts!=0) {
 			//set the new offset, also check for improper value and reset connected button editability
 			int tempOffs = offset;
@@ -322,7 +322,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			//the shifts that actually occurred here
 			shifts = offset-tempOffs;
 			//now update the changed for the return. Change the amount of shifts*interval
-			change[(vertical)? 1:0] = (shifts*lastLength*bool)/totalOffs;
+			change[vertical? 1:0] = (shifts*lastLength*bool)/(double)totalOffs;
 		}
 		return change;
 	}

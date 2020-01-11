@@ -47,6 +47,8 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	/**A modifier to manually set the {@link ScrollBar#totalOffs} with an algebraic expression.
 	 * @see #setTotalOffsofScrollBar(String, boolean)*/
 	protected String heightBarTotalOffsets;
+	/**The coordinates of the panel at last render*/
+	protected int lastX=0, lastY=0;
 	
 	/**
 	 * @param parent the panel this panel will reside upon.
@@ -105,6 +107,8 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			w = ww;
 			h = hh;
 		}
+		lastX = x;
+		lastY = y;
 		
 		//the full dimensions
 		int fullW = solveString(fullWidth, ww, hh);
@@ -159,35 +163,14 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 
 		try{
 			for(MenuComponent mc: both) {
-				if(mc.isVisible()) {
+				if(mc!=null && mc.isVisible()) {
 					//render each component onto the image with full dimensions.
 					int[] self = {-xOffs, -yOffs, fullW, fullH};
 					if(mc.getGridLocation() != null)
 						self = getGriddedComponentCoordinates(mc, self);
 					
 					mc.render(show, self[0], self[1], self[2], self[3]);
-					//if the menu component is a clickable type, we need to go in and change the click boundary.
-					//since the panel itself can be offset, the boundaries are not necessarily where the clickable would assume they are.
-					if(mc instanceof Clickable) {
-						int clickBoundary[][] = ((Clickable)mc).getClickBoundary();
-						//for each of the xs we need to shift it back by xx
-						//if any x goes out of its bounds, it needs to be fixed
-						for(int i=0; i<clickBoundary[0].length; i++) {
-							clickBoundary[0][i]+= x;
-							if(clickBoundary[0][i]> x+w)
-								clickBoundary[0][i] = x+w;
-							else if(clickBoundary[0][i]<x)
-								clickBoundary[0][i] = x;
-						}
-						//do the same with ys
-						for(int i=0; i<clickBoundary[1].length; i++) {
-							clickBoundary[1][i]+= y;
-							if(clickBoundary[1][i]> y+h)
-								clickBoundary[1][i] = y+h;
-							else if(clickBoundary[1][i]<y)
-								clickBoundary[1][i] = y;
-						}
-					}
+					adjustClickBoundaries(mc, x, y, w, h);
 				}
 			}
 		}catch(ConcurrentModificationException cme){
@@ -195,6 +178,34 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		}
 
 		g.drawImage(shown, x, y, null);
+	}
+	
+	protected void adjustClickBoundaries(MenuComponent mc, int x, int y, int w, int h) {
+		if(mc instanceof Clickable) {
+			int clickBoundary[][] = ((Clickable)mc).getClickBoundary();
+			//for each of the xs we need to shift it back by x
+			//if any x goes out of its bounds, it needs to be fixed
+			for(int i=0; i<clickBoundary[0].length; i++) {
+				clickBoundary[0][i]+= x;
+				if(clickBoundary[0][i]> x+w)
+					clickBoundary[0][i] = x+w;
+				else if(clickBoundary[0][i]<x)
+					clickBoundary[0][i] = x;
+			}
+			//do the same with ys
+			for(int i=0; i<clickBoundary[1].length; i++) {
+				clickBoundary[1][i]+= y;
+				if(clickBoundary[1][i]> y+h)
+					clickBoundary[1][i] = y+h;
+				else if(clickBoundary[1][i]<y)
+					clickBoundary[1][i] = y;
+			}
+		}else if(mc instanceof Panel) { //recursively adjust all held components
+			ArrayList<MenuComponent> held = ((Panel)mc).getAllHeldComponents();
+			for(MenuComponent comp: held) {
+				adjustClickBoundaries(comp, x, y, w, h);
+			}
+		}
 	}
 
 	/**

@@ -47,7 +47,7 @@ public abstract class MenuManager {
 	 * draggable components through {@link #mouseMoved(int, int)} and {@link DraggableComponent#drag(int, int)}
 	 * to be the location of the mouse at the point of last update.
 	 */
-	protected int mouseX, mouseY;
+	protected double mouseX, mouseY;
 	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link #mouseX}, {@link #mouseY}).
 	 * @see #mousePressed
 	 * @see #mouseReleased(int, int)*/
@@ -246,9 +246,9 @@ public abstract class MenuManager {
 	 */
 	public void mouseMoved(int x, int y) {
 		if(mousePressed && clicked instanceof DraggableComponent) {
-			int dragDeltaX = x-mouseX;
-			int dragDeltaY = y-mouseY;
-			int[] changeXY = ((DraggableComponent)clicked).drag(dragDeltaX, dragDeltaY);
+			double dragDeltaX = x-mouseX;
+			double dragDeltaY = y-mouseY;
+			double[] changeXY = ((DraggableComponent)clicked).drag(dragDeltaX, dragDeltaY);
 			mouseX += changeXY[0];
 			mouseY += changeXY[1];
 		}
@@ -299,7 +299,7 @@ public abstract class MenuManager {
 		}
 		this.clicked = clicked;
 		if(clicked!=null) //tell the clicked that it has been clicked
-			clicked.setClicked(true, mouseX, mouseY);
+			clicked.setClicked(true, (int)mouseX, (int)mouseY);
 	}
 	
 	/**
@@ -319,5 +319,57 @@ public abstract class MenuManager {
 	 */
 	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
 		touchCheckList.remove(comp);
+	}
+	
+	/**
+	 * Finds the clickable component with the specified ID. It is assumed that there will only be one since
+	 * ID codes are intended to be unique. Uses the recursive method {@link #findComponent(String, Panel, Panel)}.
+	 * @param idToFind the ID that should be matched in the found component
+	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
+	 * the menu root panel ({@link #menu} will be used as the starting point.
+	 * @return the component found that has the matching ID, or if such component cannot be found, null.
+	 */
+	public Clickable findComponent(String idToFind, Panel startPoint) {
+		if(startPoint==null) { //if start point not defined, use the root menu panel
+			if(hasMenu())
+				startPoint = menu;
+			else
+				return null;
+		}
+		return findComponent(idToFind, startPoint, startPoint);
+	}
+	/**
+	 * The recursive method to find the component with the specified ID. Use {@link #findComponent(String, Panel)}
+	 * for full functionality. This is just meant to be the recursive version.
+	 * @param idToFind the ID that should be matched in the found component
+	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
+	 * the menu root panel ({@link #menu} will be used as the starting point.
+	 * @param ignore this panel and its children components will not be searched. The reason for this is because
+	 * they have already been searched earlier, so they aren't searched again. If no panel is given, then this
+	 * method will not move up the panel tree, or in other words, the parent panels and their components will not
+	 * be searched, only the subdirectories of the specified start point panel.
+	 * @return the component found that has the matching ID, or if such component cannot be found, null.
+	 */
+	protected Clickable findComponent(String idToFind, Panel startPoint, Panel ignore) {
+		//search down
+		for(MenuComponent comp: startPoint.getAllHeldComponents()) {
+			if(comp == ignore || comp == null)
+				continue;
+			if(comp instanceof Clickable) {
+				Clickable c = (Clickable) comp;
+				if(c.getId().equals(idToFind))
+					return c;
+			}else if(comp instanceof Panel) {
+				Clickable result = findComponent(idToFind, (Panel)comp, null);
+				if(result != null)
+					return result;
+			}
+		}
+		if(ignore == null) //if there is nothing to ignore, then we shouldn't backtrack
+			return null;
+		//if we are still here, then we should go up
+		if(startPoint.getParent() == null)
+			return null;
+		return findComponent(idToFind, startPoint.getParent(), startPoint);
 	}
 }

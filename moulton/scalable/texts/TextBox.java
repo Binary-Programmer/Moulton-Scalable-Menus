@@ -55,6 +55,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #allowsWordSplitting()
 	 * @see #allowWordSplitting(boolean)*/
 	protected boolean wordSplitting = false;
+	/**If the text box {@link #allowsVirtualSpace()} and some of the message is cut off in display, this will
+	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
+	 * @see #setCutOffMark(boolean)
+	 * @see #hasCutOffMark()*/
+	protected boolean cutOffMark = true;
 	
 	/**Whether or not to show the blinker. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
 	 * by {@link #timer} and {@link #timeLast}. */
@@ -197,32 +202,67 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			int rows = hh/hheight;
 			int centeringY = (hh-(rows*hheight))/2;
 			//find which row the click was on
-			//default to bottom
-			int row = rows-1;
-			//then start at top and work down. the empty space below the last line will end up being for the last line
-			for(int i=0; i<rows; i++) {
-				if(mouseY-clickBoundary[1][0] < (int)(hheight*(i+.8) + centeringY)){
-					row = i;
-					break;
+			int row = rows; //default to bottom (impossible index)
+			int bufferWidth = fontMetrics.stringWidth("_")/2;
+			if(mouseY-clickBoundary[1][0] < (int)(hheight*.1) + centeringY) { //above the top row
+				if(rows>1) { //multi-line box
+					//the index will be the end of the row above the start shift
+					if(startShift>0) {
+						row = -1;
+						mouseX = clickBoundary[0][1]-bufferWidth;
+					}else //no start shift, and top of row just means index 0
+						return 0;
+				}else { //one-line box
+					//for one-liners, just treat this as the very beginning since there is only one row
+					return 0;
 				}
+			}else {
+				//start at top and work down
+				for(int i=0; i<rows; i++) {
+					if(mouseY-clickBoundary[1][0] < (int)(hheight*(i+.8) + centeringY)){
+						row = i;
+						break;
+					}
+				}
+			}if(row == rows) { //so if it was unchanged, below the last row
+				if(rows>1)
+					mouseX = clickBoundary[0][0] + bufferWidth;//should be beginning of the that row
+				else //there is only one row, so go to very end
+					return message.length();
 			}
+			
+			//checks for single row boxes of left and right
+			if(rows <= 1) {
+				//if the mouse's x was in the left margin, then just one short of shift
+				if(mouseX < clickBoundary[0][0] + bufferWidth) {
+					return startShift-1;
+				}
+				//or for the right margin, would be the end for shift once more. check for shift modifications later
+			}
+			
 			//variable that will keep track of the number of letters shown thus far
 			int sum = 0;
 			String rem = message;
 			
 			//shift modifications
-			if(rows==1 && startShift>0 && message.length()>startShift) {
-				rem = message.substring(startShift);
-				sum+=startShift;
-			}
 			int shift=0;
+			if(rows==1 && startShift>0 && message.length()>startShift) {
+				//if the mouse in right margin
+				if(mouseX > clickBoundary[0][1] - bufferWidth && message.length()>startShift+1) {
+					shift = startShift+1;
+				}else
+					shift = startShift;
+				rem = message.substring(shift);
+				sum += shift;
+				shift = 0; //need to reset to not interfere with the multi-line computations
+			}
 			if(rows>1)
 				shift = startShift;
 			
 			int underscoreWidth = fontMetrics.stringWidth("_");
 			/*The inside width is the difference of the pixel width of the box and the underscore width.
 			 *This leaves spacing for half an underscore on both sides. */
-			int insideWidth = ww - underscoreWidth/2;
+			int insideWidth = ww - underscoreWidth;
 			if(rem != null && !rem.isEmpty()){
 				//it only needs to go to row because that is the data we need
 				for(int i=-shift; i<=row; i++){
@@ -365,10 +405,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
 		
-		if(textScroller != null) {
+		if(textScroller != null)
 			//try to get the new start shift from the scroll bar
 			startShift = textScroller.getOffset();
-		}
 
 		// draw the text
 		if(clicked && blinkTime!=-1){
@@ -434,18 +473,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean redo;
 		do {
 			redo = false;
-			boolean lastCheck = false;
 			while(i<texts.length){
 				if(i<texts.length && texts[i] == null) //create the text if needed
 					texts[i] = "";
 				
 				//check for the blinker position
-				if(!setBlinker && rem.length()==totalTextLength-index){
+				if(!setBlinker && rem.length()<=totalTextLength-index){
 					setBlinker = true;
 					blinkerRow = i;
 					blinkerPlace = texts[i].length();
 					blinkerX = fontMetrics.stringWidth(texts[i]);
-				}if(!setClick && rem.length()==totalTextLength-clickIndex){
+				}if(!setClick && rem.length()<=totalTextLength-clickIndex){
 					setClick = true;
 					clickRow = i;
 					clickPlace = texts[i].length();
@@ -454,11 +492,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//checked for click and blinker first (for end of line)
 				if(rem.isEmpty()) //but if rem is empty, quit out
 					break;
-				//we have checked for click and blinker one last time
-				if(lastCheck) {
-					i++; //now we can change i back and quit
-					break;
-				}
 				
 				//add a character onto the line
 				texts[i] += rem.charAt(0);
@@ -542,12 +575,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						texts[i] = texts[i].substring(0, texts[i].length()-1);
 						i++;
 					}
-					
-					//if i has now become too large, we need to check blinker and click before breaking
-					if(i>=texts.length) {
-						lastCheck = true;
-						i--;
-					}
 				}
 				
 			}
@@ -560,9 +587,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						texts[ii-1] = texts[ii];
 					}//delete the last row
 					texts[ii-1] = "";
+					if(setClick && selection) //if click index was altered
+						clickRow--;
 				}else {
 					//get rid of the first character
 					texts[0] = texts[0].substring(1);
+					if(setClick && selection) //if click index was altered
+						clickPlace--;
 				}
 				redo = true; //go back into the loop
 				i--; //do the last line again
@@ -585,6 +616,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 		}while(redo);
 		//do some more operations on the leftover text if it is the message
+		boolean endCutOff = false;
 		if(messageShown) {
 			//cut off extra if virtual space not allowed
 			if(!virtualSpace && !rem.isEmpty()) {
@@ -594,6 +626,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				if(textScroller!=null)
 					textScroller.setBarOffs(0);
 			}
+			endCutOff = !rem.isEmpty(); //set this before the scroll bar calculation modifies it
 			//update the scroll bar
 			if(virtualSpace && textScroller!=null) {
 				if(texts.length==1) { //one lined text box
@@ -661,6 +694,15 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				break;
 			}
 		}
+		
+		//show text cut off mark
+		if(cutOffMark && messageShown) {
+			int decrease = hheight - fontMetrics.getDescent();
+			if(endCutOff) 
+				g.drawLine(x+w-2, (int)(y + hheight*(texts.length-1+.8) + centeringY -decrease), x+w-2, (int)(y + hheight*(texts.length+.8) + centeringY -decrease));
+			if(startShift>0)
+				g.drawLine(x+1, (int)(y + hheight*.8 + centeringY -decrease), x+1, (int)(y + hheight*1.8 + centeringY -decrease));
+		}
 
 		//now to draw the selected portion and selection on top
 		if(!selection)
@@ -670,7 +712,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(clickRow<0) { //it is less than shown row, but set place, so minimum
 			clickRow = 0;
 			clickPlace = 0;
-		}else if(!setClick) { //it hasn't been set, so maximum
+		}else if(clickPlace<0)
+			clickPlace = 0;
+		else if(!setClick) { //it hasn't been set, so maximum
 			clickRow = texts.length-1;
 			if(texts[clickRow] != null)
 				clickPlace = (texts[clickRow] != null)? texts[clickRow].length(): 0;
@@ -860,10 +904,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	@Override
-	public synchronized int[] drag(int dx, int dy) {
+	public synchronized double[] drag(double dx, double dy) {
 		//this should be for drag selecting text. Then cut and paste shortcuts should work
 		if(mouseClickXY == null)
-			return new int[]{0,0};
+			return new double[]{0d,0d};
 		//otherwise
 		mouseClickXY[0] += dx;
 		mouseClickXY[1] += dy;
@@ -874,7 +918,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			index = newIndex;
 		}
 		//all of the change in x and y was used to update the mouse coords
-		return new int[] {dx,dy};
+		return new double[] {dx,dy};
 	}
 	
 	/**
@@ -1139,5 +1183,20 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	@Override
 	public ScrollBar getHeightScrollBar() {
 		return textScroller;
+	}
+	
+	/**
+	 * Sets whether the cut off mark should be shown.
+	 * @param shown the value to replace {@link #cutOffMark}
+	 */
+	public void setCutOffMark(boolean shown) {
+		this.cutOffMark = shown;
+	}
+	/**
+	 * Returns whether the cut off mark is shown
+	 * @return the value of {@link #cutOffMark}
+	 */
+	public boolean hasCutOffMark() {
+		return cutOffMark;
 	}
 }
