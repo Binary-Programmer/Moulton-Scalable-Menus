@@ -9,6 +9,10 @@ import java.util.HashMap;
  * GridFormatter will hold MenuComponents in a grid that can have variable margins, frames, and weights, then
  * will give the coordinate specifications for each component through {@link #findCompCoordinates(MenuComponent, int[])}.
  * @author Matthew Moulton
+ * @see #setFrame(String, String)
+ * @see #setMargin(String, String)
+ * @see #specifyRowWeight(int, double)
+ * @see #specifyColumnWeight(int, double)
  */
 public class GridFormatter {
 	/**The components that are held at the location they are in the grid. Technically, the maximum x and y are
@@ -48,6 +52,12 @@ public class GridFormatter {
 	 * another column's weight will have double the height of the latter's column.*/
 	protected HashMap<Integer, Double> colWeights = new HashMap<Integer, Double>();
 	
+	/**Adds a component onto the grid at the specified location. If the location is already taken by another
+	 * component, comp will replace it. If the location is outside the grid size in {@link #gridDim}, the grid
+	 * will expand to include it.
+	 * @param comp the component to add to the grid
+	 * @param x the x location of the component
+	 * @param y the y location of the component*/
 	public void addComponent(MenuComponent comp, int x, int y) {
 		if (x >= gridDim.getWidth())
 			gridDim.setSize(x+1, gridDim.getHeight());
@@ -56,34 +66,28 @@ public class GridFormatter {
 		gridComponents.put(new Point(x, y), comp);
 	}
 	
-	/**
-	 * Returns the components that are held.
-	 * @return more formally, returns the components in {@link #gridComponents}
-	 */
+	/**Returns the components that are held.
+	 * @return more formally, returns the components in {@link #gridComponents}*/
 	public Collection<MenuComponent> getHeldComponents(){
 		return gridComponents.values();
 	}
 	
-	/**
-	 * Sets the {@link #xMargin} and {@link #yMargin} for this panel. The margins will
+	/**Sets the {@link #xMargin} and {@link #yMargin} for this panel. The margins will
 	 * be used to separate components in the grid. Thus the number of marginal dimensions
 	 * for the width of a panel is (number of x components)-1, where the number of x 
 	 * components is at least one. A null value indicates no margin.
 	 * @param xMargin the width of the margin on the x-axis
-	 * @param yMargin the height of the margin on the y-axis
-	 */
+	 * @param yMargin the height of the margin on the y-axis*/
 	public void setMargin(String xMargin, String yMargin) {
 		this.xMargin = xMargin;
 		this.yMargin = yMargin;
 	}
 	
-	/**
-	 * Sets the {@link #xFrame} and {@link #yFrame} for this panel. Unlike margins, the frame
+	/**Sets the {@link #xFrame} and {@link #yFrame} for this panel. Unlike margins, the frame
 	 * will only be on the outside of the panel, not between individual components. A null
 	 * value indicates no frame.
 	 * @param xFrame the algebraic expression for the width of the frame
-	 * @param yFrame the algebraic expression for the height of the frame.
-	 */
+	 * @param yFrame the algebraic expression for the height of the frame.*/
 	public void setFrame(String xFrame, String yFrame){
 		this.xFrame = xFrame;
 		this.yFrame = yFrame;
@@ -93,8 +97,7 @@ public class GridFormatter {
 	 * @param x the x-value of the component to remove
 	 * @param y the y-value of the component to remove
 	 * @param resize whether the grid should check for a resize after the deletion.
-	 * @return whether a component was removed at (x,y)
-	 */
+	 * @return whether a component was removed at (x,y)*/
 	public boolean removeComponent(int x, int y, boolean resize) {
 		if(resize && gridDim.width>x && gridDim.height>y) {
 			int maxX=0, maxY=0;
@@ -116,13 +119,11 @@ public class GridFormatter {
 		return gridComponents.remove(new Point(x,y)) != null;
 	}
 	
-	/**
-	 * Finds the specified component in the grid and returns its pixel coordinates. If it cannot be found,
+	/**Finds the specified component in the grid and returns its pixel coordinates. If it cannot be found,
 	 * null is returned.
 	 * @param comp the component to look for in the grid
 	 * @param self the location and dimension of the container component in the render. Ordered as x, y, width, and height.
-	 * @return the pixel coordinates for the specified component to be rendered. Ordered as x, y, width, and height.
-	 */
+	 * @return the pixel coordinates for the specified component to be rendered. Ordered as x, y, width, and height.*/
 	public int[] findCompCoordinates(MenuComponent comp, int[] self) {
 		Point gridPoint = comp.getGridLocation();
 		//The component must be in a grid for the following calculations to work!
@@ -161,11 +162,14 @@ public class GridFormatter {
 				if(marginSize<0 || self[2]<1)
 					marginSize = 0;
 			}
+			int numMargins = gridDim.width-1;
+			if(numMargins<0)
+				numMargins=0;
 			double totalWeight = findXWeights(gridDim.width);
-			details[0] = self[0] + (int)((self[2]*findXWeights(gridPoint.x))/totalWeight *
-					identityDiv(marginSize*gridPoint.x, marginSize*(gridDim.width-1)));
-			int endPoint = self[0] + (int)((self[2]*findXWeights(gridPoint.x+1))/totalWeight *
-					identityDiv(marginSize*(gridPoint.x+1), marginSize*(gridDim.width-1)));
+			details[0] = self[0] + (int)((self[2]-marginSize*numMargins)*
+					findXWeights(gridPoint.x)/totalWeight) + marginSize*gridPoint.x;
+			int endPoint = self[0] + (int)((self[2]-marginSize*numMargins)*
+					findXWeights(gridPoint.x+1)/totalWeight) + marginSize*(gridPoint.x+1);
 			details[2] = endPoint - details[0] - marginSize;
 			
 			marginSize = 0;
@@ -174,27 +178,18 @@ public class GridFormatter {
 				if(marginSize<0 || self[3]<1)
 					marginSize = 0;
 			}
+			numMargins = gridDim.height-1;
+			if(numMargins<0)
+				numMargins=0;
 			totalWeight = findYWeights(gridDim.height);
-			details[1] = self[1] + (int)((self[3]*findXWeights(gridPoint.y))/totalWeight *
-					identityDiv(marginSize*gridPoint.y, marginSize*(gridDim.height-1)));
-			endPoint = self[1] + (int)((self[3]*findXWeights(gridPoint.y+1))/totalWeight *
-					identityDiv(marginSize*(gridPoint.y+1), marginSize*(gridDim.height-1)));
+			details[1] = self[1] + (int)((self[3]-marginSize*numMargins)*
+					findYWeights(gridPoint.y)/totalWeight) + marginSize*gridPoint.y;
+			endPoint = self[1] + (int)((self[3]-marginSize*numMargins)*
+					findYWeights(gridPoint.y+1)/totalWeight) + marginSize*(gridPoint.y+1);
 			details[3] = endPoint - details[1] - marginSize;
 			return details;
 		}
 		return null;
-	}
-	
-	/**Computes division, but gives priority to identity division, that being: any number divided by itself
-	 * is 1. Even 0/0 will be computed as 1.
-	 * @param numerator the numerator
-	 * @param denominator the denominator
-	 * @return the result of the division*/
-	private double identityDiv(double numerator, double denominator) {
-		if(numerator == denominator)
-			return 1.0;
-		else
-			return numerator/denominator;
 	}
 	
 	/**Defines the weight for the given row. A weight of 1 is default and will delete the entry in {@link #rowWeights}
@@ -226,9 +221,9 @@ public class GridFormatter {
 	protected double findXWeights(int maxX) {
 		double runningTotal = 0;
 		for(int i=0; i<maxX; i++) {
-			if(rowWeights.containsKey(i)) {
+			if(rowWeights.containsKey(i))
 				runningTotal += rowWeights.get(i);
-			}else //add the default of 1 to the total
+			else //add the default of 1 to the total
 				runningTotal++;
 		}
 		return runningTotal;
@@ -240,9 +235,9 @@ public class GridFormatter {
 	protected double findYWeights(int maxY) {
 		double runningTotal = 0;
 		for(int i=0; i<maxY; i++) {
-			if(colWeights.containsKey(i)) {
+			if(colWeights.containsKey(i))
 				runningTotal += colWeights.get(i);
-			}else //add the default of 1 to the total
+			else //add the default of 1 to the total
 				runningTotal++;
 		}
 		return runningTotal;

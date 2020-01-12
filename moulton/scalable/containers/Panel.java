@@ -241,7 +241,7 @@ public class Panel extends MenuComponent {
 	/**
 	 * Returns the formatter for this panel's grid components. Very useful to set margins, borders, or weights.
 	 * @return the value of {@link #grid}
-	 * */
+	 */
 	public GridFormatter getGridFormatter() {
 		return grid;
 	}
