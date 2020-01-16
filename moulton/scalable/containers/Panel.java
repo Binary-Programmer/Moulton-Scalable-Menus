@@ -114,10 +114,10 @@ public class Panel extends MenuComponent {
 		if(color!=null){
 			g.setColor(color);
 			g.fillRect(x, y, w, h);
-			g.setColor(Color.BLACK);
-			if (outline)
-				g.drawRect(x, y, w - 1, h - 1);
 		}
+		g.setColor(Color.BLACK);
+		if (outline)
+			g.drawRect(x, y, w - 1, h - 1);
 		
 		try{
 			//now draw any components in the grid

@@ -235,7 +235,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(rows <= 1) {
 				//if the mouse's x was in the left margin, then just one short of shift
 				if(mouseX < clickBoundary[0][0] + bufferWidth) {
-					return startShift-1;
+					if(startShift>0)
+						return startShift-1;
+					return 0;
 				}
 				//or for the right margin, would be the end for shift once more. check for shift modifications later
 			}
@@ -643,6 +645,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						if(fontMetrics.stringWidth(extraText)>insideWidth) {//the line is now too long
 							extraLines++;
 							extraText = ""+rem.charAt(0); //start the next line
+						}else if(extraText.charAt(extraText.length()-1)=='\n') {
+							extraLines++;
+							extraText = ""; //reset the text
 						}
 						rem = rem.substring(1); //remove the used character
 					}if(!extraText.isEmpty())
@@ -821,7 +826,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				start = index;
 				end = clickIndex;
 			}
-			setMessage(message.substring(0, start)+ message.substring(end+1));
+			message = message.substring(0, start) + message.substring(end);
 			//set the new index where the deletion starts
 			index = start;
 			//also, there is no more selection since we just deleted it
@@ -836,7 +841,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		message = fixed;
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
-		index += string.length();
+		shiftIndex(string.length());
 	}
 	/**
 	 * Deletes the selection then removes characters from {@link #message} starting at {@link #index}.
@@ -928,7 +933,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(selection) {
 			int start = (clickIndex < index)? clickIndex: index;
 			int end = (index > clickIndex)? index: clickIndex;
-			if(end == message.length())
+			if(start<0)
+				start = 0;
+			if(end >= message.length())
 				return message.substring(start);
 			return message.substring(start, end);
 		}else
@@ -1026,7 +1033,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					newText += message.substring(0, start);
 				newText += pasteText;
 				if(end < message.length())
-					newText += message.substring(end+1);
+					newText += message.substring(end);
 				setMessage(newText);
 				//we don't technically know the length beforehand since the pasted text may pass through a filter
 				int pasteLength = message.length() - messageLength;
@@ -1053,7 +1060,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public void shiftIndex(int delta){
 		index += delta;
 		if(index<0)	index = 0;
-		if(index>message.length()) index = message.length();
+		if(index>message.length())
+			index = message.length();
 		//reset the blink timer so the user can see where the index is
 		if(blinkTime != -1) {
 			showBlinker = true;

@@ -96,7 +96,7 @@ public class View extends MenuComponent {
 				g.drawImage(getImage(), x, y, w, h, null);
 			if(outline) {
 				g.setColor(Color.BLACK);
-				g.drawRect(x, y, w, h);
+				g.drawRect(x, y, w-1, h-1);
 			}
 		}
 	}

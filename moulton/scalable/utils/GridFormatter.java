@@ -44,12 +44,14 @@ public class GridFormatter {
 	/**Holds the values of unique row weights. At default, this map will be empty, and all shown rows will
 	 * have an implied weight of 1. However, row weights can be specified otherwise with {@link #specifyRowWeight(int, double)}
 	 * and they will be saved here. A row with a weight double to another row's weight will have double the
-	 * width of the latter's row.*/
+	 * width of the latter's row.
+	 * @see #findYWeights(int)*/
 	protected HashMap<Integer, Double> rowWeights = new HashMap<Integer, Double>();
 	/**Holds the values of unique column weights. At default, this map will be empty, and all shown columns will
 	 * have an implied weight of 1. However, column weights can be specified otherwise with 
 	 * {@link #specifyColumnWeight(int, double)} and they will be saved here. A column with a weight double to
-	 * another column's weight will have double the height of the latter's column.*/
+	 * another column's weight will have double the height of the latter's column.
+	 * @see #findXWeights(int)*/
 	protected HashMap<Integer, Double> colWeights = new HashMap<Integer, Double>();
 	
 	/**Adds a component onto the grid at the specified location. If the location is already taken by another
@@ -214,29 +216,29 @@ public class GridFormatter {
 			colWeights.put(col, weight);
 	}
 	
-	/**Calculates the total weight of the rows until maxX using saved values in {@link #rowWeights}.
+	/**Calculates the total weight of the rows until maxX using saved values in {@link #colWeights}.
 	 * @param maxX the limit where the weight totaling should stop. Using {@link #gridDim}.width will yield
 	 * a complete total.
-	 * @return the total of all row weights*/
+	 * @return the total of all column weights*/
 	protected double findXWeights(int maxX) {
 		double runningTotal = 0;
 		for(int i=0; i<maxX; i++) {
-			if(rowWeights.containsKey(i))
-				runningTotal += rowWeights.get(i);
+			if(colWeights.containsKey(i))
+				runningTotal += colWeights.get(i);
 			else //add the default of 1 to the total
 				runningTotal++;
 		}
 		return runningTotal;
 	}
-	/**Calculates the total weight of the columns until maxY using saved values in {@link #colWeights}.
+	/**Calculates the total weight of the columns until maxY using saved values in {@link #rowWeights}.
 	 * @param maxY the limit where the weight totaling should stop. Using {@link #gridDim}.height will yield
 	 * a complete total.
-	 * @return the total of all column weights*/
+	 * @return the total of all row weights*/
 	protected double findYWeights(int maxY) {
 		double runningTotal = 0;
 		for(int i=0; i<maxY; i++) {
-			if(colWeights.containsKey(i))
-				runningTotal += colWeights.get(i);
+			if(rowWeights.containsKey(i))
+				runningTotal += rowWeights.get(i);
 			else //add the default of 1 to the total
 				runningTotal++;
 		}
