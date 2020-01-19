@@ -324,7 +324,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			int i = line.length();
 			if(endLocation != null) { //edge cases
 				if(endLocation == true) { //before, thus the end of this line
-					return sum + i;
+					return i + sum;
 				}else if (endLocation == false) { //after, thus the first index of this line
 					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
 					return sum + (this.wordSplitting? 1:0);
