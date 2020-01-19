@@ -204,12 +204,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			//find which row the click was on
 			int row = rows; //default to bottom (impossible index)
 			int bufferWidth = fontMetrics.stringWidth("_")/2;
+			Boolean endLocation = null; //false is before, true is after, null is none
 			if(mouseY-clickBoundary[1][0] < (int)(hheight*.1) + centeringY) { //above the top row
 				if(rows>1) { //multi-line box
 					//the index will be the end of the row above the start shift
 					if(startShift>0) {
 						row = -1;
-						mouseX = clickBoundary[0][1]-bufferWidth;
+						endLocation = false;
 					}else //no start shift, and top of row just means index 0
 						return 0;
 				}else { //one-line box
@@ -226,7 +227,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}if(row == rows) { //so if it was unchanged, below the last row
 				if(rows>1)
-					mouseX = clickBoundary[0][0] + bufferWidth;//should be beginning of the that row
+					endLocation = true;
 				else //there is only one row, so go to very end
 					return message.length();
 			}
@@ -271,7 +272,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					String text = "";
 					int wwidth = 0;
 					
-					while(wwidth<insideWidth && !rem.isEmpty()){
+					while(wwidth<=insideWidth && !rem.isEmpty()){
 						text += rem.charAt(0);
 						rem = rem.substring(1);
 						wwidth = fontMetrics.stringWidth(text);
@@ -279,7 +280,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							wwidth += insideWidth;
 					}
 					
-					if(!rem.isEmpty() && rows>1) { //the width is too long
+					if(wwidth>insideWidth && rows>1) { //the width is too long
 						boolean wordSplit = allowsWordSplitting();
 						if(!wordSplit) {
 							int ii=text.length()-1;
@@ -313,7 +314,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							text = text.substring(0, length-1);
 						}
 					}
-					
 					if(i!=row)
 						sum += text.length();
 					else
@@ -321,8 +321,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}
 			//now we have the line
-			//this line could be left aligned, center aligned, or right aligned
 			int i = line.length();
+			if(endLocation != null) { //edge cases
+				if(endLocation == true) { //before, thus the end of this line
+					return sum + i;
+				}else if (endLocation == false) { //after, thus the first index of this line
+					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
+					return sum + (this.wordSplitting? 1:0);
+				}
+			}
+			//this line could be left aligned, center aligned, or right aligned
 			int here = clickBoundary[0][0];
 			switch(alignment) {
 			case LEFT_ALIGNMENT:
@@ -552,8 +560,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							}
 						}//otherwise we can just remove the last added character
 						if(wordSplit) {
-							rem = texts[i].charAt(texts[i].length()-1) + rem;
-							texts[i] = texts[i].substring(0, texts[i].length()-1);
+							int length = texts[i].length();
+							rem = texts[i].charAt(length-1) + rem;
+							texts[i] = texts[i].substring(0, length-1);
 						}
 						
 						//shift modifications
@@ -666,7 +675,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(texts[ii]==null) //the text is done, move onto the next step
 				break;
 			switch(alignment){
-			case LEFT_ALIGNMENT:
+			case LEFT_ALIGNMENT: //TODO there has to be a more scientific way than just +.8 ...
 				g.drawString(texts[ii], x + underscoreWidth/2, (int)(y + hheight*(ii+.8) + centeringY));
 				break;
 			case CENTER_ALIGNMENT:
