@@ -206,7 +206,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * @see #setOffset(int)
 	 */
 	public void setOffsets(int totalOffs, int barOffs, int offset) {
-		setTotalOffs(totalOffs, false);
+		setTotalOffs(totalOffs);
 		setBarOffs(barOffs);
 		setOffset(offset);
 	}
@@ -253,19 +253,12 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * it will be shifted to keep the same spot of data relative to <code>totalOffs</code>. <p>
 	 * Regardless, the editability of {@link #scrollNeg} and {@link #scrollPos} may change due to this method.
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
-	 * @param updateOffset whether <code>offset</code> should be modified by this call. Generally should be true,
-	 * unless <code>totalOffs</code> must change relatively to the data the scroll bar is representing, or if
-	 * <code>offset</code> will be directly set after. In the latter case, use {@link #setOffsets(int, int, int)}.
 	 */
-	public void setTotalOffs(int total, boolean updateOffset) {
+	public void setTotalOffs(int total) {
 		if(total>0) {
-			if(updateOffset) {
-				if(offset!=0) {
-					offset += total-totalOffs;
-				}else if(!pullNegative && totalOffs == 1)
-					offset = total-barOffs;
-			}
 			totalOffs = total;
+			if(offset > totalOffs)
+				offset = totalOffs-1;
 			if(scrollNeg != null)
 				scrollNeg.setEditable(offset > 0);
 			if(scrollPos != null)

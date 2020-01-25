@@ -122,21 +122,21 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			//normal settings
 			if(widthBarTotalOffsets == null){
 				//total offs will be the fullWidth
-				widthBar.setTotalOffs(fullW, true);
+				widthBar.setTotalOffs(fullW);
 				//the number of bar offs will be pixels visible
 				widthBar.setBarOffs(w);
 			}else { //overridden setting
 				int totalOffs = solveString(widthBarTotalOffsets, fullW, fullH);
-				widthBar.setTotalOffs(totalOffs, true);
+				widthBar.setTotalOffs(totalOffs);
 				widthBar.setBarOffs((totalOffs * w)/fullW);
 			}
 		}if(heightBar!=null) {
 			if(heightBarTotalOffsets == null) {
-				heightBar.setTotalOffs(fullH, true);
+				heightBar.setTotalOffs(fullH);
 				heightBar.setBarOffs(h);
 			}else {
 				int totalOffs = solveString(heightBarTotalOffsets, fullW, fullH);
-				widthBar.setTotalOffs(totalOffs, true);
+				widthBar.setTotalOffs(totalOffs);
 				widthBar.setBarOffs((totalOffs * h)/fullH);
 			}
 		}

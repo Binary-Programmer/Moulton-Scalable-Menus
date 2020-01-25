@@ -244,7 +244,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 					if(textIndex>-1) //if something was cut off
 						totalOffs += textIndex + endCutOff;
 					if(bar.getTotalOffs()!=totalOffs)
-						bar.setTotalOffs(totalOffs,false);
+						bar.setTotalOffs(totalOffs);
 					int barOffs = numberOfLinesShown; //how many were shown
 					bar.setBarOffs(barOffs);
 				}else {
@@ -290,7 +290,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			history.removeFirst();
 		}
 		if(bar!=null)
-			bar.setTotalOffs(history.size(), true);
+			bar.setTotalOffs(history.size());
 	}
 
 	/**
