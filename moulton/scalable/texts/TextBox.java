@@ -204,12 +204,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			//find which row the click was on
 			int row = rows; //default to bottom (impossible index)
 			int bufferWidth = fontMetrics.stringWidth("_")/2;
-			if(mouseY-clickBoundary[1][0] < (int)(hheight*.1) + centeringY) { //above the top row
+			Boolean endLocation = null; //false is before, true is after, null is none
+			if(mouseY-clickBoundary[1][0] < 2*fontMetrics.getLeading() + centeringY) { //above the top row
 				if(rows>1) { //multi-line box
 					//the index will be the end of the row above the start shift
 					if(startShift>0) {
 						row = -1;
-						mouseX = clickBoundary[0][1]-bufferWidth;
+						endLocation = false;
 					}else //no start shift, and top of row just means index 0
 						return 0;
 				}else { //one-line box
@@ -219,14 +220,14 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}else {
 				//start at top and work down
 				for(int i=0; i<rows; i++) {
-					if(mouseY-clickBoundary[1][0] < (int)(hheight*(i+.8) + centeringY)){
+					if(mouseY-clickBoundary[1][0] < hheight*(i+1) + centeringY -1){
 						row = i;
 						break;
 					}
 				}
 			}if(row == rows) { //so if it was unchanged, below the last row
 				if(rows>1)
-					mouseX = clickBoundary[0][0] + bufferWidth;//should be beginning of the that row
+					endLocation = true;
 				else //there is only one row, so go to very end
 					return message.length();
 			}
@@ -235,7 +236,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(rows <= 1) {
 				//if the mouse's x was in the left margin, then just one short of shift
 				if(mouseX < clickBoundary[0][0] + bufferWidth) {
-					return startShift-1;
+					if(startShift>0)
+						return startShift-1;
+					return 0;
 				}
 				//or for the right margin, would be the end for shift once more. check for shift modifications later
 			}
@@ -269,7 +272,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					String text = "";
 					int wwidth = 0;
 					
-					while(wwidth<insideWidth && !rem.isEmpty()){
+					while(wwidth<=insideWidth && !rem.isEmpty()){
 						text += rem.charAt(0);
 						rem = rem.substring(1);
 						wwidth = fontMetrics.stringWidth(text);
@@ -277,7 +280,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							wwidth += insideWidth;
 					}
 					
-					if(!rem.isEmpty() && rows>1) { //the width is too long
+					if(wwidth>insideWidth && rows>1) { //the width is too long
 						boolean wordSplit = allowsWordSplitting();
 						if(!wordSplit) {
 							int ii=text.length()-1;
@@ -311,7 +314,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							text = text.substring(0, length-1);
 						}
 					}
-					
 					if(i!=row)
 						sum += text.length();
 					else
@@ -319,8 +321,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}
 			//now we have the line
-			//this line could be left aligned, center aligned, or right aligned
 			int i = line.length();
+			if(endLocation != null) { //edge cases
+				if(endLocation == true) { //before, thus the end of this line
+					return i + sum;
+				}else if (endLocation == false) { //after, thus the first index of this line
+					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
+					return sum + (this.wordSplitting? 1:0);
+				}
+			}
+			//this line could be left aligned, center aligned, or right aligned
 			int here = clickBoundary[0][0];
 			switch(alignment) {
 			case LEFT_ALIGNMENT:
@@ -430,7 +440,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int hheight = fontMetrics.getHeight();
 		//an array to be filled by the text to be displayed. The size of this array is the visual maximum
 		String texts [] = new String[h/hheight];
-		int centeringY = (h-(texts.length*hheight))/2;
+		//the amount that the text is offset rendered in the box
+		int textOffset = fontMetrics.getAscent() + fontMetrics.getLeading() + (h-(texts.length*hheight))/2;
 
 		boolean messageShown;
 		boolean isClicked = getClicked(); //we should only shift to the blinker if the box is selected
@@ -550,8 +561,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							}
 						}//otherwise we can just remove the last added character
 						if(wordSplit) {
-							rem = texts[i].charAt(texts[i].length()-1) + rem;
-							texts[i] = texts[i].substring(0, texts[i].length()-1);
+							int length = texts[i].length();
+							rem = texts[i].charAt(length-1) + rem;
+							texts[i] = texts[i].substring(0, length-1);
 						}
 						
 						//shift modifications
@@ -643,6 +655,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						if(fontMetrics.stringWidth(extraText)>insideWidth) {//the line is now too long
 							extraLines++;
 							extraText = ""+rem.charAt(0); //start the next line
+						}else if(extraText.charAt(extraText.length()-1)=='\n') {
+							extraLines++;
+							extraText = ""; //reset the text
 						}
 						rem = rem.substring(1); //remove the used character
 					}if(!extraText.isEmpty())
@@ -662,13 +677,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				break;
 			switch(alignment){
 			case LEFT_ALIGNMENT:
-				g.drawString(texts[ii], x + underscoreWidth/2, (int)(y + hheight*(ii+.8) + centeringY));
+				g.drawString(texts[ii], x + underscoreWidth/2, y + hheight*ii + textOffset);
 				break;
 			case CENTER_ALIGNMENT:
-				g.drawString(texts[ii], x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2, (int)(y + hheight*(ii+.8) + centeringY));
+				g.drawString(texts[ii], x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2, y + hheight*ii + textOffset);
 				break;
 			case RIGHT_ALIGNMENT:
-				g.drawString(texts[ii], x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2), (int)(y + hheight*(ii+.8) + centeringY));
+				g.drawString(texts[ii], x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2), y + hheight*ii + textOffset);
 				break;
 			}
 		}
@@ -682,15 +697,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			g.setColor(Color.BLACK);
 			switch(alignment) {
 			case LEFT_ALIGNMENT:
-				g.fillRect(x +underscoreWidth/2 + blinkerX, (int)(y + hheight*(blinkerRow+.8) + centeringY -decrease), 2, hheight);
+				g.fillRect(x +underscoreWidth/2 + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
 				break;
 			case CENTER_ALIGNMENT:
-				g.fillRect(x - rowWidth/2 + w/2 + blinkerX, (int)(y + hheight*(blinkerRow+.8)
-						+ centeringY) -decrease, 2, hheight);
+				g.fillRect(x - rowWidth/2 + w/2 + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
 				break;
 			case RIGHT_ALIGNMENT:
-				g.fillRect(x + w - (rowWidth+underscoreWidth/2) + blinkerX, (int)(y + hheight*
-						(blinkerRow+.8) + centeringY) -decrease, 2, hheight);
+				g.fillRect(x + w - (rowWidth+underscoreWidth/2) + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
 				break;
 			}
 		}
@@ -699,9 +712,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(cutOffMark && messageShown) {
 			int decrease = hheight - fontMetrics.getDescent();
 			if(endCutOff) 
-				g.drawLine(x+w-2, (int)(y + hheight*(texts.length-1+.8) + centeringY -decrease), x+w-2, (int)(y + hheight*(texts.length+.8) + centeringY -decrease));
+				g.drawLine(x+w-2, y + hheight*(texts.length-1) + + textOffset -decrease, x+w-2, (int)(y + hheight*texts.length + textOffset -decrease));
 			if(startShift>0)
-				g.drawLine(x+1, (int)(y + hheight*.8 + centeringY -decrease), x+1, (int)(y + hheight*1.8 + centeringY -decrease));
+				g.drawLine(x+1, y + textOffset -decrease, x+1, y + hheight + textOffset -decrease);
 		}
 
 		//now to draw the selected portion and selection on top
@@ -770,11 +783,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				break;
 			}
 			//draw the rectangles and selection texts
-			g.fillRect(xOffs + fontMetrics.stringWidth(texts[ii].substring(0,start)),
-					(int)(y + hheight*ii + centeringY), selWidth, hheight);
+			int centerY = (h - (texts.length*hheight))/2;
+			g.fillRect(xOffs + fontMetrics.stringWidth(texts[ii].substring(0,start)), y + hheight*ii + centerY, selWidth, hheight);
 			g.setColor(Color.WHITE);
 			g.drawString(texts[ii].substring(start,end), xOffs + fontMetrics.stringWidth(texts[ii].substring(0,start)),
-					(int)(y + hheight*(ii+.8) + centeringY));
+					y + hheight*ii + textOffset);
 		}
 	}
 
@@ -821,7 +834,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				start = index;
 				end = clickIndex;
 			}
-			setMessage(message.substring(0, start)+ message.substring(end+1));
+			message = message.substring(0, start) + message.substring(end);
 			//set the new index where the deletion starts
 			index = start;
 			//also, there is no more selection since we just deleted it
@@ -836,7 +849,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		message = fixed;
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
-		index += string.length();
+		shiftIndex(string.length());
 	}
 	/**
 	 * Deletes the selection then removes characters from {@link #message} starting at {@link #index}.
@@ -928,7 +941,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(selection) {
 			int start = (clickIndex < index)? clickIndex: index;
 			int end = (index > clickIndex)? index: clickIndex;
-			if(end == message.length())
+			if(start<0)
+				start = 0;
+			if(end >= message.length())
 				return message.substring(start);
 			return message.substring(start, end);
 		}else
@@ -1026,7 +1041,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					newText += message.substring(0, start);
 				newText += pasteText;
 				if(end < message.length())
-					newText += message.substring(end+1);
+					newText += message.substring(end);
 				setMessage(newText);
 				//we don't technically know the length beforehand since the pasted text may pass through a filter
 				int pasteLength = message.length() - messageLength;
@@ -1053,7 +1068,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public void shiftIndex(int delta){
 		index += delta;
 		if(index<0)	index = 0;
-		if(index>message.length()) index = message.length();
+		if(index>message.length())
+			index = message.length();
 		//reset the blink timer so the user can see where the index is
 		if(blinkTime != -1) {
 			showBlinker = true;
