@@ -43,8 +43,10 @@ public class Panel extends MenuComponent {
 	 * @see #setTextResizeFactor(int)*/
 	private Boolean textResize = null;
 	/**The height of the panel (in pixels) at last render. Used by {@link MenuComponent} to know how much
-	 * the text should resize for child components.*/
+	 * the text should resize for child components. Also used to tell child components their maximum heights*/
 	protected int lastHeight = 0;
+	/**The width of the panel (in pixels) at last render. Used to tell child components their maximum widths*/
+	protected int lastWidth = 0;
 	
 	/**
 	 * @param parent the panel this panel will reside upon. Null if this is being set to {@link MenuManager#menu}.
@@ -139,6 +141,65 @@ public class Panel extends MenuComponent {
 		}catch(ConcurrentModificationException cme){
 			System.err.println("There was a concurrent access of the components in the panel.");
 		}
+	}
+	
+	/**
+	 * Although Panel tells its children components to render where they truly are on the screen, offset is allowed
+	 * to be use in subclasses. For example, {@link PanelPlus} uses a subimage which components are drawn on, and that
+	 * subimage is later drawn onto the screen. Children components may need to get their true location on the screen,
+	 * for use in mouse touch and clicking boundaries for example.
+	 * @param comp the companion to find the render offset for
+	 * @return a four element long pixel array for interpreting the render coordinates in terms of real locations:
+	 * <br><b>{ xStart, yStart, xEnd, yEnd }</b>
+	 * <br>The first two indices in the array are how far from where the component was told to render the actual
+	 * render location was. Therefore, if the panel told the component to render at (0,0), but it was actually being
+	 * rendered at (350,20), the first two values in the returned array would be 350 and 20 respectively.<br>
+	 * The third and fourth values in the returned array signify ending offsets or cut offs. If a component is told
+	 * to render in the rectangle between (0,0) and (100,80), but only 40 pixels of width and 50 pixels of height are
+	 * actually being drawn to the screen, then the third and fourth indices would be 40 and 50 respectively. The
+	 * minimum supported cut off value would be 0 (thus having no true width/height), and negative values are to be
+	 * interpreted as there being no cut off.
+	 */
+	public int[] getRenderOffset(MenuComponent comp) {
+		if(parent != null) { //get the parent panel's values
+			int[] offs = parent.getRenderOffset(this);
+			return offs;
+		}else
+			return new int[] {0,0,-1,-1};
+	}
+	
+	/**
+	 * It is very frequent that components need their true coordinates for action in relation to the mouse (such as
+	 * in mouse clicking or scrolling) or other uses. The coordinates that the component is told for rendering are
+	 * not necessarily correct. Thus {@link #getRenderOffset(MenuComponent)} can be called to get the offsets that
+	 * define how far the x and y components are from their true values, and if any cutting off occurred. For single
+	 * coordinate queries, it is likely easier to calculate from the render offset method, but when a larger number
+	 * of points need to be handled, this method can be used.
+	 * @param xs the rendering x positions
+	 * @param ys the rendering y positions
+	 * @param callingComp the component which needs its true coordinates
+	 * @return a two dimensional array where the modified xs are in index 0, and the modified ys are in index 1.
+	 * Therefore, {xs, ys}.
+	 */
+	public int[][] handleOffsets(int[] xs, int[] ys, MenuComponent callingComp){
+		int[] offs = getRenderOffset(callingComp);
+		if(offs!=null) {
+			for(int i=0; i<xs.length; i++) {
+				if(xs[i]<0)
+					xs[i] = 0;
+				if(xs[i] > offs[2] && offs[2]>-1)
+					xs[i] = offs[2];
+				xs[i] += offs[0];
+			}
+			for(int i=0; i<ys.length; i++) {
+				if(ys[i]<0)
+					ys[i] = 0;
+				if(ys[i] > offs[3] && offs[3]>-1)
+					ys[i] = offs[3];
+				ys[i] += offs[1];
+			}
+		}
+		return new int[][] {xs, ys};
 	}
 
 	/**

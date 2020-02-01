@@ -38,6 +38,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * A two-dimensional array holding the pixel x and y points for the polygon that represents this component's clickable area.
 	 * clickBoundary[0] should hold x points and clickBoundary[1] should hold y points. The number of x and y points should be equal.
 	 * Used to determine whether this component is clickable in {@link #clickableAt(int, int)}.
+	 * @see #defineClickBoundary(int[][])
 	 */
 	protected int[][] clickBoundary = null;
 
@@ -90,13 +91,12 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Defines the {@link #clickBoundary} by combining the xs and ys array into one array. This can be easily done in render
-	 * because the component needs to be rendered before it can be clicked.
-	 * @param xs the pixel values of the x points for the geometrical polygon that defines where this is clicked
-	 * @param ys the pixel values of the y points for the geometrical polygon that defines where this is clicked
+	 * Defines the {@link #clickBoundary} from the given. Defining the click boundary can easily be done during rendering
+	 * since the component needs to be rendered before it can be clicked.
+	 * @param clickBoundary
 	 */
-	public void defineClickBoundary(int[] xs, int[] ys) {
-		clickBoundary = new int[][] {xs, ys};
+	public void defineClickBoundary(int[][] clickBoundary) {
+		this.clickBoundary = clickBoundary;
 	}
 	
 	/**
@@ -191,6 +191,10 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 */
 	public boolean isDeselectedOnRelease() {
 		return true;
+	}
+	
+	public String toString() {
+		return id+":"+super.toString();
 	}
 	
 }

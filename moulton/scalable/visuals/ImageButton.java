@@ -120,7 +120,8 @@ public class ImageButton extends RadioButton {
 		
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
-		defineClickBoundary(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h});
+		if(parent != null)
+			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
 		
 		// draw the picture
 		BufferedImage imageToDraw = getDrawImage();

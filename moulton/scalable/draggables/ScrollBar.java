@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import moulton.scalable.clickables.Clickable;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
+import moulton.scalable.containers.MenuManager;
 
 /**
  * The scroll bar class is a Draggable component that handles mouse draggging and notifies a component to be
@@ -33,15 +34,20 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	/**The buttons to click as opposed to dragging the scroll bar. This class does not handle them!
 	 * It only changes them to editable/uneditable when necessary. */
 	protected RadioButton scrollNeg, scrollPos;
+	/**Defines the number of offsets the bar will shift for each mouse scroll that occurs. Defaults to 1.
+	 * @see #getScrollRate()
+	 * @see #setScrollRate(int)*/
+	protected int scrollRate = 1;
 	/**The offset of the clickable portion of the bar. Possible values range from 0 to {@link #totalOffs}-{@link #barOffs}.
 	 * @see #getOffset()
 	 * @see #setOffset(int)*/
 	protected int offset = 0;
 	/**The total number of offsets in the bar. Minimum is 1. 
-	 * @see #setTotalOffs(int, boolean) 
-	 * @see #getTotalOffs()*/
+	 * @see #getTotalOffs()
+	 * @see #setTotalOffs(int)*/
 	protected int totalOffs = 1;
 	/**The height/width of the scroll button on the bar measured in offset distances.
+	 * @see #getBarOffs()
 	 * @see #setBarOffs(int)*/
 	protected int barOffs = 1;
 
@@ -168,7 +174,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			g.setColor(Color.BLACK);
 			g.drawRect(cx, cy, cw-1, ch-1);
 		}
-		defineClickBoundary(new int[] {cx, cx+cw, cx+cw, cx}, new int[] {cy, cy, cy+ch, cy+ch});
+		if(parent != null)
+			defineClickBoundary(parent.handleOffsets(new int[] {cx, cx+cw, cx+cw, cx},
+													new int[] {cy, cy, cy+ch, cy+ch}, this));
 	}
 
 	/**
@@ -187,11 +195,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	public void setScrollButtons(RadioButton scrollNeg, RadioButton scrollPos) {
 		this.scrollNeg = scrollNeg;
 		this.scrollPos = scrollPos;
-		//update them now
-		if(scrollNeg != null)
-			scrollNeg.setEditable(offset > 0);
-		if(scrollPos != null)
-			scrollPos.setEditable(offset+barOffs < totalOffs);
+		updateScrollButtons();
 	}
 	
 	/**
@@ -209,6 +213,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 		setTotalOffs(totalOffs);
 		setBarOffs(barOffs);
 		setOffset(offset);
+		updateScrollButtons();
 	}
 
 	/**
@@ -231,11 +236,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 		if(offset+barOffs > totalOffs)
 			offset = totalOffs-barOffs;
 		this.offset = offset;
-		//update the buttons
-		if(scrollNeg != null)
-			scrollNeg.setEditable(offset > 0);
-		if(scrollPos != null)
-			scrollPos.setEditable(offset+barOffs < totalOffs);
+		updateScrollButtons();
 	}
 
 	/**
@@ -255,14 +256,11 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
 	 */
 	public void setTotalOffs(int total) {
-		if(total>0) {
+		if(total > -1) {
 			totalOffs = total;
 			if(offset > totalOffs)
 				offset = totalOffs-1;
-			if(scrollNeg != null)
-				scrollNeg.setEditable(offset > 0);
-			if(scrollPos != null)
-				scrollPos.setEditable(offset+barOffs < totalOffs);
+			updateScrollButtons();
 		}
 	}
 
@@ -271,7 +269,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * @param offs sets {@link #barOffs}
 	 */
 	public void setBarOffs(int offs) {
-		if(offs>-1){
+		if(offs > -1){
 			barOffs = offs;
 			if(offset+barOffs>totalOffs) {
 				offset = totalOffs-barOffs;
@@ -279,6 +277,21 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 					offset = 0;
 			}
 		}
+	}
+	/**
+	 * Returns the number of offsets the button on the bar takes up.
+	 * @return {@link #barOffs}
+	 */
+	public int getBarOffs() {
+		return barOffs;
+	}
+	
+	protected void updateScrollButtons() {
+		boolean inUse = barOffs<totalOffs;
+		if(scrollNeg != null)
+			scrollNeg.setEditable(offset > 0 && inUse);
+		if(scrollPos != null)
+			scrollPos.setEditable(offset+barOffs < totalOffs && inUse);
 	}
 
 	/**
@@ -370,5 +383,22 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			return colorTouched;
 		
 		return colorButton;
+	}
+	
+	/**
+	 * Sets the number of offsets that this scroll bar should be shifted for each unit of mouse scrolling applied.
+	 * @param offsetRate sets the value of {@link #scrollRate}
+	 */
+	public void setScrollRate(int offsetRate) {
+		scrollRate = offsetRate;
+	}
+	/**
+	 * Returns the number of offsets that this scroll bar should be shifted for each unit of mouse scrolling. Called
+	 * by {@link MenuManager#mouseScrolled(int, int, int)} to determine how much the {@link #offset} of this bar
+	 * should be altered.
+	 * @return the value of {@link #scrollRate}
+	 */
+	public int getScrollRate() {
+		return scrollRate;
 	}
 }

@@ -1,6 +1,7 @@
 package moulton.scalable.containers;
 
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -15,6 +16,8 @@ import moulton.scalable.clickables.Clickable;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.draggables.DraggableComponent;
+import moulton.scalable.draggables.ScrollBar;
+import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.texts.HotkeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
@@ -42,11 +45,9 @@ public abstract class MenuManager {
 	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
-	/**
-	 * mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
+	/**mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
 	 * draggable components through {@link #mouseMoved(int, int)} and {@link DraggableComponent#drag(int, int)}
-	 * to be the location of the mouse at the point of last update.
-	 */
+	 * to be the location of the mouse at the point of last update.*/
 	protected double mouseX, mouseY;
 	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link #mouseX}, {@link #mouseY}).
 	 * @see #mousePressed
@@ -153,6 +154,63 @@ public abstract class MenuManager {
 				setClicked(null,x,y);
 			}
 		}
+	}
+	
+	/**
+	 * Call this when the mouse is scrolled. Positive values are down, and negative values are up.
+	 * The new change will be summed with the built up change in {@link #mouseScroll}, and the total will
+	 * be passed to the scroll bar of the relevant touched {@link ScrollableComponent}.
+	 * @param mouseX the x-position of the mouse when the scrolling occurred
+	 * @param mouseY the y-position of the mouse when the scrolling occurred
+	 * @param scrollAmount the amount that the mouse is scrolled.
+	 */
+	public void mouseScrolled(int mouseX, int mouseY, int scrollAmount) {
+		if(menu == null)
+			return;
+		
+		MenuComponent found = findRelevantScrolledComponent(mouseX, mouseY, menu);
+		if(found == null) //there is no relevant component
+			return;
+		ScrollBar toScroll = ((ScrollableComponent)found).getHeightScrollBar();
+		if(toScroll == null) //there is no scroll bar
+			return;
+		
+		toScroll.setOffset(toScroll.getOffset()+scrollAmount*toScroll.getScrollRate());
+		scrollAmount = 0;
+	}
+	
+	/**
+	 * Recursive method to find the most specific boundaries 
+	 * @param mouseX the mouse's x-position at scroll time
+	 * @param mouseY the mouse's y-position at scroll time
+	 * @param checkComp the panel of components to search through
+	 * @return the MenuComponent most specific and that contains the x,y coordinate
+	 */
+	private MenuComponent findRelevantScrolledComponent(int mouseX, int mouseY, MenuComponent checkComp) {
+		if(checkComp instanceof Panel) { //check children
+			Panel compPanel = (Panel)checkComp;
+			for(MenuComponent childComp: compPanel.getAllHeldComponents()) {
+				MenuComponent relevantScrolled = findRelevantScrolledComponent(mouseX, mouseY, childComp);
+				if(relevantScrolled!=null) {
+					//must also have a vertical scroll bar
+					if(((ScrollableComponent)relevantScrolled).getHeightScrollBar()!=null)
+						return relevantScrolled;
+				}
+			}
+		}
+		
+		//if it was a panel, and the children resulted no, then maybe this is it
+		//but regardless, check this
+		if(checkComp instanceof ScrollableComponent) {
+			ScrollableComponent scrollable = (ScrollableComponent)checkComp;
+			int[][] activeCoords = scrollable.getActiveScrollCoordinates();
+			Polygon polygon = new Polygon(activeCoords[0], activeCoords[1], activeCoords[0].length);
+			//the component must contain the mouse coordinates and have a vertical scroll bar to be relevant
+			if(polygon.contains(mouseX, mouseY) && scrollable.getHeightScrollBar()!=null) {
+				return checkComp;
+			}
+		}
+		return null; //nothing found here...
 	}
 	
 	/**Called when the component lost focus and needs to report changes. After this is called to ensure

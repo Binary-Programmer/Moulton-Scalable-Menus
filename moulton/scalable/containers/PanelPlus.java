@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
-import moulton.scalable.clickables.Clickable;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.utils.MenuComponent;
@@ -109,6 +108,8 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		}
 		lastX = x;
 		lastY = y;
+		lastWidth = w;
+		lastHeight = h;
 		
 		//the full dimensions
 		int fullW = solveString(fullWidth, ww, hh);
@@ -154,9 +155,6 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		if(color!=null) {
 			show.setColor(color);
 			show.fillRect(0, 0, w, h);
-			show.setColor(Color.BLACK);
-			if (outline)
-				show.drawRect(0, 0, w - 1, h - 1);
 		}
 		//draw the components onto the bufferedimage and then draw the bufferedimage onto the menu
 		ArrayList<MenuComponent> both = getAllHeldComponents();
@@ -170,42 +168,18 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 						self = grid.findCompCoordinates(mc, self);
 					
 					mc.render(show, self[0], self[1], self[2], self[3]);
-					adjustClickBoundaries(mc, x, y, w, h);
 				}
 			}
 		}catch(ConcurrentModificationException cme){
 			System.err.println("There was a concurrent access of the components in the panel.");
 		}
-
-		g.drawImage(shown, x, y, null);
-	}
-	
-	protected void adjustClickBoundaries(MenuComponent mc, int x, int y, int w, int h) {
-		if(mc instanceof Clickable) {
-			int clickBoundary[][] = ((Clickable)mc).getClickBoundary();
-			//for each of the xs we need to shift it back by x
-			//if any x goes out of its bounds, it needs to be fixed
-			for(int i=0; i<clickBoundary[0].length; i++) {
-				clickBoundary[0][i]+= x;
-				if(clickBoundary[0][i]> x+w)
-					clickBoundary[0][i] = x+w;
-				else if(clickBoundary[0][i]<x)
-					clickBoundary[0][i] = x;
-			}
-			//do the same with ys
-			for(int i=0; i<clickBoundary[1].length; i++) {
-				clickBoundary[1][i]+= y;
-				if(clickBoundary[1][i]> y+h)
-					clickBoundary[1][i] = y+h;
-				else if(clickBoundary[1][i]<y)
-					clickBoundary[1][i] = y;
-			}
-		}else if(mc instanceof Panel) { //recursively adjust all held components
-			ArrayList<MenuComponent> held = ((Panel)mc).getAllHeldComponents();
-			for(MenuComponent comp: held) {
-				adjustClickBoundaries(comp, x, y, w, h);
-			}
+		
+		//draw outline
+		if (outline) {
+			show.setColor(Color.BLACK);
+			show.drawRect(0, 0, w - 1, h - 1);
 		}
+		g.drawImage(shown, x, y, null);
 	}
 
 	/**
@@ -244,6 +218,40 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	@Override
 	public ScrollBar getHeightScrollBar() {
 		return heightBar;
+	}
+	@Override
+	public int[][] getActiveScrollCoordinates() {
+		int[] offs = getRenderOffset(this);
+		return new int[][] {{offs[0], offs[0]+offs[2], offs[0]+offs[2], offs[0]},
+							{offs[1], offs[1], offs[1]+offs[3], offs[1]+offs[3]}};
+	}
+	
+	/**
+	 * The PanelPlus gets the offset from its parent panel ({@link Panel#getRenderOffset(MenuComponent)}), then
+	 * adds the offset this has saved from the last render, saved as {@link #lastX} and {@link #lastY}.
+	 */
+	@Override
+	public int[] getRenderOffset(MenuComponent comp) {
+		int[] parentOffset = super.getRenderOffset(comp); //all the offsets and parent work set in super
+		
+		if(parentOffset[2]>-1) {
+			parentOffset[2] = Math.min(parentOffset[2]-lastX, lastWidth);
+			if(parentOffset[2]<0) parentOffset[2] = 0;
+		}else
+			parentOffset[2] = lastWidth;
+		if(parentOffset[3]>-1) {
+			parentOffset[3] = Math.min(parentOffset[3]-lastY, lastHeight);
+			if(parentOffset[3]<0) parentOffset[3] = 0;
+		}else
+			parentOffset[3] = lastHeight;
+		
+		if(parentOffset[0] < 0)
+			parentOffset[0] = 0;
+		if(parentOffset[1] < 0)
+			parentOffset[1] = 0;
+		parentOffset[0] += lastX;
+		parentOffset[1] += lastY;
+		return parentOffset;
 	}
 
 }

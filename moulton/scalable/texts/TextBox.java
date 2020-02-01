@@ -76,15 +76,18 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**How much the index where the text box starts displaying is shifted. If the text box has more than one row,
 	 * a shift will be in rows. Otherwise, shifts will be horizontal. The shift can be controlled by the connected
 	 * scroll bar saved as {@link #textScroller}.
-	 * @see #setStartShift(int)
-	 */
+	 * @see #setStartShift(int)*/
 	protected int startShift = 0;
-	/**
-	 * The scroll bar to change {@link #startShift} and view text in unseen virtual space if allowed ({@link #virtualSpace}).
+	/**The scroll bar to change {@link #startShift} and view text in unseen virtual space if allowed ({@link #virtualSpace}).
 	 * @see #getTextScroller()
-	 * @see #setTextScroller(ScrollBar)
-	 */
+	 * @see #setTextScroller(ScrollBar)*/
 	protected ScrollBar textScroller = null;
+	/**The character to replace the actual message content. The specified character will be repeated to match the
+	 * length of the message when shown. If null, no mask will be applied. If the character is invisible (value less
+	 * than 32), then an empty string will be returned. Defaults to null.
+	 * @see #setCharMask(Character)
+	 * @see #getShowMessage()*/
+	protected Character charMask = null;
 	
 	/**
 	 * The index of the mouse click. When the user drags the mouse, clickIndex stays the same but {@link #index} changes. The selection
@@ -410,7 +413,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
-		defineClickBoundary(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h});
+		if(parent != null)
+			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
 		g.setColor(editable? Color.BLACK: Color.GRAY);
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
@@ -448,7 +452,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		//the string that will be displayed. usually message but sometimes the hint
 		String rem;
 		if(message!=null && message.length()>0 || clicked || hint==null){
-			rem = message;
+			rem = getShowMessage();
 			g.setColor(Color.BLACK);
 			messageShown = true;
 		}else{
@@ -464,7 +468,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean setBlinker = false;
 		int underscoreWidth = fontMetrics.stringWidth("_");
 
-		//otherwise we will proceed to draw over the text box with a selection
 		if(h/hheight<1)
 			return;
 		texts = new String[h/hheight];
@@ -588,7 +591,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						i++;
 					}
 				}
-				
 			}
 			//if the blinker hasn't been set yet, it is further in the message
 			if(!setBlinker && allowsVirtualSpace() && getClicked() && !rem.isEmpty()) {
@@ -616,7 +618,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				if((texts.length>1 && i<texts.length-1) || (texts.length==1 && 
 						fontMetrics.stringWidth(message.charAt(startShift-1)+texts[i])
 						< insideWidth && message.charAt(startShift-1)!='\n')) {
-					rem = message;
+					rem = getShowMessage();
 					setBlinker = false;
 					setClick = !selection;
 					texts = new String[h/hheight];
@@ -662,7 +664,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						rem = rem.substring(1); //remove the used character
 					}if(!extraText.isEmpty())
 						extraLines++;
-					
 					//total lines is the lines shown (texts.length), plus the lines skipped, plus lines left over
 					textScroller.setOffsets(startShift+extraLines+texts.length,
 								 texts.length, //bar offs is the number of texts shown
@@ -670,7 +671,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}
 		}
-		
 		
 		for(int ii=0; ii<texts.length; ii++){
 			if(texts[ii]==null) //the text is done, move onto the next step
@@ -792,11 +792,29 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 
 	/**
-	 * Returns the message displayed on this text box
+	 * Returns the message displayed on this text box.
 	 * @return {@link #message}
 	 */
 	public synchronized String getMessage() {
 		return message;
+	}
+	
+	/**
+	 * Returns the {@link #message} after applying any {@link #charMask}.
+	 * @return the text that should be shown for the message
+	 */
+	protected String getShowMessage() {
+		if(charMask == null)
+			return getMessage();
+		else {
+			String mes = "";
+			if(charMask >= ' ') { //if the char mask is something that actually can be printed
+				int length = getMessage().length();
+				for(int i=0; i<length; i++)
+					mes += charMask;
+			}
+			return mes;
+		}
 	}
 	
 	/**
@@ -814,6 +832,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
 		index = message.length(); //set the index to the end
+		if(message.length()<1 && textScroller != null) //the scroll bar should be unset
+			textScroller.setTotalOffs(0);
 	}
 	
 	/**
@@ -1214,5 +1234,19 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	public boolean hasCutOffMark() {
 		return cutOffMark;
+	}
+	@Override
+	public int[][] getActiveScrollCoordinates() {
+		return clickBoundary;
+	}
+	
+	/**
+	 * Sets the mask for this text box. The masking character will be used instead of the {@link #message} contents,
+	 * but the mask will be repeated the number of times equal to the message length. The char mask can be set to
+	 * null to have no mask used.
+	 * @param charMask to replace the value of {@link #charMask}
+	 */
+	public void setCharMask(Character charMask) {
+		this.charMask = charMask;
 	}
 }

@@ -73,7 +73,9 @@ public class PolygonalButton extends RadioButton{
 				g.setColor(Color.GRAY);
 			g.drawPolygon(xpoints, ypoints, numberOfPoints);
 		}
-		defineClickBoundary(xpoints, ypoints);
+		
+		if(parent != null)
+			defineClickBoundary(parent.handleOffsets(xpoints, ypoints, this));
 	}
 	
 	/**

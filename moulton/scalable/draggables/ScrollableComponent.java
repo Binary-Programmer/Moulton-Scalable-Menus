@@ -17,4 +17,11 @@ public interface ScrollableComponent {
 	 * @return the scroll bar associated with this component's vertical shifting
 	 */
 	public abstract ScrollBar getHeightScrollBar();
+	
+	/**
+	 * @return where a mouse scrolling action should affect this component. Normally just its rendering or
+	 * clicking boundaries. int[0] should hold x points and int[1] should hold y points. The number of x and
+	 * y points should be equal.
+	 */
+	public abstract int[][] getActiveScrollCoordinates();
 }

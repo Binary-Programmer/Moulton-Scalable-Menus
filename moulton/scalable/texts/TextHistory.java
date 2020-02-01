@@ -52,6 +52,9 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**The color with which the messages in {@link #history} are printed.
 	 * @see #setTextColor(Color)*/
 	protected Color textColor = Color.BLACK;
+	/**Saved scroll coordinates found from most recent render.
+	 * @see #getActiveScrollCoordinates()*/
+	protected int[][] scrollCoords = new int[2][4];
 
 	/**
 	 * Creates a new TextHistory component and adds it to the parent panel by {@link MenuComponent#MenuComponent(Panel,
@@ -116,6 +119,8 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			w = ww;
 			h = hh;
 		}
+		if(parent != null)
+			scrollCoords = parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this); 				
 		//there must be texts to display to draw them		
 		if(history.size()>0){
 			//set font
@@ -426,6 +431,11 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 * @param color the color to replace {@link #textColor}*/
 	public void setTextColor(Color color) {
 		textColor = color;
+	}
+	
+	@Override
+	public int[][] getActiveScrollCoordinates() {
+		return scrollCoords;
 	}
 
 }

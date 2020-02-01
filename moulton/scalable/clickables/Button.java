@@ -97,7 +97,8 @@ public class Button extends RadioButton {
 
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
-		defineClickBoundary(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h});
+		if(parent != null)
+			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
 		g.setColor(editable? Color.BLACK:Color.GRAY);
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
