@@ -6,6 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import moulton.scalable.containers.Panel;
+import moulton.scalable.texts.Alignment;
 import moulton.scalable.utils.MenuComponent;
 import moulton.scalable.containers.MenuManager;
 
@@ -26,6 +27,9 @@ public class Button extends RadioButton {
 	protected String width, height;
 	/**The font of the text rendered on the button. */
 	protected Font font;
+	/**The alignment for the text on the button's face. Defaults to centered.
+	 * @see #setAlignment(Alignment)*/
+	protected Alignment alignment = Alignment.CENTER_ALIGNMENT;
 	
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -117,7 +121,17 @@ public class Button extends RadioButton {
 				fontWidth = fm.stringWidth(shownText);
 			}
 			int fontHeight = fm.getHeight();
-			g.drawString(shownText, x + w/2 - fontWidth/2, (int) (y + h/2 + fontHeight/2.8));
+			switch(alignment) {
+			case CENTER_ALIGNMENT:
+				g.drawString(shownText, x + w/2 - fontWidth/2, (int) (y + h/2 + fontHeight/2.8));
+				break;
+			case LEFT_ALIGNMENT:
+				g.drawString(shownText, x, (int) (y + h/2 + fontHeight/2.8));
+				break;
+			case RIGHT_ALIGNMENT:
+				g.drawString(shownText, x + w - fontWidth, (int) (y + h/2 + fontHeight/2.8));
+				break;
+			}
 		}
 	}
 	
@@ -169,5 +183,13 @@ public class Button extends RadioButton {
 			colorDark = color.darker();
 		}	
 		this.colorTouched = touchedColor;
+	}
+	
+	/**
+	 * Sets the alignment for the button's text.
+	 * @param newAlignment the alignment to replace {@link #alignment}
+	 */
+	public void setAlignment(Alignment newAlignment) {
+		alignment = newAlignment;
 	}
 }

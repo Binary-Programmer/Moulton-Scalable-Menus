@@ -26,10 +26,6 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * is set to true, increasing offset vertically will be up and increasing offset horizonatally will be left.
 	 * @see #renderInverse(boolean)*/
 	protected boolean inverseRender = false;
-	/**Whether 0 {@link #offset} (when there is minimum {@link #totalOffs}) should be considered a minimum or 
-	 * maximum value. Defaults to true/minimum.
-	 * @see #setPull(boolean)*/
-	protected boolean pullNegative = true;
 
 	/**The buttons to click as opposed to dragging the scroll bar. This class does not handle them!
 	 * It only changes them to editable/uneditable when necessary. */
@@ -44,7 +40,8 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	protected int offset = 0;
 	/**The total number of offsets in the bar. Minimum is 1. 
 	 * @see #getTotalOffs()
-	 * @see #setTotalOffs(int)*/
+	 * @see #setTotalOffs(int)
+	 * @see #setTotalOffs(int, boolean)*/
 	protected int totalOffs = 1;
 	/**The height/width of the scroll button on the bar measured in offset distances.
 	 * @see #getBarOffs()
@@ -127,10 +124,8 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 		}
 		if(vertical) {
 			lastLength = h;
-			//lastMinimum = y;
 		}else {
 			lastLength = w;
-			//lastMinimum = x;
 		}
 
 		g.setColor(color);
@@ -248,15 +243,43 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	/**
-	 * Sets the total number of offsets for the scroll bar. <p>
-	 * If updateOffset is true, then {@link #offset} may change based on the new value for {@link #totalOffs}.
-	 * If <code>offset</code> is at 0 when this method is called, it stay at zero. However, if it is any higher,
-	 * it will be shifted to keep the same spot of data relative to <code>totalOffs</code>. <p>
-	 * Regardless, the editability of {@link #scrollNeg} and {@link #scrollPos} may change due to this method.
+	 * Sets the total number of offsets for the scroll bar. This method is useful for more internal
+	 * workings of the scroll bar. It will set the new {@link #totalOffs}, decrease {@link #offset}
+	 * if it is too high, then {@link #updateScrollButtons()}. <p>
+	 * This method does not maintain the place of offset like {@link #setTotalOffsWithPull(int)}.
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
 	 */
 	public void setTotalOffs(int total) {
 		if(total > -1) {
+			totalOffs = total;
+			if(offset > totalOffs)
+				offset = totalOffs-1;
+			updateScrollButtons();
+		}
+	}
+	
+	/**
+	 * Sets the total number of offsets for the scroll bar like {@link #setTotalOffs(int)}. <p>
+	 * The {@link #offset} may change based on the new value for {@link #totalOffs} to have it keep its place.
+	 * If <code>offset</code> is at 0 when this method is called, it stay at zero. However, if it is any higher
+	 * and <code>pullPositive</code> is true, offset will be shifted by the amount that {@link #totalOffs}
+	 * changes. <p>
+	 * Regardless, the editability of {@link #scrollNeg} and {@link #scrollPos} may change due to this method.
+	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
+	 * @param pullPositive whether it is logical to shift based on a total offsets change. If data is being
+	 * added at the minimum value of offset side for this bar, then the bar should resultantly pull positively
+	 * to compensate. For example, if this scroll bar is keeping track of the user's index in a list, and a
+	 * new entry is added to the front of that list, then what was once at index 0 shifts to index 1, what was
+	 * once at index 1 goes to index 2, etc. The offset will thus increase to match that change.<br>
+	 * However, if data is being added to the maximum value side, then no offset change needs to occur.
+	 */
+	public void setTotalOffs(int total, boolean pullPositive) {
+		if(total > -1) {
+			if(offset>0 && pullPositive) { //then stick with the current
+				offset += total - totalOffs;
+				if(offset < 0)
+					offset = 0;
+			}
 			totalOffs = total;
 			if(offset > totalOffs)
 				offset = totalOffs-1;
@@ -276,6 +299,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 				if(offset<0)
 					offset = 0;
 			}
+			updateScrollButtons();
 		}
 	}
 	/**
@@ -287,24 +311,11 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	protected void updateScrollButtons() {
-		boolean inUse = barOffs<totalOffs;
+		boolean inUse = isEditable() && barOffs<totalOffs;
 		if(scrollNeg != null)
 			scrollNeg.setEditable(offset > 0 && inUse);
 		if(scrollPos != null)
 			scrollPos.setEditable(offset+barOffs < totalOffs && inUse);
-	}
-
-	/**
-	 * Sets the pull direction. <p>
-	 * The pull direction comes into play when {@link #totalOffs} is at minimum and when it is increased.
-	 * If the pull direction is negative, then the {@link #offset} will stay at 0. If the pull direction is
-	 * positive, then the {@link #offset} will become max after the change. <p>
-	 * This condition will occur the first time that the scroll bar has its size changed. Therefore, this
-	 * method will determine whether the scroll bar starts at max or min value.
-	 * @param negative whether pull should be negative. Sets {@link #pullNegative}.
-	 */
-	public void setPull(boolean negative){
-		pullNegative = negative;
 	}
 
 	@Override

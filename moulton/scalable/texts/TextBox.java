@@ -477,7 +477,12 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean setClick = !selection;
 		int clickRow = 0;
 		int clickPlace = 0;
-		int shift = messageShown? startShift:0; //shift only used when the message is shown
+		int shift = 0;
+		if(messageShown) { //shift only used when the message is shown
+			if(startShift > rem.length())
+				startShift = rem.length();
+			shift = startShift;
+		}
 
 		/*The inside width is the difference of the pixel width of the box and the underscore width.
 		 *This leaves spacing for half an underscore on both sides. */
@@ -983,7 +988,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		Polygon clickBox = new Polygon(clickBoundary[0], clickBoundary[1], clickBoundary[0].length);
 		if(clicked && clickBox.contains(mouseX, mouseY))
 			index = findIndex(mouseX, mouseY);
-		else
+		else //just put the blinker at the end if the mouse position isn't found
 			index = message.length();
 		
 		if(clicked) {

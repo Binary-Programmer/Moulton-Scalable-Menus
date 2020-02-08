@@ -108,10 +108,10 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	/**
 	 * Sets whether or not the component is currently selected by the press of a mouse. Different clickables handle this differently. 
-	 * Clickables like buttons are only clicked while the mouse button is held down. Whereas, clickables like text boxes stay clicked
-	 * even when the mouse button is released, instead changing to unclicked when the user deselects the text box. Sometimes clickable
-	 * components need the exact mouse coordinates when this change occurs, thus they are provided even though they are not used in
-	 * this method.
+	 * Clickables like buttons are only clicked while the mouse button is held down. On the other hand, clickables like text boxes stay
+	 * clicked even when the mouse button is released, instead changing to unclicked when the user deselects the text box. Sometimes
+	 * clickable components need the exact mouse coordinates when this change occurs, thus they are provided even though they are not
+	 * used in this method.
 	 * @see #isDeselectedOnRelease()
 	 * @param clicked {@link #clicked}
 	 * @param mouseX the x coordinate of the mouse when this change occurs

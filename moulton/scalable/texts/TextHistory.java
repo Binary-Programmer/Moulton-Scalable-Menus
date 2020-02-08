@@ -240,21 +240,20 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			
 			//update the scroll bar
 			if(bar!=null) {
+				int totalOffs = bar.getOffset() + numberOfLinesShown;
 				if(!allShown) { //if there were some lines not shown, bar should be editable
 					bar.setEditable(true);
 					/*To find the total number of offsets, find the initial offset texts (assume one line per
 					 *text), then add how many lines were shown, then add how many lines were cut off at the
 					 *end (lines from the text and remaining texts at one line per text).*/
-					int totalOffs = bar.getOffset() + numberOfLinesShown;
 					if(textIndex>-1) //if something was cut off
 						totalOffs += textIndex + endCutOff;
-					if(bar.getTotalOffs()!=totalOffs)
-						bar.setTotalOffs(totalOffs);
-					int barOffs = numberOfLinesShown; //how many were shown
-					bar.setBarOffs(barOffs);
 				}else {
 					bar.setEditable(false);
 				}
+				if(bar.getTotalOffs()!=totalOffs)
+					bar.setTotalOffs(totalOffs);
+				bar.setBarOffs(numberOfLinesShown); //how many were shown
 			}
 			
 			//print now
@@ -286,16 +285,20 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	}
 
 	/**
-	 * Adds the string to {@link #history} and changes {@link ScrollBar#totalOffs} of {@link #bar} if not null.
-	 * @param s The string that should be added.
+	 * Adds the string(s) to {@link #history} and changes {@link ScrollBar#totalOffs} of {@link #bar} if not null.
+	 * @param s The string(s) that should be added.
 	 */
-	public void addToList(String s){
-		history.add(s);
+	public void addToList(String ...s){
+		for(int i=0; i<s.length; i++)
+			history.add(s[i]);
 		while(history.size()>maxMessages) {
 			history.removeFirst();
 		}
-		if(bar!=null)
-			bar.setTotalOffs(history.size());
+		if(bar!=null && bar.getOffset()>0) {
+			//change the offset to keep pace with the previously shown texts
+			bar.setTotalOffs(bar.getTotalOffs()+s.length);
+			bar.setOffset(bar.getOffset()+s.length);
+		}
 	}
 
 	/**
@@ -306,8 +309,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 */
 	public void setScrollBar(ScrollBar bar) {
 		this.bar = bar;
-		if(bar != null)
-			bar.renderInverse(!addToTop);
+		forceScrollBarMatch();
 	}
 	
 	/**
@@ -316,8 +318,23 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 */
 	public void setViewMode(boolean recentAtTop) {
 		addToTop = recentAtTop;
+		forceScrollBarMatch();
+	}
+	
+	/**
+	 * Two attributes of the text history must match the scroll bar's analogous attributes for rendering
+	 * and scrolling to operate correctly. Thus, whenever the {@link #bar} or {@link #addToTop} is altered,
+	 * the effect must occur in the connected scroll bar.
+	 */
+	protected void forceScrollBarMatch() {
 		if(bar != null) {
-			bar.renderInverse(addToTop);
+			bar.renderInverse(!addToTop);
+			int scrollRate = bar.getScrollRate();
+			if(scrollRate>-1 ^ addToTop) { //if positivity and addToTop don't match
+				//negate the scrollRate
+				scrollRate *= -1;
+			}
+			bar.setScrollRate(scrollRate);
 		}
 	}
 	
@@ -366,8 +383,10 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	public boolean getTextDemarkation() {
 		return textDemarkation;
 	}
-	/**Sets whether each text displayed should be separated by a black line.
-	 * @param textDemarkation sets the value of {@link #textDemarkation}*/
+	/**
+	 * Sets whether each text displayed should be separated by a black line.
+	 * @param textDemarkation sets the value of {@link #textDemarkation}
+	 */
 	public void setTextDemarkation(boolean textDemarkation) {
 		this.textDemarkation = textDemarkation;
 	}
@@ -427,8 +446,10 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 		return outline;
 	}
 	
-	/**Sets the color that messages are printed with in {@link #render(Graphics, int, int, int, int)}.
-	 * @param color the color to replace {@link #textColor}*/
+	/**
+	 * Sets the color that messages are printed with in {@link #render(Graphics, int, int, int, int)}.
+	 * @param color the color to replace {@link #textColor}
+	 */
 	public void setTextColor(Color color) {
 		textColor = color;
 	}

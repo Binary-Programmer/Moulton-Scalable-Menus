@@ -343,8 +343,9 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Sets {@link #clicked} to defined. If <code>clicked</code> was non-null before the change, the clickable
+	 * Sets {@link #clicked} to defined. If clicked was non-null before the change, the clickable
 	 * will be updated with its new non-clicked status, and any losing focus events will be triggered.
+	 * The new clicked will be notified of this event.
 	 * @param clicked the component that has been clicked. Saved as {@link #clicked}
 	 * @param x the x-location of the mouse when clicked. Measured in pixels.
 	 * @param y the y-location of the mouse when clicked. Measured in pixels.

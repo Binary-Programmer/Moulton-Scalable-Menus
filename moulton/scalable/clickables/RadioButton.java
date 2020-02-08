@@ -32,14 +32,18 @@ public abstract class RadioButton extends Clickable {
 	public RadioButton(String id, Panel parent, String x, String y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;
-		colorDark = color.darker();
-		colorLight = color.brighter();
+		if(color != null) {
+			colorDark = color.darker();
+			colorLight = color.brighter();
+		}
 	}
 	public RadioButton(String id, Panel parent, int x, int y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;
-		colorDark = color.darker();
-		colorLight = color.brighter();
+		if(color != null) {
+			colorDark = color.darker();
+			colorLight = color.brighter();
+		}
 	}
 	
 	/**
