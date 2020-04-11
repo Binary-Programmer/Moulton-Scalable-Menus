@@ -13,7 +13,7 @@ public interface DraggableComponent{
 	 * since the component was clicked or last updated.
 	 * @param dx the change in x of the mouse
 	 * @param dy the change in y of the mouse
-	 * @return a two dimensional array of how much change was used by the drag in x and y respectively. Any left over movement
+	 * @return an two-element array of how much change was used by the drag in x and y respectively. Any left over movement
 	 * will be saved in the MenuManager and summed with new change when it occurs. This makes it possible that if the mouse hasn't
 	 * changed enough to cause a change in the state of the draggable the first time, it will add up over several occurrences.
 	 */

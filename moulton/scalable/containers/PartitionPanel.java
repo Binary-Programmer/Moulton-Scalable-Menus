@@ -60,19 +60,27 @@ public class PartitionPanel extends Panel {
 		super(parent, x, y, color);
 	}
 	
-	/**This method is overridden and does nothing because PartitionPanel requires components to be added
+	/**This method is overridden and only returns false because PartitionPanel requires components to be added
 	 * in a very specific way. Each component held must be in the top, bottom, left, or right sector.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
 	 * @see #setTop(MenuComponent)
 	 * @see #setBottom(MenuComponent)*/
 	@Override
-	public void addToGrid(MenuComponent comp, int x, int y) {
-		return;
+	public boolean addToGrid(MenuComponent comp, int x, int y) {
+		return false;
 	}
+	/**This method is overridden and returns false because PartitionPanel cannot directly remove a component
+	 * from the grid. Each component held is in one of four sectors: top, bottom, left, or right.
+	 * @see #setLeft(MenuComponent)
+	 * @see #setRight(MenuComponent)
+	 * @see #setTop(MenuComponent)
+	 * @see #setBottom(MenuComponent)*/
 	@Override
-	public void removeFromGrid(int x, int y, boolean resize) {}
-	/**This method is overridden and does nothing because PartitionPanel requires components to be added
+	public boolean removeFromGrid(int x, int y, boolean resize) {
+		return false;
+	}
+	/**This method is overridden and only returns false because PartitionPanel requires components to be added
 	 * in a very specific way. Each component held must be in the top, bottom, left, or right sector.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
@@ -138,6 +146,17 @@ public class PartitionPanel extends Panel {
 		this.verticalPartition = expression;
 	}
 	
+	/**Returns the string representing the x-value of the horizontal partition.
+	 * @return the expression of {@link #horizontalPartition}*/
+	public String getHorizontalPartition() {
+		return horizontalPartition;
+	}
+	/**Returns the string representing the y-value of the vertical partition.
+	 * @return the expression of {@link #verticalPartition}*/
+	public String getVerticalPartition() {
+		return verticalPartition;
+	}
+	
 	@Override
 	public ArrayList<MenuComponent> getAllHeldComponents() {
 		ArrayList<MenuComponent> list = new ArrayList<MenuComponent>(4);
@@ -196,33 +215,33 @@ public class PartitionPanel extends Panel {
 				int sectorTop = horizPartition;
 				int sectorBot = horizPartition;
 				if((topLeftCorner==null && top==null) || topLeftCorner.booleanValue())
-					sectorTop = 0;
+					sectorTop = y;
 				if((bottomLeftCorner==null && bottom==null) || bottomLeftCorner.booleanValue())
-					sectorBot = h;
+					sectorBot = y+h;
 				left.render(g, 0, sectorTop, vertPartition, sectorBot-sectorTop);
 			}if(right != null && right.isVisible()) {
 				int sectorTop = horizPartition;
 				int sectorBot = horizPartition;
 				if((topRightCorner==null && top==null) || topRightCorner.booleanValue())
-					sectorTop = 0;
+					sectorTop = y;
 				if((bottomRightCorner==null && bottom==null) || bottomRightCorner.booleanValue())
-					sectorBot = h;
+					sectorBot = y+h;
 				right.render(g, vertPartition, sectorTop, w-vertPartition, sectorBot-sectorTop);
 			}if(top != null && top.isVisible()) {
 				int sectorLft = vertPartition;
 				int sectorRgt = vertPartition;
 				if((topLeftCorner==null && left==null) || !topLeftCorner.booleanValue())
-					sectorLft = 0;
+					sectorLft = x;
 				if((topRightCorner==null && right==null) || !topRightCorner.booleanValue())
-					sectorRgt = h;
+					sectorRgt = x+w;
 				top.render(g, sectorLft, 0, sectorRgt-sectorLft, horizPartition);
 			}if(bottom != null && bottom.isVisible()) {
 				int sectorLft = vertPartition;
 				int sectorRgt = vertPartition;
 				if((bottomLeftCorner==null && left==null) || !bottomLeftCorner.booleanValue())
-					sectorLft = 0;
+					sectorLft = x;
 				if((bottomRightCorner==null && right==null) || !bottomRightCorner.booleanValue())
-					sectorRgt = h;
+					sectorRgt = x+w;
 				bottom.render(g, sectorLft, horizPartition, sectorRgt-sectorLft, h-horizPartition);
 			}
 		}catch(ConcurrentModificationException cme){

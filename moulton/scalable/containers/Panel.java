@@ -210,9 +210,11 @@ public class Panel extends MenuComponent {
 	 * @param comp the component to be added to this panel's grid
 	 * @param x the x position on the grid for the component
 	 * @param y the y position on the grid for the component
+	 * @return whether the addition of the component was successful
 	 */
-	public void addToGrid(MenuComponent comp, int x, int y) {
+	public boolean addToGrid(MenuComponent comp, int x, int y) {
 		grid.addComponent(comp, x, y);
+		return true;
 	}
 	
 	/**Deletes the component found at the location (x,y) in {@link #grid}.
@@ -221,8 +223,8 @@ public class Panel extends MenuComponent {
 	 * @param resize whether the grid should check for a resize after the deletion.
 	 * @return whether a component was removed at (x,y)
 	 */
-	public void removeFromGrid(int x, int y, boolean resize) {
-		grid.removeComponent(x, y, resize);
+	public boolean removeFromGrid(int x, int y, boolean resize) {
+		return grid.removeComponent(x, y, resize);
 	}
 	
 	/**

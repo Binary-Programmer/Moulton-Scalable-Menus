@@ -307,8 +307,13 @@ public abstract class MenuManager {
 			double dragDeltaX = x-mouseX;
 			double dragDeltaY = y-mouseY;
 			double[] changeXY = ((DraggableComponent)clicked).drag(dragDeltaX, dragDeltaY);
-			mouseX += changeXY[0];
-			mouseY += changeXY[1];
+			try {
+				mouseX += changeXY[0];
+				mouseY += changeXY[1];
+			}catch(NullPointerException ne) {
+				throw new NullPointerException("The draggable component: "+clicked+" must return an "+
+						"array of two elements: [changeX, changeY]!");
+			}
 		}
 		for(TouchResponsiveComponent touchComp: touchCheckList) {
 			if(touchComp.isTouchedAt(x, y)) {

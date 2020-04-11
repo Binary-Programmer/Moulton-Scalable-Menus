@@ -45,13 +45,15 @@ public class GridFormatter {
 	 * have an implied weight of 1. However, row weights can be specified otherwise with {@link #specifyRowWeight(int, double)}
 	 * and they will be saved here. A row with a weight double to another row's weight will have double the
 	 * width of the latter's row.
-	 * @see #findYWeights(int)*/
+	 * @see #findYWeights(int)
+	 * @see #getRowWeight(int)*/
 	protected HashMap<Integer, Double> rowWeights = new HashMap<Integer, Double>();
 	/**Holds the values of unique column weights. At default, this map will be empty, and all shown columns will
 	 * have an implied weight of 1. However, column weights can be specified otherwise with 
 	 * {@link #specifyColumnWeight(int, double)} and they will be saved here. A column with a weight double to
 	 * another column's weight will have double the height of the latter's column.
-	 * @see #findXWeights(int)*/
+	 * @see #findXWeights(int)
+	 * @see #getColWeight(int)*/
 	protected HashMap<Integer, Double> colWeights = new HashMap<Integer, Double>();
 	
 	/**Adds a component onto the grid at the specified location. If the location is already taken by another
@@ -243,6 +245,30 @@ public class GridFormatter {
 				runningTotal++;
 		}
 		return runningTotal;
+	}
+	
+	/**Returns the width of the saved grid.
+	 * @return the width of {@link #gridDim}*/
+	public int getGridWidth() {
+		return gridDim.width;
+	}
+	/**Returns the height of the saved grid.
+	 * @return the height of {@link #gridDim}*/
+	public int getGridHeight() {
+		return gridDim.height;
+	}
+	
+	/**Returns the weight of the specified column.
+	 * @param column the column to find the weight of
+	 * @return the weight of the column specified.*/
+	public Double getColWeight(int column) {
+		return colWeights.get(column);
+	}
+	/**Returns the weight of the specified row.
+	 * @param row the row to find the weight of
+	 * @return the weight of the row specified.*/
+	public Double getRowWeight(int row) {
+		return rowWeights.get(row);
 	}
 
 }

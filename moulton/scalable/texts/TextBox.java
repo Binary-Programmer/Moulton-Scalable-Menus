@@ -451,7 +451,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean isClicked = getClicked(); //we should only shift to the blinker if the box is selected
 		//the string that will be displayed. usually message but sometimes the hint
 		String rem;
-		if(message!=null && message.length()>0 || clicked || hint==null){
+		if(message!=null && message.length()>0 || hint==null) {
 			rem = getShowMessage();
 			g.setColor(Color.BLACK);
 			messageShown = true;
