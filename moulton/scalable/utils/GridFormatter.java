@@ -64,9 +64,9 @@ public class GridFormatter {
 	 * @param y the y location of the component*/
 	public void addComponent(MenuComponent comp, int x, int y) {
 		if (x >= gridDim.getWidth())
-			gridDim.setSize(x+1, gridDim.getHeight());
+			gridDim.width = x+1;
 		if (y >= gridDim.getHeight())
-			gridDim.setSize(gridDim.getWidth(), y+1);
+			gridDim.height = y+1;
 		gridComponents.put(new Point(x, y), comp);
 	}
 	
@@ -103,24 +103,28 @@ public class GridFormatter {
 	 * @param resize whether the grid should check for a resize after the deletion.
 	 * @return whether a component was removed at (x,y)*/
 	public boolean removeComponent(int x, int y, boolean resize) {
-		if(resize && gridDim.width>x && gridDim.height>y) {
+		Point toRemove = new Point(x,y);
+		//should check to resize even if the value at the key was null
+		boolean removed = gridComponents.containsKey(toRemove);
+		gridComponents.remove(toRemove);
+		if(removed && resize && gridDim.width>x && gridDim.height>y) {
 			int maxX=0, maxY=0;
 			boolean resized = true;
 			for(Point p:gridComponents.keySet()) {
 				if(p.x > maxX) maxX = p.x;
 				if(p.y > maxY) maxY = p.y;
 				//if components are found to have higher xs and ys, then the deletion of this object was in the middle
-				if(maxX>x && maxY>y) { 
+				if(maxX>=x && maxY>=y) { 
 					resized = false;
 					break;
 				}
 			}
 			if(resized) {
-				gridDim.width = maxX;
-				gridDim.height = maxY;
+				gridDim.width = maxX + 1;
+				gridDim.height = maxY + 1;
 			}
 		}
-		return gridComponents.remove(new Point(x,y)) != null;
+		return removed;
 	}
 	
 	/**Finds the specified component in the grid and returns its pixel coordinates. If it cannot be found,
@@ -269,6 +273,14 @@ public class GridFormatter {
 	 * @return the weight of the row specified.*/
 	public Double getRowWeight(int row) {
 		return rowWeights.get(row);
+	}
+	
+	/**Returns the menu component in the grid at the specified location
+	 * @param x the x-value for the component's location
+	 * @param y the y-value for the component's location
+	 * @return the component found at that location. Null is returned if nothing was found there.*/
+	public MenuComponent getAt(int x, int y) {
+		return gridComponents.get(new Point(x,y));
 	}
 
 }

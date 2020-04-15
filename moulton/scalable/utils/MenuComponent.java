@@ -95,6 +95,14 @@ public abstract class MenuComponent {
 	public Point getGridLocation(){
 		return gridPoint;
 	}
+	/**
+	 * Sets the grid location of this component. If the newPoint is null, the component will think that it
+	 * is not in a grid
+	 * @param newPoint to replace {@link #gridPoint}
+	 */
+	public void setGridLocation(Point newPoint) {
+		gridPoint = newPoint;
+	}
 	
 	/**
 	 * Returns the parent panel of this component.

@@ -121,6 +121,7 @@ public class Button extends RadioButton {
 				fontWidth = fm.stringWidth(shownText);
 			}
 			int fontHeight = fm.getHeight();
+			
 			switch(alignment) {
 			case CENTER_ALIGNMENT:
 				g.drawString(shownText, x + w/2 - fontWidth/2, (int) (y + h/2 + fontHeight/2.8));

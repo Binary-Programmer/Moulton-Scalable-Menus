@@ -149,6 +149,8 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			yOffs = (fullH*heightBar.getOffset())/heightBar.getTotalOffs();
 
 		//create a new image for the shown area
+		if(w <= 0 || h <= 0)
+			return;
 		BufferedImage shown = new BufferedImage(w,h,BufferedImage.TYPE_INT_ARGB);
 		Graphics show = shown.getGraphics();
 		// draw color

@@ -610,7 +610,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						clickRow--;
 				}else {
 					//get rid of the first character
-					texts[0] = texts[0].substring(1);
+					texts[0] = (texts[0].length() > 0)? texts[0].substring(1): "";
 					if(setClick && selection) //if click index was altered
 						clickPlace--;
 				}
