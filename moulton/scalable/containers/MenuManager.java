@@ -18,6 +18,7 @@ import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
+import moulton.scalable.popups.Popup;
 import moulton.scalable.texts.HotkeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
@@ -40,6 +41,10 @@ public abstract class MenuManager {
 	 * @see #hasMenu()
 	 * @see #getMenu()*/
 	protected Panel menu;
+	/**A popup that should be drawn on top of the {@link #menu}. If the popup is set (default is null), it will take precedence
+	 * over the menu and take the action events such as {@link #mousePressed} and {@link #mouseScrolled(int, int, int)}.
+	 * @see #setPopup(Popup)*/
+	protected Popup popup = null;
 	/**The container for the menus to manage.*/
 	protected Container cont;
 	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
@@ -53,7 +58,9 @@ public abstract class MenuManager {
 	 * @see #mousePressed
 	 * @see #mouseReleased(int, int)*/
 	protected boolean mousePressed = false;
-	/**All of the components that the menu needs to check if touched every time the mouse moves*/
+	/**All of the components that the menu needs to check if touched every time the mouse moves
+	 * @see #addTouchResponsiveComponent(TouchResponsiveComponent)
+	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)*/
 	protected LinkedList<TouchResponsiveComponent> touchCheckList = new LinkedList<>();
 	
 	/**
@@ -94,7 +101,10 @@ public abstract class MenuManager {
 	 * @param y the y position of the mouse relative to the JFrame
 	 */
 	public void mousePressed(int x, int y){
-		mousePressed(x,y,menu.getAllHeldComponents());
+		if(popup != null)
+			mousePressed(x,y,popup.getBase().getAllHeldComponents());
+		else if(menu != null)
+			mousePressed(x,y,menu.getAllHeldComponents());
 	}
 	/**
 	 * internal recursive mousePressed call
@@ -150,9 +160,8 @@ public abstract class MenuManager {
 			//check if it lost focus
 			//If release deselects- deselect. If not, no deselect even if unsuccessful click
 			//sometimes the click action changes the clicked obj, so check again
-			if(clicked!=null && clicked.isDeselectedOnRelease()) {
+			if(!successfulClick || clicked.isDeselectedOnRelease())
 				setClicked(null,x,y);
-			}
 		}
 	}
 	
@@ -165,10 +174,16 @@ public abstract class MenuManager {
 	 * @param scrollAmount the amount that the mouse is scrolled.
 	 */
 	public void mouseScrolled(int mouseX, int mouseY, int scrollAmount) {
-		if(menu == null)
+		Panel searchIn = null;
+		if(popup != null)
+			searchIn = popup.getBase();
+		else if(menu != null)
+			searchIn = menu;
+		
+		if(searchIn == null)
 			return;
 		
-		MenuComponent found = findRelevantScrolledComponent(mouseX, mouseY, menu);
+		MenuComponent found = findRelevantScrolledComponent(mouseX, mouseY, searchIn);
 		if(found == null) //there is no relevant component
 			return;
 		ScrollBar toScroll = ((ScrollableComponent)found).getHeightScrollBar();
@@ -269,11 +284,13 @@ public abstract class MenuManager {
 			if(key == 8 || key == 127){ //backspace OR delete
 				textInputComp.removeMessage(1, key == 8);
 			}else if(key == 10){ //enter
-				//remove focus
-				setClicked(null,-1,-1);
+				textInputComp.appendMessage("\n");
+				//check for focus removal
+				if(textInputComp instanceof TextBox && ((TextBox)textInputComp).getDeselectOnEnter())
+					setClicked(null,-1,-1);
 			}else if (key>31){
 				textInputComp.appendMessage(key+"");
-			}
+			} //if the key is less than 31 but not checked for, it is just a control character
 		}
 	}
 	
@@ -315,7 +332,15 @@ public abstract class MenuManager {
 						"array of two elements: [changeX, changeY]!");
 			}
 		}
-		for(TouchResponsiveComponent touchComp: touchCheckList) {
+		LinkedList<TouchResponsiveComponent> touchList = null;
+		if(popup != null)
+			touchList = popup.getTouchCheckList();
+		else
+			touchList = touchCheckList;
+		
+		if(touchList == null)
+			return;
+		for(TouchResponsiveComponent touchComp: touchList) {
 			if(touchComp.isTouchedAt(x, y)) {
 				touchComp.setTouched(true);
 			}else if(touchComp.isTouched()) { //if it was touched
@@ -329,22 +354,31 @@ public abstract class MenuManager {
 	 * @param g the Graphics to render on
 	 */
 	public void render(Graphics g){
-		if(menu != null){
+		if(menu != null)
 			menu.render(g, 0, 0, cont.getMenuWidth(), cont.getMenuHeight());
-		}
+		if(popup != null)
+			popup.render(g, cont.getMenuWidth(), cont.getMenuHeight());
 	}
 	
 	/**
 	 * @return true if {@link #menu} is not null. Otherwise, returns false.
 	 */
-	public boolean hasMenu(){
+	public boolean hasMenu() {
 		return menu != null;
 	}
 	/**
 	 * @return the menu that is currently being used. Defined as {@link #menu}.
 	 */
-	public Panel getMenu(){
+	public Panel getMenu() {
 		return menu;
+	}
+	
+	public Popup getPopup() {
+		return popup;
+	}
+	
+	public void setPopup(Popup pop) {
+		this.popup = pop;
 	}
 	
 	/**

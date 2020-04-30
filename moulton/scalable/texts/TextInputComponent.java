@@ -1,5 +1,14 @@
 package moulton.scalable.texts;
 
+import moulton.scalable.containers.MenuManager;
+import moulton.scalable.clickables.Clickable;
+
+/**
+ * Implementations of HotkeyTextComponent are instances of {@link Clickable} that receive text input from
+ * the {@link MenuManager} through the {@link #appendMessage(String)} and {@link #removeMessage(int, boolean)}
+ * methods.
+ * @author Matthew Moulton
+ */
 public interface TextInputComponent {
 	/**
 	 * When this component is selected and the menu manager receives key input from the user, it is sent

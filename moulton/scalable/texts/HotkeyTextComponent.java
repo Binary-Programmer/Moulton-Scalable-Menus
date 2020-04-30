@@ -1,12 +1,12 @@
 package moulton.scalable.texts;
 
 import moulton.scalable.containers.MenuManager;
-import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.clickables.Clickable;
 
 /**
- * Subclasses of HotkeyTextComponent are instances of {@link MenuComponent} that can react to the hotkey commands
+ * Implementations of HotkeyTextComponent are instances of {@link Clickable} that can react to the hotkey commands
  * of "copy", "cut", and "paste". The {@link MenuManager} associated with this component, is in charge of
- * detecting when these hotkey commands are performed by the user, and to call correlating events. Moreover, the
+ * detecting when these hotkey commands are performed by the user, and to call corresponding events. Moreover, the
  * manager will copy the text returned by {@link #copy()} and {@link #cut()} to the system clipboard, and will
  * give the contents of the system clipboard (when it can be represented as a string) in the calling of
  * {@link #paste(String)}.

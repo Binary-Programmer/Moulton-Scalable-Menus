@@ -18,6 +18,7 @@ import moulton.scalable.draggables.ScrollableComponent;
  * @author Matthew Moulton
  */
 public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent, ScrollableComponent {
+	//core fields
 	/**The display string of the text box.
 	 * @see #getMessage()
 	 * @see #setMessage(String)*/
@@ -36,32 +37,14 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getTextFormat()
 	 * @see #setTextResizeFactor(int)*/
 	protected TextFormat format = null;
-	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
-	 * the default.
-	 * @see #setCharLimit(int)*/
-	protected int charMax = -1;
-	/**Whether input can be put outside of the visible box.
-	 * @see #allowsVirtualSpace()
-	 * @see #allowVirtualSpace(boolean)*/
-	protected boolean virtualSpace = true;
 	/**The alignment of the text to be rendered. Defaults to left alignment.*/
 	protected Alignment alignment = Alignment.LEFT_ALIGNMENT;
 	/**The color of the box when touched.
 	 * @see #setTouchedColor(Color)*/
 	protected Color colorTouched = null;
-	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text box,
-	 * encountering and end of line will force previous characters (until a break) to the next line.
-	 * Break characters include space, new line, and hyphens. Defaults to false.
-	 * @see #allowsWordSplitting()
-	 * @see #allowWordSplitting(boolean)*/
-	protected boolean wordSplitting = false;
-	/**If the text box {@link #allowsVirtualSpace()} and some of the message is cut off in display, this will
-	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
-	 * @see #setCutOffMark(boolean)
-	 * @see #hasCutOffMark()*/
-	protected boolean cutOffMark = true;
 	
-	/**Whether or not to show the blinker. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
+	//text control fields
+	/**Whether or not the blinker is shown. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
 	 * by {@link #timer} and {@link #timeLast}. */
 	protected boolean showBlinker = false;
 	/**The time in milliseconds the blinker should wait before toggling on/off. Default value is 1000 ms = 1 sec. -1 indicates that the
@@ -89,20 +72,48 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getShowMessage()*/
 	protected Character charMask = null;
 	
-	/**
-	 * The index of the mouse click. When the user drags the mouse, clickIndex stays the same but {@link #index} changes. The selection
-	 * is defined as the text between the two indices.<p>Can be determined by {@link #findIndex(int, int)}.
-	 */
+	//click and selection fields
+	/**The index of the mouse click. When the user drags the mouse, clickIndex stays the same but {@link #index} changes. The selection
+	 * is defined as the text between the two indices.<p>Can be determined by {@link #findIndex(int, int)}.*/
 	protected int clickIndex = 0;
 	/**Whether there currently is a selection of text. Also determines whether {@link #clickIndex} is relevant. That text selection
 	 * can be retrieved with {@link #getSelectedText()}.*/
 	protected boolean selection = false;
 	/**The pixel point of the last mouse click.*/
 	protected int[] mouseClickXY = new int[2];
+	
+	//optional functionality
+	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text box,
+	 * encountering and end of line will force previous characters (until a break) to the next line.
+	 * Break characters include space, new line, and hyphens. Defaults to false.
+	 * @see #getAllowWordSplitting()
+	 * @see #allowWordSplitting(boolean)*/
+	protected boolean wordSplitting = false;
+	/**If the text box {@link #getAllowVirtualSpace()} and some of the message is cut off in display, this will
+	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
+	 * @see #setCutOffMark(boolean)
+	 * @see #hasCutOffMark()*/
+	protected boolean cutOffMark = true;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
 	 * @see #isHotkeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
+	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
+	 * the default.
+	 * @see #setCharLimit(int)*/
+	protected int charMax = -1;
+	/**Whether input can be put outside of the visible box. Defaults to true.
+	 * @see #getAllowVirtualSpace()
+	 * @see #allowVirtualSpace(boolean)*/
+	protected boolean virtualSpace = true;
+	/**Whether this text box should accept 'enter' or 'return' input from the user. Defaults to false.
+	 * @see #getAcceptEnter()
+	 * @see #acceptEnter(boolean)*/
+	protected boolean acceptEnter = false;
+	/**Whether the user action of 'enter' or 'return' should deselect this text box. Defaults to true.
+	 * @see #getDeselectOnEnter()
+	 * @see #deselectOnEnter(boolean)*/
+	protected boolean deselectOnEnter = true;
 	
 	//last font metrics used
 	private FontMetrics fontMetrics;
@@ -284,7 +295,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 					
 					if(wwidth>insideWidth && rows>1) { //the width is too long
-						boolean wordSplit = allowsWordSplitting();
+						boolean wordSplit = getAllowWordSplitting();
 						if(!wordSplit) {
 							int ii=text.length()-1;
 							for(; ii>-1; ii--) {
@@ -535,7 +546,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n'){
 					if(texts.length>1) {
 						//if word split is not allowed, we will find a space or break
-						boolean wordSplit = allowsWordSplitting();
+						boolean wordSplit = getAllowWordSplitting();
 						if(!wordSplit) {
 							boolean loseChar = false;
 							boolean lineKeep = false;
@@ -561,7 +572,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 								if(lineKeep)
 									ii++;
 								texts[i] = texts[i].substring(0, ii);
-								//blinker or click effected by the row change
+								//blinker or click affected by the row change
 								if(setBlinker && blinkerRow == i && blinkerPlace>ii)
 									setBlinker = false;
 								if(setClick && clickRow == i && clickPlace>ii)
@@ -598,7 +609,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}
 			//if the blinker hasn't been set yet, it is further in the message
-			if(!setBlinker && allowsVirtualSpace() && getClicked() && !rem.isEmpty()) {
+			if(!setBlinker && getAllowVirtualSpace() && getClicked() && !rem.isEmpty()) {
 				if(texts.length>1) {
 					//shift all rows up
 					int ii=1;
@@ -845,10 +856,21 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Deletes the selection, then appends the given string into {@link #message}. If the append makes 
 	 * {@link #message} longer than {@link #charMax} if {@link #charMax} has been set, the tail-end of
 	 * the string will be excluded.
+	 * Properly handles any new line characters as determined by {@link #acceptEnter}.
 	 * @param string the String to append on
 	 */
 	@Override
 	public synchronized void appendMessage(String string) {
+		//handles any new line characters appropriately
+		if(!acceptEnter && string.indexOf('\n')!=-1) {
+			String[] sections = string.split("\n");
+			string = "";
+			if(sections.length > 0) {
+				for(int i=0; i<sections.length; i++)
+					string += sections[i];
+			}
+		}
+		
 		//deletes the selection if there is one
 		if(selection) {
 			int start, end;
@@ -1096,7 +1118,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(index>message.length())
 			index = message.length();
 		//reset the blink timer so the user can see where the index is
-		if(blinkTime != -1) {
+		if(blinkTime != -1 && clicked) {
 			showBlinker = true;
 			timer = 0;
 			timeLast = System.currentTimeMillis();
@@ -1173,8 +1195,43 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * for the text length (false).
 	 * @return {@link #virtualSpace}
 	 */
-	public boolean allowsVirtualSpace() {
+	public boolean getAllowVirtualSpace() {
 		return virtualSpace;
+	}
+	
+	/**
+	 * Sets whether this text box should be deselected by the enter or return key.
+	 * @param toDeselect sets {@link #deselectOnEnter}
+	 */
+	public void deselectOnEnter(boolean toDeselect) {
+		deselectOnEnter = toDeselect;
+	}
+	
+	/**
+	 * Returns whether the enter key deselects this text box, as defined by {@link #deselectOnEnter}.
+	 * @return {@link #deselectOnEnter}
+	 */
+	public boolean getDeselectOnEnter() {
+		return deselectOnEnter;
+	}
+	
+	/**
+	 * Sets whether this box should accept the new line character from user input.<p>
+	 * Accepting enter sets {@link #deselectOnEnter} to false
+	 * @param acceptEnter sets {@link #acceptEnter}
+	 */
+	public void acceptEnter(boolean acceptEnter) {
+		if(acceptEnter)
+			deselectOnEnter(false);
+		this.acceptEnter = acceptEnter;
+	}
+	
+	/**
+	 * Returns whether this box accepts the new line character from user input.
+	 * @return {@link #acceptEnter}
+	 */
+	public boolean getAcceptEnter() {
+		return acceptEnter;
 	}
 	
 	/**
@@ -1214,7 +1271,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Returns whether word splitting is allowed for this text box
 	 * @return the value of {@link #wordSplitting}
 	 */
-	public boolean allowsWordSplitting() {
+	public boolean getAllowWordSplitting() {
 		return wordSplitting;
 	}
 	@Override
