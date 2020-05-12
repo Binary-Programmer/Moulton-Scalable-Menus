@@ -257,9 +257,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//or for the right margin, would be the end for shift once more. check for shift modifications later
 			}
 			
-			//variable that will keep track of the number of letters shown thus far
-			int sum = 0;
-			String rem = message;
+			int sum = 0; //variable that will keep track of the number of letters shown thus far
+			String rem = message; //the remainder to process. Clicking forces message instead of hint or other
 			
 			//shift modifications
 			int shift=0;
@@ -281,51 +280,57 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			 *This leaves spacing for half an underscore on both sides. */
 			int insideWidth = ww - underscoreWidth;
 			if(rem != null && !rem.isEmpty()){
-				//it only needs to go to row because that is the data we need
-				for(int i=-shift; i<=row; i++){
+				//it only needs to go to row (instead of the whole message) because that is the data we need
+				for(int i=-shift; i<=row; i++) {
+					//the text that fits on the currently processed row. If this isn't the row we need, the
+					//text will be reset when processing progresses to the next line.
 					String text = "";
-					int wwidth = 0;
+					int wwidth = 0; //the width in pixels of text on the line
 					
-					while(wwidth<=insideWidth && !rem.isEmpty()){
-						text += rem.charAt(0);
+					while(wwidth<=insideWidth && !rem.isEmpty()) {
+						//transfer a character from rem to text
+						char nextChar = rem.charAt(0);
+						text += nextChar;
 						rem = rem.substring(1);
-						wwidth = fontMetrics.stringWidth(text);
-						if(text.charAt(text.length()-1) == '\n')
-							wwidth += insideWidth;
+						if(nextChar == '\n') //new line will force too long
+							wwidth = insideWidth+1;
+						else
+							wwidth = fontMetrics.stringWidth(text); //find the new width
 					}
 					
 					if(wwidth>insideWidth && rows>1) { //the width is too long
 						boolean wordSplit = getAllowWordSplitting();
 						if(!wordSplit) {
 							int ii=text.length()-1;
-							for(; ii>-1; ii--) {
+							for(; ii>-1; ii--) { //backtrack to find a suitable character to break on
 								char c = text.charAt(ii);
-								if(c == '\n' || c == ' ') {
-									//add it back to the remainder
+								if(c == '\n' || c == ' ') { //these characters are just consumed in the break
 									rem = text.substring(ii+1) + rem;
-									text = text.substring(0,ii);
-									if(i!=row)
-										sum++; //make up for the consumed char
+									text = text.substring(0, ii+1);
 									break;
 								}else if(c == '-') {
-									if(ii<text.length()-1) {
+									if(ii<text.length()-1) { //if the - was not the char too long
 										//keep the - on this line
 										rem = text.substring(ii+1) + rem;
 										text = text.substring(0, ii+1);
-									}else {
+									}else { //otherwise we have to put it on the next line
 										rem = text.substring(ii) + rem;
 										text = text.substring(0, ii);
 									}
 									break;
 								}
 							}
-							if(ii == -1) { //no break character found, split the word
+							if(ii == -1) //no break character found, split the word
 								wordSplit = true;
-							}
-						}if(wordSplit){
+						}if(wordSplit) {
 							int length = text.length();
-							rem = text.charAt(length-1) + rem;
-							text = text.substring(0, length-1);
+							//if that character was a new line, just leave it on the text string to
+							//get counted then consumed
+							if(text.charAt(length-1) != '\n') {
+								//put a character from text back onto the remainder
+								rem = text.charAt(length-1) + rem;
+								text = text.substring(0, length-1);
+							}
 						}
 					}
 					if(i!=row)
@@ -580,9 +585,14 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 							}
 						}//otherwise we can just remove the last added character
 						if(wordSplit) {
-							int length = texts[i].length();
-							rem = texts[i].charAt(length-1) + rem;
-							texts[i] = texts[i].substring(0, length-1);
+							//if that character was a new line, consume it
+							if(texts[i].charAt(texts[i].length()-1) == '\n')
+								texts[i] = texts[i].substring(0, texts[i].length()-1);
+							else {
+								int length = texts[i].length();
+								rem = texts[i].charAt(length-1) + rem;
+								texts[i] = texts[i].substring(0, length-1);
+							}
 						}
 						
 						//shift modifications

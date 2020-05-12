@@ -107,6 +107,14 @@ public class GridFormatter {
 		//should check to resize even if the value at the key was null
 		boolean removed = gridComponents.containsKey(toRemove);
 		gridComponents.remove(toRemove);
+		if(gridComponents.size() == 0) {
+			//if there are no more, we need the dimensions to be 0,0
+			gridDim.width = 0;
+			gridDim.height = 0;
+			return removed;
+		}
+		
+		//otherwise we will have to find the new maxes to resize to
 		if(removed && resize && gridDim.width>x && gridDim.height>y) {
 			int maxX=0, maxY=0;
 			boolean resized = true;

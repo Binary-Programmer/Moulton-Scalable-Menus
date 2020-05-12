@@ -7,7 +7,18 @@ import java.util.LinkedList;
 import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.ExpressionSolver;
+import moulton.scalable.containers.MenuManager;
 
+/**
+ * A super class for all pop ups. The {@link MenuManager} will give precedence to the popup if there is one
+ * set ({@link MenuManager#setPopup(Popup)}). The pop up holds a {@link Panel} that all its components can
+ * be components of. That root panel can be retrived by {@link #getBase()}. <p>
+ * If {@link #x} or {@link #y} are left unspecified, then the pop up will be centered on that axis within
+ * the container. The popup can draw a background over the other components from the main menu, the color
+ * of which is specified by {@link #blanketBackground}. Any components belonging to the popup that need
+ * touch sensitivity can be added to {@link #touchCheckList}.
+ * @author Matthew Moulton
+ */
 public class Popup {
 	/**The root panel of this popup.
 	 * @see #getBase()*/

@@ -65,8 +65,11 @@ public class PolygonalButton extends RadioButton{
 			ypoints[i] = yy + solveString(ys[i], ww, hh);
 		}
 		
-		g.setColor(getFillColor());
-		g.fillPolygon(xpoints, ypoints, numberOfPoints);
+		Color fillColor = getFillColor();
+		if(fillColor != null) {
+			g.setColor(getFillColor());
+			g.fillPolygon(xpoints, ypoints, numberOfPoints);
+		}
 		if(outline){
 			g.setColor(Color.BLACK);
 			if(!editable)

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.security.InvalidParameterException;
+import java.util.Collection;
 
 import moulton.scalable.utils.MenuComponent;
 
@@ -11,7 +12,8 @@ import moulton.scalable.utils.MenuComponent;
  * A subclass of {@link PanelPlus}. Built to hold a variable number of elements in the list. These elements
  * must be of type {@link MenuComponent}, whether they be panels or individual components. Elements can be
  * added when the components set it parent, calling {@link #addComponent(MenuComponent, int)}. Elements can
- * be removed to the list by {@link #removeComponent(int, boolean)}.
+ * be removed to the list by {@link #removeComponent(int, boolean)}. All components can be removed from the
+ * list by {@link #clearComponents()}.
  * @author Matthew Moulton
  */
 public class ListPanel extends PanelPlus {
@@ -62,7 +64,7 @@ public class ListPanel extends PanelPlus {
 	 * location in that list, displacing other elements if necessary. The x-value of the component will
 	 * be discarded.<p>
 	 * This method calls {@link #addComponent(MenuComponent, int)} to store the component.
-	 * @param x an unused value
+	 * @param x an unused value. Included so this method can override the super method.
 	 * @param y the location on the list that the component should be stored
 	 */
 	@Override
@@ -74,7 +76,7 @@ public class ListPanel extends PanelPlus {
 	 * The ListPanel stores elements in a vertical list. If there is an element at the given y-value, it
 	 * will be removed. The x-value is unused.<p>
 	 * This method calls {@link #removeComponent(int, boolean)} to perform the deletion.
-	 * @param x an unused value
+	 * @param x an unused value. Included so this method can override the super method.
 	 * @param y where on the list the component should be deleted from
 	 * @return whether the component at the specified list index (y-value) was removed
 	 */
@@ -89,6 +91,7 @@ public class ListPanel extends PanelPlus {
 	 * @param comp the component to be added
 	 * @param listIndex the index of the vertical list to add the component at
 	 * @return whether the component was successfully added
+	 * @see #removeComponent(int, boolean)
 	 */
 	public boolean addComponent(MenuComponent comp, int listIndex) {
 		if(listIndex < 0)
@@ -113,6 +116,8 @@ public class ListPanel extends PanelPlus {
 	 * @param listIndex the index of the vertical list to remove from
 	 * @param pull whether this deletion should pull successive elements down one index
 	 * @return whether the component was successfully removed
+	 * #see {@link #addComponent(MenuComponent, int)}
+	 * #see {@link #clearComponents()}
 	 */
 	public boolean removeComponent(int listIndex, boolean pull) {
 		boolean remove = grid.removeComponent(0, listIndex, !pull);
@@ -130,6 +135,21 @@ public class ListPanel extends PanelPlus {
 			grid.removeComponent(0, listIndex, true);
 		}
 		return true;
+	}
+	
+	/**
+	 * Clears all held components in the grid from this list.
+	 */
+	public void clearComponents() {
+		Collection<MenuComponent> comps = grid.getHeldComponents();
+		if(comps.isEmpty())
+			return;
+		
+		//the linked list is the actual collection, so we can clear it
+		comps.clear();
+		//we have to tell the formatter to resize though
+		grid.addComponent(null, 0, 0);
+		grid.removeComponent(0, 0, true);
 	}
 	
 	/**

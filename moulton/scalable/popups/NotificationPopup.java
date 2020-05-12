@@ -6,17 +6,44 @@ import java.awt.FontMetrics;
 import java.awt.image.BufferedImage;
 
 import moulton.scalable.clickables.Button;
+import moulton.scalable.containers.MenuManager;
 import moulton.scalable.geometrics.Line;
 import moulton.scalable.texts.Alignment;
 import moulton.scalable.texts.Caption;
 
+/**
+ * This is an example of what can be done with popups. Sometimes the user needs to be notified of some event
+ * or information before they proceed to the next action, and this popup fulfills this purpose. Admittedly
+ * its design does not allow for much flexibility: the constructor calls an init method that creates the
+ * contents of the popup on its base panel.
+ * @author Matthew Moulton
+ */
 public class NotificationPopup extends Popup {
 
+	/**
+	 * @param text the text that is the notification
+	 * @param okId the ID that should be used for the accept and exit buttons. <i>*This ID should be used to
+	 * remove the popup from the MenuManager ({@link MenuManager#setPopup(Popup)}) as an event in 
+	 * {@link MenuManager#clickableAction(Clickable)} for this popup to function properly.*</i>
+	 * @param title the title of the popup. Set to null for no title.
+	 * @param font the font of the text on the popup.
+	 * @param exitButton whether an x button in the top right corner should be included in the popup.
+	 */
 	public NotificationPopup(String text, String okId, String title, Font font, boolean exitButton) {
 		super(null, null, Color.WHITE);
 		init(text, okId, title, font, exitButton);
 	}
-	
+	/**
+	 * @param text the text that is the notification
+	 * @param okId the ID that should be used for the accept and exit buttons. <i>*This ID should be used to
+	 * remove the popup from the MenuManager ({@link MenuManager#setPopup(Popup)}) as an event in 
+	 * {@link MenuManager#clickableAction(Clickable)} for this popup to function properly.*</i>
+	 * @param title the title of the popup. Set to null for no title.
+	 * @param font the font of the text on the popup.
+	 * @param x the x location of the popup
+	 * @param y the y location of the popup
+	 * @param exitButton whether an x button in the top right corner should be included in the popup.
+	 */
 	public NotificationPopup(String text, String okId, String title, Font font, String x, String y, boolean exitButton) {
 		super(x, y, null, null, Color.WHITE);
 		init(text, okId, title, font, exitButton);
@@ -82,11 +109,20 @@ public class NotificationPopup extends Popup {
 		this.height = ""+(doubleHeight*3 + linesOfText*fontHeight);
 	}
 	
+	/**
+	 * Finds a natural word break in the given string text. The search for the break index starts at the
+	 * index specified by breakFrom then continues going backwards at most to the startIndex.
+	 * @param text the text that needs to be broken
+	 * @param startIndex the earliest index that breaks could appropriately be found at
+	 * @param breakFrom the index where the search for breaks should start
+	 * @return the index found where the text should break. If no break character is located within the
+	 * proper boundaries, breakFrom is returned.
+	 */
 	protected int findNaturalBreak(String text, int startIndex, int breakFrom) {
 		int ii = breakFrom;
 		for(; ii>startIndex; ii--) {
 			char c = text.charAt(ii);
-			if(c == ' ' || c == '-')
+			if(c == ' ' || c == '-' || c == '\n')
 				break;
 		}
 		if(ii == startIndex) //no space char found
