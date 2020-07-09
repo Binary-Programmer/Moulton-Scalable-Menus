@@ -9,7 +9,7 @@ import moulton.scalable.containers.Panel;
 /**
  * The parent class for all components to fit inside of a parent panel. Each component is designed to be
  * scalable. The size of text-based components are scaled by height unless disabled by a parent Panel
- * with {@link Panel#setTextResize(boolean)}.
+ * with {@link Panel#setTextResize(Boolean)}.
  * @author Matthew Moulton
  */
 public abstract class MenuComponent {

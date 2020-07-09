@@ -8,7 +8,7 @@ import moulton.scalable.utils.MenuComponent;
 
 /**
  * Ancestor class for components that are clickable. These include buttons and text boxes. All subclasses should define {@link #clickBoundary}
- * when convenient to (usually during rendering) or else it won't be clickable. This can be done with {@link #defineClickBoundary(int[], int[])}.
+ * when convenient to (usually during rendering) or else it won't be clickable. This can be done with {@link #defineClickBoundary(int[][])}.
  * <p>Components default to being deselected upon mouse release. However, this can be overridden by setting {@link #isDeselectedOnRelease()}
  * to false.
  * @author Matthew Moulton
@@ -97,7 +97,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * Defines the {@link #clickBoundary} from the given. Defining the click boundary can easily be done during rendering
 	 * since the component needs to be rendered before it can be clicked.
-	 * @param clickBoundary
+	 * @param clickBoundary the boundary of this component where each index is a vertex array containing x and y
 	 */
 	public void defineClickBoundary(int[][] clickBoundary) {
 		this.clickBoundary = clickBoundary;

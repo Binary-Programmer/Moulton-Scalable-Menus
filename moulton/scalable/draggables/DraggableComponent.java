@@ -4,7 +4,7 @@ import java.awt.MenuComponent;
 
 /**
  * A type of {@link MenuComponent} that can be mouse dragged by the user and thus needs to be responsive in that
- * regard through use of {@link #drag(int, int)}. 
+ * regard through use of {@link #drag(double, double)}.
  * @author Matthew Moulton
  */
 public interface DraggableComponent{

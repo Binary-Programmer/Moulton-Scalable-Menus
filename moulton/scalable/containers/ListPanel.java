@@ -42,10 +42,9 @@ public class ListPanel extends PanelPlus {
 	 * @param y the integer y coordinate this panel should appear on its parent panel
 	 * @param fullWidth the entire width of the panel. In general, intended to be greater than the shown width,
 	 * determined at run time by the space on the grid allotted to this panel.
-	 * determined at run time by the space on the grid allotted to this panel.
 	 * @param color the background color for the box when editable
 	 */
-	public ListPanel(String rowHeight, Panel parent, int x, int y, String fullWidth, String fullHeight, Color color) {
+	public ListPanel(String rowHeight, Panel parent, int x, int y, String fullWidth, Color color) {
 		super(parent, x, y, fullWidth, "0", color);
 		this.rowHeight = rowHeight;
 	}

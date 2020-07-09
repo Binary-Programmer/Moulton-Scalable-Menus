@@ -245,8 +245,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	/**
 	 * Sets the total number of offsets for the scroll bar. This method is useful for more internal
 	 * workings of the scroll bar. It will set the new {@link #totalOffs}, decrease {@link #offset}
-	 * if it is too high, then {@link #updateScrollButtons()}. <p>
-	 * This method does not maintain the place of offset like {@link #setTotalOffsWithPull(int)}.
+	 * if it is too high, then {@link #updateScrollButtons()}.
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
 	 */
 	public void setTotalOffs(int total) {

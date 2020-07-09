@@ -43,6 +43,7 @@ public abstract class MenuManager {
 	protected Panel menu;
 	/**A popup that should be drawn on top of the {@link #menu}. If the popup is set (default is null), it will take precedence
 	 * over the menu and take the action events such as {@link #mousePressed} and {@link #mouseScrolled(int, int, int)}.
+	 * @see #getPopup()
 	 * @see #setPopup(Popup)*/
 	protected Popup popup = null;
 	/**The container for the menus to manage.*/
@@ -51,7 +52,7 @@ public abstract class MenuManager {
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
 	/**mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
-	 * draggable components through {@link #mouseMoved(int, int)} and {@link DraggableComponent#drag(int, int)}
+	 * draggable components through {@link #mouseMoved(int, int)} and {@link DraggableComponent#drag(double, double)}
 	 * to be the location of the mouse at the point of last update.*/
 	protected double mouseX, mouseY;
 	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link #mouseX}, {@link #mouseY}).
@@ -167,8 +168,7 @@ public abstract class MenuManager {
 	
 	/**
 	 * Call this when the mouse is scrolled. Positive values are down, and negative values are up.
-	 * The new change will be summed with the built up change in {@link #mouseScroll}, and the total will
-	 * be passed to the scroll bar of the relevant touched {@link ScrollableComponent}.
+	 * The scroll will be passed to the scroll bar of the relevant touched {@link ScrollableComponent}.
 	 * @param mouseX the x-position of the mouse when the scrolling occurred
 	 * @param mouseY the y-position of the mouse when the scrolling occurred
 	 * @param scrollAmount the amount that the mouse is scrolled.
@@ -191,7 +191,6 @@ public abstract class MenuManager {
 			return;
 		
 		toScroll.setOffset(toScroll.getOffset()+scrollAmount*toScroll.getScrollRate());
-		scrollAmount = 0;
 	}
 	
 	/**
@@ -373,10 +372,20 @@ public abstract class MenuManager {
 		return menu;
 	}
 	
+	/**
+	 * Gets the current {@link #popup} for this menu. Only one popup can be active at a time.
+	 * @see #setPopup(Popup)
+	 * @return the current popup
+	 */
 	public Popup getPopup() {
 		return popup;
 	}
 	
+	/**
+	 * Sets the {@link #popup} for this menu. Only one popup can be active at a time.
+	 * @see #getPopup()
+	 * @param pop the popup to be set for this menu manager.
+	 */
 	public void setPopup(Popup pop) {
 		this.popup = pop;
 	}

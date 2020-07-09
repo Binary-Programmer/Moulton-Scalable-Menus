@@ -303,8 +303,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 
 	/**
 	 * Sets the scroll bar so the text history can show more than just recent messages. <br>
-	 * Will also override {@link ScrollBar#pullNegative} and {@link ScrollBar#inverseRender} to coincide
-	 * with {@link #addToTop}.
+	 * Will also call {@link #forceScrollBarMatch()} to coincide with {@link #addToTop}.
 	 * @param bar the scroll bar to replace {@link #bar}.
 	 */
 	public void setScrollBar(ScrollBar bar) {

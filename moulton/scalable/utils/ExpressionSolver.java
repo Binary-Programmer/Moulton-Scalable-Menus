@@ -250,8 +250,8 @@ public class ExpressionSolver {
 	}
 	
 	/**
-	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and is not
-	 * < 0.0. Therefore, this method will determine if there is a leading negation sign.
+	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and does not
+	 * less than 0.0. Therefore, this method will determine if there is a leading negation sign.
 	 * @param d the double to test
 	 * @return whether the double to test is negative.
 	 */

@@ -8,6 +8,7 @@ import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.ExpressionSolver;
 import moulton.scalable.containers.MenuManager;
+import moulton.scalable.containers.Container;
 
 /**
  * A super class for all pop ups. The {@link MenuManager} will give precedence to the popup if there is one
@@ -141,12 +142,12 @@ public class Popup {
 		
 		//if x or y is null, then the popup will be centered
 		if(this.x != null) {
-			if(!this.x.isEmpty() && !this.x.isBlank())
+			if(!this.x.isEmpty())
 				x = (int)solver.solveString(this.x);
 		}else //centers
 			x = (width-w)/2;
 		if(this.y != null) {
-			if(!this.y.isEmpty() && !this.y.isBlank())
+			if(!this.y.isEmpty())
 				y = (int)solver.solveString(this.y);
 		}else //centers
 			y = (height-h)/2;

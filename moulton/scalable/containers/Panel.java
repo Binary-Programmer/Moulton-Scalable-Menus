@@ -15,8 +15,8 @@ import moulton.scalable.utils.MenuComponent;
  * constructor, which will either call {@link #addToGrid(MenuComponent, int, int)} if the component is to reside in a gridded fashion, or will add itself
  * to this Panel's {@link #comps}.<p>
  * One can use the {@link #createRoot(Color)} method to create a simple menu panel. For any panel, {@link #setColor(Color)} can be used to set its backdrop
- * color. Other methods like {@link #setFrame(String, String)}, {@link #setMargin(String, String)}, {@link #setOutline(boolean)}, and {@link #setTextResize(boolean)}
- * can further be used to customize the Panel.
+ * color. Other methods like {@link #setOutline(boolean)}, and {@link #setTextResize(Boolean)} can further be used to customize the Panel. The GridFormatter
+ * (saved as {@link #grid}) is in charge of formatting the details of the grid, such as margin, frame, and column or row weights.
  * @author Matthew Moulton
  */
 public class Panel extends MenuComponent {

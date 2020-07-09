@@ -97,7 +97,7 @@ public class GridFormatter {
 		this.yFrame = yFrame;
 	}
 	
-	/**Deletes the component found at the location (x,y) in {@link #grid}.
+	/**Deletes the component found at the location (x,y) in {@link #gridComponents}.
 	 * @param x the x-value of the component to remove
 	 * @param y the y-value of the component to remove
 	 * @param resize whether the grid should check for a resize after the deletion.
