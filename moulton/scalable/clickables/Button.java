@@ -11,8 +11,10 @@ import moulton.scalable.utils.MenuComponent;
 import moulton.scalable.containers.MenuManager;
 
 /**
- * A menu component that is a simple rectangular button and is a subclass of {@link RadioButton}. Although it is a sublass
- * of RadioButton it is only used as a radio button when the {@link RadioButton#group} is set to a not-null value.<p>
+ * A menu component that is a simple rectangular button with optional frontal text saved as {@link #text}.
+ * Button is a subclass of {@link RadioButton}, but only acts as a radio button when the {@link RadioButton#group}
+ * is set to a not-null value.
+ * <p>
  * If this button is registered on the {@link MenuManager}'s touch check list, then it will be responsive to mouse
  * touching. By default, upon mouse touch the outline will toggle, but if {@link RadioButton#colorTouched} is set from
  * non-null, then the fill color of the button will change instead.

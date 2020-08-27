@@ -7,7 +7,8 @@ import moulton.scalable.containers.MenuManager;
 
 /**
  * A button where only one in the group can be clicked at a time. Used in conjunction with {@link RadioGroup}. If
- * this button has no group, then its behavior is that of a normal button: being freely clickable while editable. <p>
+ * this button has no group, then its behavior is that of a normal button: being freely clickable while editable.
+ * <p>
  * As a subclass of {@link Clickable} which implements {@link TouchResponsiveComponent}, this button and subclasses
  * can be responsive to mouse touching. However, simply creating the button and adding it to the Panel tree is 
  * insufficient for this functionality. The button must also be added to the {@link MenuManager}'s touch list by

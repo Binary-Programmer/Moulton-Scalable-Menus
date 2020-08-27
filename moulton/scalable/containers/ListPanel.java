@@ -7,13 +7,15 @@ import java.security.InvalidParameterException;
 import java.util.Collection;
 
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.containers.Panel;
 
 /**
  * A subclass of {@link PanelPlus}. Built to hold a variable number of elements in the list. These elements
  * must be of type {@link MenuComponent}, whether they be panels or individual components. Elements can be
- * added when the components set it parent, calling {@link #addComponent(MenuComponent, int)}. Elements can
- * be removed to the list by {@link #removeComponent(int, boolean)}. All components can be removed from the
- * list by {@link #clearComponents()}.
+ * added when components set their parent, which thereby calls {@link #addComponent(MenuComponent, int)}.
+ * Elements can be removed from the list by {@link #removeComponent(int, boolean)}. All components can be
+ * removed from the list by {@link #clearComponents()}. The length of the list may be ascertained by
+ * {@link #getListLength()}.
  * @author Matthew Moulton
  */
 public class ListPanel extends PanelPlus {
@@ -134,6 +136,15 @@ public class ListPanel extends PanelPlus {
 			grid.removeComponent(0, listIndex, true);
 		}
 		return true;
+	}
+	
+	/**
+	 * The components in the list are saved in {@link Panel#grid}. Thus, calling this method returns
+	 * the height of that grid.
+	 * @return the height of the grid, or the length of the list held by this panel
+	 */
+	public int getListLength() {
+		return grid.getGridHeight();
 	}
 	
 	/**

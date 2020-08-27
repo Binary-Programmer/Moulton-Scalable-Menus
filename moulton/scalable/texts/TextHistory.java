@@ -13,7 +13,17 @@ import moulton.scalable.utils.MenuComponent;
 
 /**
  * A menu component that holds a history of text. A scroll bar can be added to see more than is able to be shown in the
- * specified rectangle. Even if no scroll bar is added, the text history is still functional, just static.
+ * specified rectangle. Even if no scroll bar is added, the text history is still functional, just static. The scroll bar
+ * should be saved as {@link #bar}. New lines can be added by use of {@link #addToList(String...)}.
+ * <p>
+ * A couple of optional features specific to text history include:<ul>
+ * <li>{@link #addToTop} defines the view mode, or in other words, whether most recent messages should be displayed at the top or the bottom.
+ * <li>{@link #maxMessages} limits how many messages the text history can hold at a time. If more are added, older lines are deleted.
+ * <li>{@link #textDemarkation} decides whether each entry should be separated by a separating line similar to an outline.
+ * <li>{@link #wordSplitting} defines whether words can be split on ends of lines, or whether lines can only split on break characters.
+ * </ul><p>
+ * Although it is highly recommended to add entries to the text history by the provided method, if the list needs to be accessed directly by
+ * a subclass, {@link #history} is where the entries are internally saved.
  * @author Matthew Moulton
  */
 public class TextHistory extends MenuComponent implements ScrollableComponent{

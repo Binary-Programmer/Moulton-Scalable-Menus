@@ -227,7 +227,8 @@ public abstract class MenuManager {
 		return null; //nothing found here...
 	}
 	
-	/**Called when the component lost focus and needs to report changes. After this is called to ensure
+	/**
+	 * Called when the component lost focus and needs to report changes. After this is called to ensure
 	 * no component inconsistencies, {@link #lostFocusAction(Clickable)} is called. This will be called
 	 * before the component loses focus.
 	 * @param c the Clickable menu component that lost focus and needs to report changes to its menu
@@ -250,30 +251,35 @@ public abstract class MenuManager {
 	 * externally. 
 	 * @param key the key that was pressed
 	 */
-	public void keyTyped(char key){
+	public void keyTyped(char key) {
 		if(clicked instanceof HotkeyTextComponent) {
 			HotkeyTextComponent c = (HotkeyTextComponent)clicked;
-			//letters typed while control is held are not the same values as without
-			//for example, ctr-a is 1, ctr-b is 2, whereas a is 97 and b is 98
-			if(key == (char)3) { //copy
-				Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
-				board.setContents(new StringSelection(c.copy()), null);
-				return;
-			}else if(key == (char)24) { //cut
-				Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
-				board.setContents(new StringSelection(c.cut()), null);
-				return;
-			}else if(key == (char)22) { //paste
-				try {
-					Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this);
-					c.paste((String)t.getTransferData(DataFlavor.stringFlavor));
-				}catch(UnsupportedFlavorException ue) {
-					System.err.println("The clipboard contents were not of text type!");
-				}catch(Exception e) {
-					System.err.println("There was an error in getting the contents of the clipboard!");
-					e.printStackTrace(System.err);
+			if(c.isHotkeyEnabled()) {
+				//letters typed while control is held are not the same values as without
+				//for example, ctr-a is 1, ctr-b is 2, whereas a is 97 and b is 98
+				if(key == (char)3) { //copy
+					Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
+					board.setContents(new StringSelection(c.copy()), null);
+					return;
+				}else if(key == (char)24) { //cut
+					Clipboard board = Toolkit.getDefaultToolkit().getSystemClipboard();
+					board.setContents(new StringSelection(c.cut()), null);
+					return;
+				}else if(key == (char)22) { //paste
+					try {
+						Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this);
+						c.paste((String)t.getTransferData(DataFlavor.stringFlavor));
+					}catch(UnsupportedFlavorException ue) {
+						System.err.println("The clipboard contents were not of text type!");
+					}catch(Exception e) {
+						System.err.println("There was an error in getting the contents of the clipboard!");
+						e.printStackTrace(System.err);
+					}
+					return;
+				}else if(key == (char)1) { //select all
+					c.selectAll();
+					return;
 				}
-				return;
 			}
 		}
 		//if none of the hotkeys were valid, continue with normal functioning

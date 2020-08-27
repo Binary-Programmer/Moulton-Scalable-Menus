@@ -15,6 +15,21 @@ import moulton.scalable.draggables.ScrollableComponent;
 /**
  * This is a text box that users can enter data into, the available characters for which is defined by {@link TextFormat}. This class also has
  * the functionality of mouse dragging to select multiple characters to be manipulated, and thereby offers support for copy, cut, and paste functions.
+ * <p>
+ * The text that is contained in the box is saved as {@link #message}. A hint (if any) is saved as {@link #hint}. If a scroll bar is to be
+ * associated with this text box, use {@link #textScroller}.
+ * <p>
+ * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:<ul>
+ * <li>{@link #wordSplitting} defines whether lines can be split on words or only on break characters.
+ * <li>{@link #virtualSpace} decides whether the text box can have text in its message that is saved but not shown
+ * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is in virtual space.
+ * <li>{@link #charMax} sets whether the text box has a maximum number of characters.
+ * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for security, for example: password boxes).
+ * <li>{@link #deselectOnEnter} determines whether an input of enter will deselect the text box.
+ * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message. Not recommended to be true if {@code deselectOnEnter} is true.
+ * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hotkeys that this enables are defined by {@link HotkeyTextComponent}.
+ * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set to clicked.
+ * </ul>
  * @author Matthew Moulton
  */
 public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent, ScrollableComponent {
@@ -65,12 +80,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getTextScroller()
 	 * @see #setTextScroller(ScrollBar)*/
 	protected ScrollBar textScroller = null;
-	/**The character to replace the actual message content. The specified character will be repeated to match the
-	 * length of the message when shown. If null, no mask will be applied. If the character is invisible (value less
-	 * than 32), then an empty string will be returned. Defaults to null.
-	 * @see #setCharMask(Character)
-	 * @see #getShowMessage()*/
-	protected Character charMask = null;
 	
 	//click and selection fields
 	/**The index of the mouse click. When the user drags the mouse, clickIndex stays the same but {@link #index} changes. The selection
@@ -89,11 +98,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getAllowWordSplitting()
 	 * @see #allowWordSplitting(boolean)*/
 	protected boolean wordSplitting = false;
-	/**If the text box {@link #getAllowVirtualSpace()} and some of the message is cut off in display, this will
-	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
-	 * @see #setCutOffMark(boolean)
-	 * @see #hasCutOffMark()*/
-	protected boolean cutOffMark = true;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
 	 * @see #isHotkeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
@@ -102,10 +106,21 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * the default.
 	 * @see #setCharLimit(int)*/
 	protected int charMax = -1;
+	/**The character to replace the actual message content. The specified character will be repeated to match the
+	 * length of the message when shown. If null, no mask will be applied. If the character is invisible (value less
+	 * than 32), then an empty string will be returned. Defaults to null.
+	 * @see #setCharMask(Character)
+	 * @see #getShowMessage()*/
+	protected Character charMask = null;
 	/**Whether input can be put outside of the visible box. Defaults to true.
 	 * @see #getAllowVirtualSpace()
 	 * @see #allowVirtualSpace(boolean)*/
 	protected boolean virtualSpace = true;
+	/**If the text box {@link #getAllowVirtualSpace()} and some of the message is cut off in display, this will
+	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
+	 * @see #setCutOffMark(boolean)
+	 * @see #hasCutOffMark()*/
+	protected boolean cutOffMark = true;
 	/**Whether this text box should accept 'enter' or 'return' input from the user. Defaults to false.
 	 * @see #getAcceptEnter()
 	 * @see #acceptEnter(boolean)*/
@@ -114,6 +129,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getDeselectOnEnter()
 	 * @see #deselectOnEnter(boolean)*/
 	protected boolean deselectOnEnter = true;
+	/**Whether the entire contents of the text box should be selected when the box is set to clicked from
+	 * a non-clicked state. Defaults to false.
+	 * @see #getClickSelectsAll()
+	 * @see #setClickSelectsAll(boolean)*/
+	protected boolean clickSelectsAll = false;
 	
 	//last font metrics used
 	private FontMetrics fontMetrics;
@@ -148,6 +168,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	public TextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
 		super(id,parent,x,y);
+		if(message == null)
+			message = "";
 		this.message = message;
 		this.color = color;
 		this.font = font;
@@ -467,7 +489,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean isClicked = getClicked(); //we should only shift to the blinker if the box is selected
 		//the string that will be displayed. usually message but sometimes the hint
 		String rem;
-		if(message!=null && message.length()>0 || hint==null) {
+		//message should always be not null. Even if it is empty, it should still be not null
+		if(message.length()>0 || hint==null) {
 			rem = getShowMessage();
 			g.setColor(Color.BLACK);
 			messageShown = true;
@@ -851,6 +874,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @param string the string provided as a replacement
 	 */
 	public synchronized void setMessage(String string) {
+		if(string == null)
+			string = "";
 		if(format != null)
 			message = format.parseText(string);
 		else
@@ -1009,29 +1034,33 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	@Override
 	public void setClicked(boolean clicked, int mouseX, int mouseY) {
-		this.clicked = clicked;
-		if(clicked){
-			timeLast = System.currentTimeMillis();
-			showBlinker = true;
-		}else{
-			showBlinker = false;
-		}
-		
 		Polygon clickBox = new Polygon(clickBoundary[0], clickBoundary[1], clickBoundary[0].length);
 		if(clicked && clickBox.contains(mouseX, mouseY))
 			index = findIndex(mouseX, mouseY);
 		else //just put the blinker at the end if the mouse position isn't found
 			index = message.length();
 		
-		if(clicked) {
-			clickIndex = index;
-			selection = false;
+		if(clicked){
+			timeLast = System.currentTimeMillis();
+			showBlinker = true;
 			mouseClickXY[0] = mouseX;
 			mouseClickXY[1] = mouseY;
-		}else {
+			
+			//if the box wasn't clicked prior, select for all (if enabled)
+			if(clickSelectsAll && !this.clicked) {
+				clickIndex = 0;
+				index = message.length();
+				selection = true;
+			}else { //otherwise just set the clickIndex for dragging and disable selections
+				clickIndex = index;
+				selection = false;
+			}
+		}else{
 			//disable the selection
+			showBlinker = false;
 			selection = false;
 		}
+		this.clicked = clicked;
 	}
 
 	/**
@@ -1111,6 +1140,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		}
 	}
 	
+	/**
+	 * Creates a selection if there is not one already that contains all of the text in this box.
+	 */
+	@Override
+	public void selectAll() {
+		if(!selection)
+			selection = true;
+		clickIndex = 0;
+		index = message.length();
+	}
+	
 	@Override
 	public boolean isDeselectedOnRelease() {
 		return false;
@@ -1173,9 +1213,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	/**
-	 * Returns whether the hotkey commands, copy, cut, paste, should work on this text box.
+	 * Returns whether the hotkey commands should work on this text box.
 	 * @return {@link #hotkeyEnabled}
 	 */
+	@Override
 	public boolean isHotkeyEnabled() {
 		return hotkeyEnabled;
 	}
@@ -1284,6 +1325,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public boolean getAllowWordSplitting() {
 		return wordSplitting;
 	}
+	
 	@Override
 	public ScrollBar getWidthScrollBar() {
 		return textScroller;
@@ -1307,6 +1349,22 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public boolean hasCutOffMark() {
 		return cutOffMark;
 	}
+	
+	/**
+	 * Sets whether all the text box's contents should be selected when it is first clicked.
+	 * @param clickSelects the value to replace {@link #clickSelectsAll}
+	 */
+	public void setClickSelectsAll(boolean clickSelects) {
+		this.clickSelectsAll = clickSelects;
+	}
+	/**
+	 * Returns whether all the characters in the text box are selected when this box is first clicked.
+	 * @return the value of {@link #clickSelectsAll}
+	 */
+	public boolean getClickSelectsAll() {
+		return clickSelectsAll;
+	}
+	
 	@Override
 	public int[][] getActiveScrollCoordinates() {
 		return clickBoundary;
