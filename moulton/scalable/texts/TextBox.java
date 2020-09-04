@@ -60,15 +60,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	//text control fields
 	/**Whether or not the blinker is shown. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
-	 * by {@link #timer} and {@link #timeLast}. */
+	 * by {@link #timer} and {@link #timeLast}.
+	 * @see #refreshBlinker()*/
 	protected boolean showBlinker = false;
 	/**The time in milliseconds the blinker should wait before toggling on/off. Default value is 1000 ms = 1 sec. -1 indicates that the
 	 * blinker should not toggle */
 	protected int blinkTime = 1000;
 	/**The last time the time was added onto timer */
-	private long timeLast;
+	protected long timeLast;
 	/**The sum of time differences since last blink toggle of on/off. */
-	private long timer;
+	protected long timer;
 	/**The point at which the blinker is in the message. Also the point at which any new input will be inserted */
 	protected int index = 0;
 	/**How much the index where the text box starts displaying is shifted. If the text box has more than one row,
@@ -135,7 +136,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #setClickSelectsAll(boolean)*/
 	protected boolean clickSelectsAll = false;
 	
-	//last font metrics used
+	/**The font metrics used by the Graphics object that was last rendered on*/
 	private FontMetrics fontMetrics;
 	
 	/**
@@ -420,7 +421,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Renders this text box with the provided graphics. If the box is displaying the message, is clicked, and
 	 * allows virtual text, it will shift the starting position ({@link #startShift}) to display where the blinker
-	 * would be placed.
+	 * would be placed. <p>
+	 * Calls . and . in the process. These can be overridden to easily adapt the functionality for subclasses.
 	 */
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
@@ -721,47 +723,19 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 		}
 		
-		for(int ii=0; ii<texts.length; ii++){
-			if(texts[ii]==null) //the text is done, move onto the next step
-				break;
-			switch(alignment){
-			case LEFT_ALIGNMENT:
-				g.drawString(texts[ii], x + underscoreWidth/2, y + hheight*ii + textOffset);
-				break;
-			case CENTER_ALIGNMENT:
-				g.drawString(texts[ii], x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2, y + hheight*ii + textOffset);
-				break;
-			case RIGHT_ALIGNMENT:
-				g.drawString(texts[ii], x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2), y + hheight*ii + textOffset);
-				break;
-			}
-		}
+		drawTextLines(g, texts, x, y, w, h, underscoreWidth, textOffset);
 
 		//show the blinker if the blinker has been placed and should be shown
-		if(setBlinker && showBlinker) {
-			int decrease = hheight - fontMetrics.getDescent();
-			int rowWidth = 0;
-			if(texts[blinkerRow] != null)
-				rowWidth = fontMetrics.stringWidth(texts[blinkerRow]);
-			g.setColor(Color.BLACK);
-			switch(alignment) {
-			case LEFT_ALIGNMENT:
-				g.fillRect(x +underscoreWidth/2 + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
-				break;
-			case CENTER_ALIGNMENT:
-				g.fillRect(x - rowWidth/2 + w/2 + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
-				break;
-			case RIGHT_ALIGNMENT:
-				g.fillRect(x + w - (rowWidth+underscoreWidth/2) + blinkerX, y + hheight*blinkerRow - decrease + textOffset, 2, hheight);
-				break;
-			}
-		}
+		int rowWidth = 0;
+		if(texts[blinkerRow] != null)
+			rowWidth = fontMetrics.stringWidth(texts[blinkerRow]);
+		drawBlinker(g, x, y, w, h, rowWidth, blinkerX, blinkerRow, underscoreWidth, textOffset);
 		
 		//show text cut off mark
 		if(cutOffMark && messageShown) {
 			int decrease = hheight - fontMetrics.getDescent();
 			if(endCutOff) 
-				g.drawLine(x+w-2, y + hheight*(texts.length-1) + + textOffset -decrease, x+w-2, (int)(y + hheight*texts.length + textOffset -decrease));
+				g.drawLine(x+w-2, y + hheight*(texts.length-1) + textOffset -decrease, x+w-2, (int)(y + hheight*texts.length + textOffset -decrease));
 			if(startShift>0)
 				g.drawLine(x+1, y + textOffset -decrease, x+1, y + hheight + textOffset -decrease);
 		}
@@ -837,6 +811,73 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			g.setColor(Color.WHITE);
 			g.drawString(texts[ii].substring(start,end), xOffs + fontMetrics.stringWidth(texts[ii].substring(0,start)),
 					y + hheight*ii + textOffset);
+		}
+	}
+	/**
+	 * Draws lines of text configured by the {@link #render(Graphics, int, int, int, int)} method onto the
+	 * specified Graphics object. Called by said render method.
+	 * @param g the graphics object to draw on
+	 * @param texts an array of the lines of texts
+	 * @param x the minimum x-value (the left side) of the text box
+	 * @param y the minimum y-value (the top side) of the text box
+	 * @param w the width of the text box
+	 * @param h the height of the text box
+	 * @param underscoreWidth the width of an underscore (_) according to the current {@link #fontMetrics}.
+	 * @param textOffset a value to correctly center the rows of text in the box. Calculated to be
+	 * fontMetrics.getAscent() + fontMetrics.getLeading() + (h-(texts.length*fontMetrics.getHeight()))/2.
+	 */
+	protected void drawTextLines(Graphics g, String[] texts, int x, int y, int w, int h, int underscoreWidth, int textOffset) {
+		int hheight = fontMetrics.getHeight();
+		for(int ii=0; ii<texts.length; ii++) {
+			if(texts[ii]==null) //the text is done, move onto the next step
+				break;
+			switch(alignment){
+			case LEFT_ALIGNMENT:
+				g.drawString(texts[ii], x + underscoreWidth/2, y + hheight*ii + textOffset);
+				break;
+			case CENTER_ALIGNMENT:
+				g.drawString(texts[ii], x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2, y + hheight*ii + textOffset);
+				break;
+			case RIGHT_ALIGNMENT:
+				g.drawString(texts[ii], x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2), y + hheight*ii + textOffset);
+				break;
+			}
+		}
+	}
+	/**
+	 * Draws the blinker at its correct position, computed by {@link #render(Graphics, int, int, int, int)}.
+	 * Draws onto the specified graphics object if the blinker should be shown ({@link #showBlinker}).
+	 * Called by said render method.
+	 * @param g the graphics object to draw on
+	 * @param x the minimum x-value (the left side) of the text box
+	 * @param y the minimum y-value (the top side) of the text box
+	 * @param w the width of the text box
+	 * @param h the height of the text box
+	 * @param rowWidth the width in pixels, of the row upon which the blinker should be drawn
+	 * @param blinkerX the offset of this blinker's x-value from the start of where the text should be drawn,
+	 * dependent upon the {@link #alignment}.
+	 * @param blinkerRow the row upon which the blinker should be drawn
+	 * @param underscoreWidth the width of an underscore (_) according to the current {@link #fontMetrics}
+	 * @param textOffset a value to correctly center the rows of text in the box. Calculated to be
+	 * fontMetrics.getAscent() + fontMetrics.getLeading() + (h-(texts.length*fontMetrics.getHeight()))/2.
+	 */
+	protected void drawBlinker(Graphics g, int x, int y, int w, int h, int rowWidth, int blinkerX, int blinkerRow, int underscoreWidth, int textOffset) {
+		int hheight = fontMetrics.getHeight();
+		if(showBlinker) {
+			int decrease = hheight - fontMetrics.getDescent();
+			g.setColor(Color.BLACK);
+			int drawY = y + hheight*blinkerRow - decrease + textOffset;
+			switch(alignment) {
+			case LEFT_ALIGNMENT:
+				g.fillRect(x + underscoreWidth/2 + blinkerX, drawY, 2, hheight);
+				break;
+			case CENTER_ALIGNMENT:
+				g.fillRect(x - rowWidth/2 + w/2 + blinkerX, drawY, 2, hheight);
+				break;
+			case RIGHT_ALIGNMENT:
+				g.fillRect(x + w - (rowWidth+underscoreWidth/2) + blinkerX, drawY, 2, hheight);
+				break;
+			}
 		}
 	}
 
@@ -936,11 +977,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Deletes the selection then removes characters from {@link #message} starting at {@link #index}.
 	 * @param chars the number of chars to be removed from the message. If there is a selection, 1 of
-	 * these characters will be used to delete it.
-	 * @param leftDelete whether to delete left or right from the starting index
+	 * these characters will be used to delete it. If chars is positive, characters will be deleted
+	 * from right to left (backspace). If chars is positive, characters will be deleted from left to
+	 * right (delete).
 	 */
 	@Override
-	public void removeMessage(int chars, boolean leftDelete) {
+	public void removeMessage(int chars) {
+		boolean leftDelete = chars >= 0;
+		if(!leftDelete)
+			chars *= -1;
+		
 		//deletes the selection if there is one
 		if(selection) {
 			int start, end;
@@ -959,7 +1005,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			setMessage(newMessage);
 			//set the new index where the deletion starts
 			index = start;
-			//then decrements the number of characters to delete before passing on to the super
+			//then decrements the number of characters to delete before passing on
 			if(chars>0)
 				chars--;
 			//also, there is no more selection since we just deleted it
@@ -996,6 +1042,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				temp += message.substring(right);
 			message = temp;
 		}
+		
+		refreshBlinker();
+	}
+	/**
+	 * Replaced by {@link #removeMessage(int)}
+	 * @param chars
+	 * @param leftDelete
+	 */
+	@Deprecated
+	public void removeMessage(int chars, boolean leftDelete) {
+		removeMessage((leftDelete? 1:-1) * chars);
 	}
 	
 	@Override
@@ -1167,12 +1224,22 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(index<0)	index = 0;
 		if(index>message.length())
 			index = message.length();
+		if(selection && index == clickIndex) //cease selection if nothing is contained
+			selection = false;
 		//reset the blink timer so the user can see where the index is
 		if(blinkTime != -1 && clicked) {
-			showBlinker = true;
-			timer = 0;
-			timeLast = System.currentTimeMillis();
+			refreshBlinker();
 		}
+	}
+	
+	/**
+	 * Shows the blinker. Tells the blinker that it should be shown again and that the timer should
+	 * be reset to now. Sets {@link #showBlinker} to true, among other things.
+	 */
+	protected void refreshBlinker() {
+		showBlinker = true;
+		timer = 0;
+		timeLast = System.currentTimeMillis();
 	}
 	
 	/**

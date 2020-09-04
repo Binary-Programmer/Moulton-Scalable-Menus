@@ -49,6 +49,7 @@ public abstract class MenuManager {
 	/**The container for the menus to manage.*/
 	protected Container cont;
 	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
+	 * @see #getClicked()
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
 	/**mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
@@ -56,7 +57,7 @@ public abstract class MenuManager {
 	 * to be the location of the mouse at the point of last update.*/
 	protected double mouseX, mouseY;
 	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link #mouseX}, {@link #mouseY}).
-	 * @see #mousePressed
+	 * @see #mousePressed(int, int)
 	 * @see #mouseReleased(int, int)*/
 	protected boolean mousePressed = false;
 	/**All of the components that the menu needs to check if touched every time the mouse moves
@@ -286,8 +287,8 @@ public abstract class MenuManager {
 		if(clicked instanceof TextInputComponent){
 			TextInputComponent textInputComp = (TextInputComponent) clicked;
 			//if it is a valid looking character, just append it
-			if(key == 8 || key == 127){ //backspace OR delete
-				textInputComp.removeMessage(1, key == 8);
+			if(key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE){ //backspace OR delete
+				textInputComp.removeMessage(key==8? 1:-1);
 			}else if(key == 10){ //enter
 				textInputComp.appendMessage("\n");
 				//check for focus removal
@@ -405,7 +406,7 @@ public abstract class MenuManager {
 	 * @param y the y-location of the mouse when clicked. Measured in pixels.
 	 */
 	public void setClicked(Clickable clicked, int x, int y) {
-		if(this.clicked != null) {//tell the old clicked that it has been replaced
+		if(this.clicked != null && clicked != this.clicked) {//tell the old clicked that it has been replaced
 			this.clicked.setClicked(false, x, y);
 			//also any lost focus actions triggered
 			componentLostFocus(this.clicked);
@@ -413,6 +414,14 @@ public abstract class MenuManager {
 		this.clicked = clicked;
 		if(clicked!=null) //tell the clicked that it has been clicked
 			clicked.setClicked(true, (int)mouseX, (int)mouseY);
+	}
+	
+	/**
+	 * Returns the currently selected clickable component.
+	 * @return {@link #clicked}
+	 */
+	public Clickable getClicked() {
+		return clicked;
 	}
 	
 	/**

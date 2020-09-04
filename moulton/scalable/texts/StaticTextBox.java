@@ -49,7 +49,7 @@ public class StaticTextBox extends TextBox {
 	 * and does nothing.
 	 */
 	@Override
-	public void removeMessage(int chars, boolean leftDelete) {}
+	public void removeMessage(int chars) {}
 	
 	/**
 	 * The user cannot modify the static text box by typing commands, so this method overrides the action of TextBox
