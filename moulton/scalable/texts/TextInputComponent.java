@@ -19,9 +19,9 @@ public interface TextInputComponent {
 	/**
 	 * When this component is selected and the menu manager receives delete key input from the user, this
 	 * component is notified through this method.
-	 * @param chars the number of characters requested to delete
-	 * @param leftDelete whether the text should be deleted left of the selection index (like the backspace
-	 * key) or to the right (like the delete key)
+	 * @param chars the number of characters requested to delete. If chars is positive, characters will be
+	 * deleted from right to left (backspace). If chars is positive, characters will be deleted from left
+	 * to right (delete).
 	 */
-	public void removeMessage(int chars, boolean leftDelete);
+	public void removeMessage(int chars);
 }
