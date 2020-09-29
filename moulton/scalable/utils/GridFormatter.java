@@ -2,12 +2,13 @@ package moulton.scalable.utils;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.HashMap;
 
 /**
  * GridFormatter will hold MenuComponents in a grid that can have variable margins, frames, and weights, then
- * will give the coordinate specifications for each component through {@link #findCompCoordinates(MenuComponent, int[])}.
+ * will give the coordinate specifications for each component through {@link #findCompCoordinates(MenuComponent, Rectangle)}.
  * @author Matthew Moulton
  * @see #setFrame(String, String)
  * @see #setMargin(String, String)
@@ -140,69 +141,69 @@ public class GridFormatter {
 	 * @param comp the component to look for in the grid
 	 * @param self the location and dimension of the container component in the render. Ordered as x, y, width, and height.
 	 * @return the pixel coordinates for the specified component to be rendered. Ordered as x, y, width, and height.*/
-	public int[] findCompCoordinates(MenuComponent comp, int[] self) {
+	public Rectangle findCompCoordinates(MenuComponent comp, Rectangle self) {
 		Point gridPoint = comp.getGridLocation();
 		//The component must be in a grid for the following calculations to work!
 		if(gridPoint!=null){
-			int details[] = {0, 0, 0, 0};
+			Rectangle details = new Rectangle();
 			//search through grid for this component
 			if (gridComponents.get(gridPoint) != comp) // not found!
 				return details;
 			//found @ gridPoint
 			
 			//find children components from self
-			int wholeWidth = self[2];
-			int wholeHeight = self[3];
+			int wholeWidth = self.width;
+			int wholeHeight = self.height;
 			ExpressionSolver solver = new ExpressionSolver(wholeWidth, wholeHeight);
 			//frame
 			if(xFrame!=null){
 				int frame = (int)solver.solveString(xFrame);
-				self[2] -= frame*2;
-				if(self[2]<0)
-					self[2] = 0;
+				self.width -= frame*2;
+				if(self.width<0)
+					self.width = 0;
 				else
-					self[0] += frame;
+					self.x += frame;
 			}
 			if(yFrame!=null){
 				int frame = (int)solver.solveString(yFrame);
-				self[3] -= frame*2;
-				if(self[3]<0)
-					self[3] = 0;
+				self.height -= frame*2;
+				if(self.height<0)
+					self.height = 0;
 				else
-					self[1] += frame;
+					self.y += frame;
 			}
 			//margins
 			int marginSize = 0;
 			if(xMargin!=null) {
 				marginSize = (int)solver.solveString(xMargin);
-				if(marginSize<0 || self[2]<1)
+				if(marginSize<0 || self.width<1)
 					marginSize = 0;
 			}
 			int numMargins = gridDim.width-1;
 			if(numMargins<0)
 				numMargins=0;
 			double totalWeight = findXWeights(gridDim.width);
-			details[0] = self[0] + (int)((self[2]-marginSize*numMargins)*
+			details.x = self.x + (int)((self.width-marginSize*numMargins)*
 					findXWeights(gridPoint.x)/totalWeight) + marginSize*gridPoint.x;
-			int endPoint = self[0] + (int)((self[2]-marginSize*numMargins)*
+			int endPoint = self.x + (int)((self.width-marginSize*numMargins)*
 					findXWeights(gridPoint.x+1)/totalWeight) + marginSize*(gridPoint.x+1);
-			details[2] = endPoint - details[0] - marginSize;
+			details.width = endPoint - details.x - marginSize;
 			
 			marginSize = 0;
 			if(yMargin!=null) {
 				marginSize = (int)solver.solveString(yMargin);
-				if(marginSize<0 || self[3]<1)
+				if(marginSize<0 || self.height<1)
 					marginSize = 0;
 			}
 			numMargins = gridDim.height-1;
 			if(numMargins<0)
 				numMargins=0;
 			totalWeight = findYWeights(gridDim.height);
-			details[1] = self[1] + (int)((self[3]-marginSize*numMargins)*
+			details.y = self.y + (int)((self.height-marginSize*numMargins)*
 					findYWeights(gridPoint.y)/totalWeight) + marginSize*gridPoint.y;
-			endPoint = self[1] + (int)((self[3]-marginSize*numMargins)*
+			endPoint = self.y + (int)((self.height-marginSize*numMargins)*
 					findYWeights(gridPoint.y+1)/totalWeight) + marginSize*(gridPoint.y+1);
-			details[3] = endPoint - details[1] - marginSize;
+			details.height = endPoint - details.y - marginSize;
 			return details;
 		}
 		return null;

@@ -7,7 +7,6 @@ import java.security.InvalidParameterException;
 import java.util.Collection;
 
 import moulton.scalable.utils.MenuComponent;
-import moulton.scalable.containers.Panel;
 
 /**
  * A subclass of {@link PanelPlus}. Built to hold a variable number of elements in the list. These elements

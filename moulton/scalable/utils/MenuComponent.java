@@ -2,6 +2,7 @@ package moulton.scalable.utils;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
@@ -186,7 +187,8 @@ public abstract class MenuComponent {
 			return parent.textResize();
 	}
 	
-	/**
+	/**This has been deprecated. Please use getRenderRect(...) instead
+	 * 
 	 * Many components are inherently rectangularly shaped, thus this method is provided to facilitate coordinate
 	 * calculations of x, y, width, and height for the component. If the component is in a grid (found by checking
 	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
@@ -203,7 +205,50 @@ public abstract class MenuComponent {
 	 * @param height the string expression for the component's height. Only used if the component isn't in a grid
 	 * @return a pixel array for the component of its x, y, width, and height, in that order.
 	 */
+	@Deprecated
 	protected int[] getRectRenderCoords(int xx, int yy, int ww, int hh, String width, String height) {
+		int x, y, w, h;
+		if(getGridLocation()==null) {
+			x = xx + solveString(this.x, ww, hh);
+			y = yy + solveString(this.y, ww, hh);
+			if (width.charAt(0) == '?') {
+				int x2 = xx + solveString(width.substring(1), ww, hh);
+				w = x2 - x;
+			} else
+				w = solveString(width, ww, hh);
+			
+			if (height.charAt(0) == '?') {
+				int y2 = yy + solveString(height.substring(1), ww, hh);
+				h = y2 - y;
+			} else
+				h = solveString(height, ww, hh);
+		}else {
+			x = xx;
+			y = yy;
+			w = ww;
+			h = hh;
+		}
+		return new int[] {x, y, w, h};
+	}
+	
+	/**
+	 * Many components are inherently rectangularly shaped, thus this method is provided to facilitate coordinate
+	 * calculations of x, y, width, and height for the component. If the component is in a grid (found by checking
+	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
+	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.<br>
+	 * For rectangular components, prefixing a width or height string with a ? will indicate that the component ends
+	 * there, in other words, the dimension in question is bounded by its analogous position axis (x for width, y for
+	 * height) and the value of what comes after the ?. For example, if x=width/8 and width=?width, then the width
+	 * of the component would result to (width-width/8).
+	 * @param xx the lower x bound of the component's canvas
+	 * @param yy the lower y bound of the component's canvas
+	 * @param ww the width for the component to draw
+	 * @param hh the height for the component to draw
+	 * @param width the string expression for the component's width. Only used if the component isn't in a grid
+	 * @param height the string expression for the component's height. Only used if the component isn't in a grid
+	 * @return the rectangle for where the component should be rendered.
+	 */
+	protected Rectangle getRenderRect(int xx, int yy, int ww, int hh, String width, String height) {
 		int x, y, w, h;
 		if(getGridLocation()==null) {
 			x = xx + solveString(this.x, ww, hh);
@@ -228,6 +273,6 @@ public abstract class MenuComponent {
 			w = ww;
 			h = hh;
 		}
-		return new int[] {x, y, w, h};
+		return new Rectangle(x, y, w, h);
 	}
 }

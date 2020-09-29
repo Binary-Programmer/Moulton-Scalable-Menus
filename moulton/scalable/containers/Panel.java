@@ -2,6 +2,7 @@ package moulton.scalable.containers;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
@@ -125,10 +126,10 @@ public class Panel extends MenuComponent {
 			//now draw any components in the grid
 			for(MenuComponent mc: grid.getHeldComponents()){
 				if(mc!=null && mc.isVisible()) {
-					int[] selfDim = {x,y,w,h};
-					int dimDetails[] = grid.findCompCoordinates(mc, selfDim);
+					Rectangle selfDim = new Rectangle(x,y,w,h);
+					Rectangle dimDetails = grid.findCompCoordinates(mc, selfDim);
 					//gridded components have a very specific space where they should be
-					mc.render(g, dimDetails[0], dimDetails[1], dimDetails[2], dimDetails[3]);
+					mc.render(g, dimDetails.x, dimDetails.y, dimDetails.width, dimDetails.height);
 				}
 			}
 			

@@ -2,6 +2,7 @@ package moulton.scalable.containers;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -165,11 +166,11 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			for(MenuComponent mc: both) {
 				if(mc!=null && mc.isVisible()) {
 					//render each component onto the image with full dimensions.
-					int[] self = {-xOffs, -yOffs, fullW, fullH};
+					Rectangle self = new Rectangle(-xOffs, -yOffs, fullW, fullH);
 					if(mc.getGridLocation() != null)
 						self = grid.findCompCoordinates(mc, self);
 					
-					mc.render(show, self[0], self[1], self[2], self[3]);
+					mc.render(show, self.x, self.y, self.width, self.height);
 				}
 			}
 		}catch(ConcurrentModificationException cme){
