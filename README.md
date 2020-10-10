@@ -41,7 +41,7 @@ The menu manager is in control of directly managing the menu system. The menu ma
 There are three abstract methods that the menu must implement to accomplish these tasks: `createMenu()`, `clickableAction(moulton.scalable.clickables.Clickable)`, and `lostFocusAction(moulton.scalable.clickables.Clickable)`. Understanding these three key methods is vital to making a responsive menu system.
 
 #### Create Menu: `createMenu()`
-This is where the menu manager expects you to create the menu. The menu system is built to handle a tree structure of menu components, each of which extend `moulton.scalable.utils.MenuComponent`. Panels may hold other components (such as buttons, text boxes, shapes, images, captions) and other panels. The menu manager has a root Panel called `menu`. For any component to be rendered on the menu, it must be included as a child component of menu.
+This is where the menu manager expects you to create the menu. The menu system is built to handle a tree structure of menu components, each of which extend `moulton.scalable.utils.MenuComponent`. Panels may hold other components (such as buttons, text boxes, shapes, images, captions) and other panels. The menu manager has a root Panel called `menu`. For any component to be rendered on the menu, it must be included as a child component of menu. For a better overview of menu components, please read [Menu Components](MenuComponents.md).
 
 The create menu method will not be called automatically when the Menu Manager is created. Thus, it *must* be called by the library user for the menu components to be created.
 
@@ -50,7 +50,7 @@ Some components are inherently clickable. Clickable components like buttons and 
 `id` field that can be very useful in determining the identity of the clickable.)
 
 #### Lost Focus: `lostFocusAction(Clickable)`
-Some clickable components (like text boxes and radio buttons) keep focus even after they are clicked. In the case of text boxes, this is for the user to pass key information to the component after the box has been selected by the clicking. In rare cases, components must perform an action when they lose focus.
+Focus is initiated when the user mouse presses on a component. Most components lose focus when the mouse is released. However, some components (like text boxes), keep the focus. This can be useful for the user to pass key information to the component after the box has been selected by the clicking. In rare cases, components must perform an action when they lose focus.
 
 
 ## Examples

@@ -35,7 +35,10 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * @see #setTouched(boolean)
 	 * @see #isTouchedAt(int, int)*/
 	protected boolean touched = false;
-	
+	/**Whether or not the component should lose focus once the mouse lets go.
+	 * Some components, like text boxes, need to retain focus so the user can enter secondary input.
+	 * Defaults to true.
+	 * @see #isDeselectedOnRelease()*/
 	protected static boolean deselectOnRelease = true;
 	
 	/**
@@ -190,8 +193,9 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * @return whether or not the component should lose focus once the mouse lets go. Some components, like text boxes, need
-	 * to retain focus so the user can enter secondary input.
+	 * Returns whether or not the component should lose focus once the mouse lets go.
+	 * Some components, like text boxes, need to retain focus so the user can enter secondary input.
+	 * @return {@link #deselectOnRelease}
 	 */
 	public boolean isDeselectedOnRelease() {
 		return true;

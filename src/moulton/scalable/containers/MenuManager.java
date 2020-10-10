@@ -34,7 +34,6 @@ import moulton.scalable.utils.MenuComponent;
  * and {@link #mouseReleased(int, int)}), and key typing ({@link #keyTyped(char)} and {@link #keyPressed(int)}) as long
  * as these event methods are being called, likely by {@link Container}.
  * @author Matthew Moulton
- * @version 1.02
  */
 public abstract class MenuManager {
 	/**The panel that will serve as the menu. Exact usage is specified in the class documentation: {@link Panel}.
@@ -92,13 +91,13 @@ public abstract class MenuManager {
 	 * when something else is clicked. A good way to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
-	protected abstract void lostFocusAction(Clickable c); //TODO what about radio buttons!
+	protected abstract void lostFocusAction(Clickable c);
 	
 	/**
 	 * The Moulton Scalable Menus handles the mouse press once this method has been called by a mouse listener external to Moulton Scalable
 	 * Menus. This method systematically processes every component in {@link #menu} to see if the (x,y) coordinate of the mouse click, as 
 	 * determined by the mouse event, was within the boundaries of the component. If so, the menu remembers that component as {@link #clicked}
-	 * for the occurence of a mouse release.
+	 * for the occurrence of a mouse release.
 	 * @param x the x position of the mouse relative to the JFrame
 	 * @param y the y position of the mouse relative to the JFrame
 	 */
@@ -129,7 +128,6 @@ public abstract class MenuManager {
 					setClicked(c,x,y);
 				}else if(c.getClicked()){ //if something still thought it was clicked
 					c.setClicked(false, x, y);
-					componentLostFocus(c);
 				}
 			}
 		}

@@ -5,7 +5,6 @@ import java.util.LinkedList;
 /**
  * Holds {@link RadioButton}s. Only one button in the group can be selected at a time.
  * @author Matthew Moulton
- *
  */
 public class RadioGroup {
 	/**The radio buttons in this group. Add buttons with {@link #addButton(RadioButton)} and if necessary, remove
