@@ -7,14 +7,11 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 * [Use](#use)
 * [Examples](#examples)
 
-
 ## Technologies
 The Project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
 
-
 ## Setup
 Download either the source .java files or select a version of the pre-compiled .jar files. Add Moulton Scalable Menus as a dependency to your intended project.
-
 
 ## Use
 Moulton Scalable Menus *requires* two core features to be implemented by you to function properly. There must be a container (which implements the `moulton.scalable.containers.Container` interface) and a menu manager (which extends the abstract `moulton.scalable.containers.MenuManager` class).
@@ -51,7 +48,6 @@ Some components are inherently clickable. Clickable components like buttons and 
 
 #### Lost Focus: `lostFocusAction(Clickable)`
 Focus is initiated when the user mouse presses on a component. Most components lose focus when the mouse is released. However, some components (like text boxes), keep the focus. This can be useful for the user to pass key information to the component after the box has been selected by the clicking. In rare cases, components must perform an action when they lose focus.
-
 
 ## Examples
 Example dummy projects have been provided to show off certain features and demonstrate intended use. There are currently seven examples. These examples are in no particular order.

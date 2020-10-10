@@ -5,14 +5,14 @@ Each program and each menu may need a different set of menu components. Therefor
 * [Positioning](#positioning)
   * [Expressions](#expressions)
   * [Grid](#grid)
-  * [Virtual Space](#virtualspace)
+  * [Virtual Space](#virtual-space)
 * [Components](#components)
   * [Panels](#panels)
   * [Clickables](#clickables)
-  * [Text Components](#textcomponents)
+  * [Text Components](#text-components)
   * [Visuals](#visuals)
   * [Shapes](#shapes)
-  * [Pop Ups](#popups)
+  * [Pop Ups](#pop-ups)
 
 ## Positioning
 The premise of Moulton Scalable Menus is that the components are arbitrarily scalable. As such, positioning is of great importance. There are two systems established whereby components can be positioned, by expressions and by the panel grid. Each has its own pros and cons, so both systems can be used together in the same menu, even on the same panel.
