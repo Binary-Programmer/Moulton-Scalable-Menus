@@ -5,7 +5,7 @@ import moulton.scalable.clickables.Clickable;
 
 /**
  * Implementations of HotkeyTextComponent are instances of {@link Clickable} that receive text input from
- * the {@link MenuManager} through the {@link #appendMessage(String)} and {@link #removeMessage(int, boolean)}
+ * the {@link MenuManager} through the {@link #appendMessage(String)} and {@link #removeMessage(int)}.
  * methods.
  * @author Matthew Moulton
  */

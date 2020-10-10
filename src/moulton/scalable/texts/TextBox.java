@@ -1047,8 +1047,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	/**
 	 * Replaced by {@link #removeMessage(int)}
-	 * @param chars
-	 * @param leftDelete
+	 * @param chars the number of characters to delete
+	 * @param leftDelete whether the delete should occur from the left (otherwise from right)
 	 */
 	@Deprecated
 	public void removeMessage(int chars, boolean leftDelete) {
