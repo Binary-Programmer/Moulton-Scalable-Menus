@@ -8,7 +8,7 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 * [Examples](#examples)
 
 ## Technologies
-The Project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
+The project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
 
 ## Setup
 Download either the source .java files or select a version of the pre-compiled .jar files. Add Moulton Scalable Menus as a dependency to your intended project.
