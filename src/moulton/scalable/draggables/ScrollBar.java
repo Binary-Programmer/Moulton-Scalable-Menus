@@ -132,7 +132,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 		g.fillRect(x, y, w, h);
 		
 		//if it is not editable, don't display the button
-		if(!isEditable())
+		if(!isEnabled())
 			return;
 
 		//if there is nowhere to scroll
@@ -310,17 +310,17 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	protected void updateScrollButtons() {
-		boolean inUse = isEditable() && barOffs<totalOffs;
+		boolean inUse = isEnabled() && barOffs<totalOffs;
 		if(scrollNeg != null)
-			scrollNeg.setEditable(offset > 0 && inUse);
+			scrollNeg.setEnabled(offset > 0 && inUse);
 		if(scrollPos != null)
-			scrollPos.setEditable(offset+barOffs < totalOffs && inUse);
+			scrollPos.setEnabled(offset+barOffs < totalOffs && inUse);
 	}
 
 	@Override
 	public double[] drag(double deltaX, double deltaY) {
 		double[] change = {0,0};
-		if(!isEditable()) {
+		if(!isEnabled()) {
 			return change;
 		}
 		int bool = inverseRender?-1:1;
@@ -385,7 +385,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * @return the applicable color for rendering the fill of the scroll bar's button
 	 */
 	public Color getFillColor() {
-		if (!isEditable())
+		if (!isEnabled())
 			return color;
 		if(getClicked())
 			return colorDark;

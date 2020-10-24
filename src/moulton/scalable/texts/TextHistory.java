@@ -252,14 +252,14 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 			if(bar!=null) {
 				int totalOffs = bar.getOffset() + numberOfLinesShown;
 				if(!allShown) { //if there were some lines not shown, bar should be editable
-					bar.setEditable(true);
+					bar.setEnabled(true);
 					/*To find the total number of offsets, find the initial offset texts (assume one line per
 					 *text), then add how many lines were shown, then add how many lines were cut off at the
 					 *end (lines from the text and remaining texts at one line per text).*/
 					if(textIndex>-1) //if something was cut off
 						totalOffs += textIndex + endCutOff;
 				}else {
-					bar.setEditable(false);
+					bar.setEnabled(false);
 				}
 				if(bar.getTotalOffs()!=totalOffs)
 					bar.setTotalOffs(totalOffs);

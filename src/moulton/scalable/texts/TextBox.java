@@ -248,6 +248,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return the index in {@link #message}
 	 */
 	protected int findIndex(int mouseX, int mouseY) {
+		//TODO small issue where clicking below the last shown row goes too far virtually
+		//more obvious with the down key for TextEditBox.
 		if(fontMetrics!=null && message!=null && !message.isEmpty()) {
 			//Remember that clickBoundary is a two-dimensional array. The 0th index holds x coords,
 			//the 1st holds y coordinates.
@@ -437,7 +439,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return the applicable color for rendering the fill of the box
 	 */
 	public Color getFillColor() {
-		if (!isEditable())
+		if (!isEnabled())
 			return Color.WHITE;
 		if(isTouched() && !getClicked() && colorTouched != null)
 			return colorTouched;
@@ -454,7 +456,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * These can be overridden to easily adapt the functionality for subclasses.
 	 */
 	@Override
-	public void render(Graphics g, int xx, int yy, int ww, int hh) { //FIXME the issue is here. Rendering ending index as the top for some reason...
+	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
 		int x = rect.x;
 		int y = rect.y;
@@ -465,7 +467,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		g.fillRect(x, y, w, h);
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
-		g.setColor(editable? Color.BLACK: Color.GRAY);
+		g.setColor(enabled? Color.BLACK: Color.GRAY);
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
 		
@@ -506,7 +508,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			rem = getShowMessage();
 			g.setColor(Color.BLACK);
 			messageShown = true;
-		}else{
+		}else {
 			rem = hint;
 			g.setColor(Color.DARK_GRAY);
 			messageShown = false;
@@ -515,8 +517,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int blinkerRow = 0;
 		int blinkerX = 0;
 		int totalTextLength = rem.length();
-		//sets the blinker position regardless (useful for row or horiz shifting)
-		boolean setBlinker = false;
+		//If we should set the blinker, then the set variable should be false. If we don't set the 
+		//blinker, then even though it hasn't been set, still pretend like it is.
+		boolean blinkerSet = !getClicked();
 		int underscoreWidth = fontMetrics.stringWidth(bufferChar);
 
 		if(h/hheight<1)
@@ -535,21 +538,24 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			shift = startShift;
 		}
 
+		boolean finalLine = false; //in cases of newlines or overflow, we need to place an extra line
 		/*The inside width is the difference of the pixel width of the box and the underscore width.
 		 *This leaves spacing for half an underscore on both sides. */
 		int insideWidth = w - underscoreWidth;
 		//the iterator of the line we are working with
 		int i = 0;
+		//In some cases, we need to go back into the line loop after we thought that we finished
 		boolean redo;
 		do {
 			redo = false;
-			while(i<texts.length){
-				if(i<texts.length && texts[i] == null) //create the text if needed
+			while(i<texts.length) { //while we haven't exceeded the number of allotted lines
+				//create the text if needed
+				if(i<texts.length && texts[i] == null) 
 					texts[i] = "";
 				
 				//check for the blinker position
-				if(!setBlinker && rem.length()<=totalTextLength-index){
-					setBlinker = true;
+				if(!blinkerSet && rem.length()<=totalTextLength-index){
+					blinkerSet = true;
 					blinkerRow = i;
 					blinkerPlace = texts[i].length();
 					blinkerX = fontMetrics.stringWidth(texts[i]);
@@ -570,7 +576,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//shift for single-line boxes
 				if(shift>0 && texts.length==1) {
 					//if the blinker has been set, the shift needs to decrease
-					if(setBlinker && isClicked) {
+					if(blinkerSet && isClicked) {
 						startShift -= shift; //adjust for next time
 						shift = 0; //render normal for the rest
 					}else {
@@ -583,21 +589,27 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 				
 				//if the line is now too long to fit in row
-				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n'){
+				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n') {
 					if(texts.length>1) {
 						LineBreak split = LineBreak.check(getAllowWordSplitting(), texts[i], rem);
-						texts[i] = split.LINE;
+						texts[i] = split.LINE; //for index calculation
 						rem = split.REMAINDER;
+						
+						//if the line break yielded nothing after and this is the end, then we need to
+						//signal that there is still a line down there to access
+						if(i==texts.length-1 && rem.isEmpty())
+							finalLine = true;
+						
+						//check if the blinker or click is affected by the change
 						int splitLocation = split.LINE.length();
-						//blinker or click affected by the row change
-						if(setBlinker && blinkerRow == i && blinkerPlace>splitLocation)
-							setBlinker = false;
+						if(blinkerSet && blinkerRow == i && blinkerPlace>splitLocation)
+							blinkerSet = false;
 						if(setClick && clickRow == i && clickPlace>splitLocation)
 							setClick = false;
 						
 						//shift modifications
 						if(shift>0) {
-							if(setBlinker && isClicked) { //if the blinker has already been placed
+							if(blinkerSet && isClicked) { //if the blinker has already been placed
 								//then we should shift to the blinker's place
 								//we will only need to shift up if startShift is greater than 0
 								startShift -= shift; //adjust for next time
@@ -618,8 +630,28 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 				}
 			}
-			//if the blinker hasn't been set yet, it is further in the message
-			if(!setBlinker && getAllowVirtualSpace() && getClicked() && !rem.isEmpty()) {
+			
+			/* 
+			 * As we have reached the end of the allotted rows, there are two distinct problems that
+			 * may have arisen during earlier rendering. It is possible that neither has occurred,
+			 * but we still need to check for both.
+			 * 
+			 * First issue: If we have not placed the blinker yet but we were supposed to. In this
+			 * occurrence, the blinker position must be later on in the message. The procedure by
+			 * which we render (going through all of the message even when startShift will make us
+			 * ignore those lines), guarantees that the blinker position could not have been earlier.
+			 * If it was, we would have found it. Therefore, the position *must* be later on in the
+			 * message.
+			 * 
+			 * Second issue: It is a very rare case, but sometimes the frame of the application is
+			 * resized, and a text box acquires more space. Instead of having empty lines at the
+			 * bottom with a start shift, the text box should try to render as much as possible.
+			 */
+			//Check for first issue: If the blinker has not been set yet but should have (!setBlinker),
+			//and also if virtual space allows us to scroll.
+			if(!blinkerSet && getAllowVirtualSpace()) {
+				//The solution to the first issue is to shift all the rows up and redo the last row.
+				//Hopefully that will find the blinker. If not, we will end up here again until we do.
 				if(texts.length>1) {
 					//shift all rows up
 					int ii=1;
@@ -638,21 +670,21 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				redo = true; //go back into the loop
 				i--; //do the last line again
 				startShift++; //save for next time
-			}else if(messageShown && startShift>0 && rem.isEmpty()) {
-				//if there was empty space and unneeded offset
-				//if so, we have to do a complete redo
-				if((texts.length>1 && i<texts.length-1) || (texts.length==1 && 
-							fontMetrics.stringWidth(message.charAt(startShift-1)+texts[i])
-							< insideWidth && message.charAt(startShift-1)!='\n')) {
-					rem = getShowMessage();
-					setBlinker = false;
-					setClick = !selection;
-					texts = new String[h/hheight];
-					i = 0;
-					//decrease startShift to try to capture more text in the box
-					shift = --startShift;
-					redo = true;
-				}
+			}
+			//Check for the second issue: If the entire message has been processed (rem.isEmpty()),
+			//but we shifted (startShift>0) and we end up with an unprocessed line at the bottom
+			//(texts[texts.length-1]==null). It has to be *unprocessed* since sometimes returns or
+			//character overflow can put the blinker on the next line without anything to draw.
+			if(rem.isEmpty() && startShift>0 && texts.length>0 && texts[texts.length-1]==null) {
+				//if so, we have to do a complete redo, where we will move the shift up to include more
+				rem = getShowMessage();
+				blinkerSet = false;
+				setClick = !selection;
+				texts = new String[h/hheight];
+				i = 0;
+				//decrease startShift to try to capture more text in the box
+				shift = --startShift;
+				redo = true;
 			}
 		}while(redo);
 		
@@ -668,6 +700,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					textScroller.setBarOffs(0);
 			}
 			endCutOff = !rem.isEmpty(); //set this before the scroll bar calculation modifies it
+			
 			//update the scroll bar
 			if(virtualSpace && textScroller!=null) {
 				if(texts.length==1) { //one lined text box
@@ -677,7 +710,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					textScroller.setOffsets(totalTextLength, textLength, startShift);
 				}else {
 					//calculate the total number of lines
-					int extraLines = 0;
+					int extraLines = finalLine? 1:0;
 					String extraText = "";
 					while(!rem.isEmpty()) {
 						extraText += rem.charAt(0);
@@ -687,6 +720,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						}else if(extraText.charAt(extraText.length()-1)=='\n') {
 							extraLines++;
 							extraText = ""; //reset the text
+							//if this is the last character
+							if(rem.length()==1) //blinker at the very end
+								extraLines++;
 						}
 						rem = rem.substring(1); //remove the used character
 					}if(!extraText.isEmpty())
@@ -841,7 +877,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Returns the message displayed on this text box.
 	 * @return {@link #message}
 	 */
-	public synchronized String getMessage() {
+	public String getMessage() {
 		return message;
 	}
 	
@@ -870,7 +906,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * been set. 
 	 * @param string the string provided as a replacement
 	 */
-	public synchronized void setMessage(String string) {
+	public void setMessage(String string) {
 		if(string == null)
 			string = "";
 		if(format != null)
@@ -880,8 +916,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
 		index = message.length(); //set the index to the end
-		if(message.length()<1 && textScroller != null) //the scroll bar should be unset
-			textScroller.setTotalOffs(0);
+		if(message.length()<1) {
+			startShift = 0;
+			if(textScroller != null) //the scroll bar should be unset
+				textScroller.setTotalOffs(0);
+		}
 	}
 	
 	/**
@@ -892,7 +931,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @param string the String to append on
 	 */
 	@Override
-	public synchronized void appendMessage(String string) {
+	public void appendMessage(String string) {
 		//handles any new line characters appropriately
 		if(!acceptEnter && string.indexOf('\n')!=-1) {
 			String[] sections = string.split("\n");
@@ -938,36 +977,42 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			chars--;
 		}
 		//then removes the commanded characters
-		if(chars<1) //if there is nothing to delete, exit
-			return;
-		
-		int left, right;
-		if(leftDelete) {
-			left = index - chars;
-			right = index;
-		}else {
-			left = index;
-			right = index + chars;
+		if(chars>0) { //if there is still something to delete
+			int left, right;
+			if(leftDelete) {
+				left = index - chars;
+				right = index;
+			}else {
+				left = index;
+				right = index + chars;
+			}
+			
+			if(left<0) left = 0;
+			if(right<0) right = 0;
+			if(left>message.length()) left = message.length();
+			if(right>message.length()) right = message.length();
+			
+			if(leftDelete) {
+				index -= chars;
+				if(index < 0)
+					index = 0;
+			}
+			
+			if(left != right) {
+				String temp = "";
+				if(left>0){
+					temp += message.substring(0, left);
+				}if(right<message.length())
+					temp += message.substring(right);
+				message = temp;
+			}
 		}
 		
-		if(left<0) left = 0;
-		if(right<0) right = 0;
-		if(left>message.length()) left = message.length();
-		if(right>message.length()) right = message.length();
-		
-		if(leftDelete) {
-			index -= chars;
-			if(index < 0)
-				index = 0;
-		}
-		
-		if(left != right) {
-			String temp = "";
-			if(left>0){
-				temp += message.substring(0, left);
-			}if(right<message.length())
-				temp += message.substring(right);
-			message = temp;
+		//verify that the message isn't empty
+		if(message.length()<1) {
+			startShift = 0;
+			if(textScroller != null) //the scroll bar should be unset
+				textScroller.setTotalOffs(0);
 		}
 		
 		refreshBlinker();
@@ -989,7 +1034,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @param replace the text to replace the deleted selection with. Keep null for a normal deletion.
 	 */
 	protected void deleteSelection(String replace) {
-		if(!editable)
+		if(!enabled)
 			return;
 		
 		int start, end;
@@ -1029,7 +1074,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	@Override
-	public synchronized double[] drag(double dx, double dy) {
+	public double[] drag(double dx, double dy) {
 		//this should be for drag selecting text. Then cut and paste shortcuts should work
 		if(mouseClickXY == null)
 			return new double[]{0d,0d};
@@ -1123,7 +1168,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void paste(String pasteText) {
-		if(editable && isHotkeyEnabled()) {
+		if(enabled && isHotkeyEnabled()) {
 			if(selection) {
 				deleteSelection(pasteText);
 			}else {

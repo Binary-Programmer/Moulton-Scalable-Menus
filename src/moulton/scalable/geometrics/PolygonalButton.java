@@ -72,7 +72,7 @@ public class PolygonalButton extends RadioButton{
 		}
 		if(outline){
 			g.setColor(Color.BLACK);
-			if(!editable)
+			if(!enabled)
 				g.setColor(Color.GRAY);
 			g.drawPolygon(xpoints, ypoints, numberOfPoints);
 		}

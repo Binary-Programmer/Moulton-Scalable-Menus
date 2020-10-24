@@ -77,12 +77,12 @@ public abstract class RadioButton extends Clickable {
 	 * If the button is clicked, {@link #colorDark} is used. If the button is touched and has a touch color ({@link #colorTouched}),
 	 * that is used. Otherwise, the normal {@link #color} is returned.
 	 * @return the applicable color for rendering the fill of the button
-	 * @see #isEditable()
+	 * @see #isEnabled()
 	 * @see #getClicked()
 	 * @see #isTouched()
 	 */
 	public Color getFillColor() {
-		if (!isEditable())
+		if (!isEnabled())
 			return colorLight;
 		if(getClicked())
 			return colorDark;

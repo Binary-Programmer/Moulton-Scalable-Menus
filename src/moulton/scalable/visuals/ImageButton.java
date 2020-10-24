@@ -141,7 +141,7 @@ public class ImageButton extends RadioButton {
 		
 		//draw outline if necessary
 		if (outline) {
-			g.setColor(editable? Color.BLACK:Color.GRAY);
+			g.setColor(enabled? Color.BLACK:Color.GRAY);
 			g.drawRect(x, y, w - 1, h - 1);
 		}
 	}

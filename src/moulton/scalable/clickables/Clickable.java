@@ -17,10 +17,10 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**A unique string designed to identify this component when an event occurs.
 	 * @see #getId()*/
 	protected String id;
-	/**Whether or not the component can be clicked (and modified by user).
-	 * @see #isEditable()
-	 * @see #setEditable(boolean)*/
-	protected boolean editable = true;
+	/**Whether or not the component can be clicked and used.
+	 * @see #isEnabled()
+	 * @see #setEnabled(boolean)*/
+	protected boolean enabled = true;
 	/**Whether or not this component is selected by the press of the mouse currently.
 	 * @see #setClicked(boolean, int, int)
 	 * @see #getClicked()
@@ -89,7 +89,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * @return whether the component was decided to be clicked based on the params
 	 */
 	public boolean clickableAt(int x, int y) {
-		if(!editable || clickBoundary==null) return false;
+		if(!isEnabled() || clickBoundary==null) return false;
 		
 		Polygon polygon = new Polygon(clickBoundary[0], clickBoundary[1], clickBoundary[0].length);
 		if(polygon.contains(x, y))
@@ -161,19 +161,35 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Sets whether or not the clickable should be able to be modified, or just shown.
-	 * @param editable {@link #editable}
+	 * Sets whether or not the clickable should be able to be used or just shown.
+	 * @param enabled {@link #enabled}
 	 */
-	public void setEditable(boolean editable){
-		this.editable = editable;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	/**Replaced by {@link #setEnabled(boolean)}.
+	 * @param enabled whether this component should be enabled.
+	 */
+	@Deprecated
+	public void setEditable(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	/**
-	 * Returns whether or not the clickable is editable.
-	 * @return {@link #editable}
+	 * Returns whether or not the clickable is usable and enabled.
+	 * @return {@link #enabled}
 	 */
-	public boolean isEditable(){
-		return editable;
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	/**Replaced by {@link #isEnabled()}.
+	 * @return {@link #enabled}
+	 */
+	@Deprecated
+	public boolean isEditable() {
+		return enabled;
 	}
 	
 	/**
