@@ -23,8 +23,8 @@ import moulton.scalable.draggables.ScrollableComponent;
  * <p>
  * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or
  * disabled:<ul>
- * <li>{@link #wordSplitting} defines whether lines can be split on words or only on break characters.
- * <li>{@link #virtualSpace} decides whether the text box can have text in its message that is saved but
+ * <li>{@link #sordSplitting} defines whether lines can be split on words or only on break characters.
+ * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but
  * not shown
  * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is
  * in virtual space.
@@ -92,7 +92,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #setStartShift(int)*/
 	protected int startShift = 0;
 	/**The scroll bar to change {@link #startShift} and view text in unseen virtual space if allowed
-	 * ({@link #virtualSpace}).
+	 * ({@link #hasVirtualSpace}).
 	 * @see #getTextScroller()
 	 * @see #setTextScroller(ScrollBar)*/
 	protected ScrollBar textScroller = null;
@@ -112,11 +112,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text
 	 * box, encountering and end of line will force previous characters (until a break) to the next line.
 	 * Break characters include space, new line, and hyphens. Defaults to false.
-	 * @see #getAllowWordSplitting()
-	 * @see #allowWordSplitting(boolean)*/
-	protected boolean wordSplitting = false;
+	 * @see #getWordSplitting()
+	 * @see #setWordSplitting(boolean)*/
+	protected boolean sordSplitting = false;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
-	 * @see #isHotkeyEnabled()
+	 * @see #getHotkeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
 	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
@@ -130,10 +130,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #getShowMessage()*/
 	protected Character charMask = null;
 	/**Whether input can be put outside of the visible box. Defaults to true.
-	 * @see #getAllowVirtualSpace()
-	 * @see #allowVirtualSpace(boolean)*/
-	protected boolean virtualSpace = true;
-	/**If the text box {@link #getAllowVirtualSpace()} and some of the message is cut off in display, this
+	 * @see #getHasVirtualSpace()
+	 * @see #setHasVirtualSpace(boolean)*/
+	protected boolean hasVirtualSpace = true;
+	/**If the text box {@link #getHasVirtualSpace()} and some of the message is cut off in display, this
 	 * will decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
 	 * @see #setCutOffMark(boolean)
 	 * @see #hasCutOffMark()*/
@@ -292,9 +292,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 				}
 			}if(row == rows) { //so if it was unchanged, below the last row
-				if(rows>1)
-					endLocation = true;
-				else //there is only one row, so go to very end
+				//if we have multiple rows and virtual space, then we have to keep processing to find which line
+				if(rows>1 && getHasVirtualSpace()) 
+					endLocation = false;
+				else //there is only one row or virtual space is off
 					return message.length();
 			}
 			
@@ -354,13 +355,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 					
 					if(wwidth>insideWidth && rows>1) { //the width is too long
-						LineBreak result = LineBreak.check(getAllowWordSplitting(), text, rem);
-						text = result.RAW_LINE;
+						LineBreak result = LineBreak.check(getWordSplitting(), text, rem);
+						text = result.LINE;
 						rem = result.REMAINDER;
 						charConsumed = result.CHAR_CONSUMED;
 					}
 					if(i!=row)
-						sum += text.length();
+						sum += text.length() + (charConsumed? 1:0);
 					else
 						line = text;
 				}
@@ -372,7 +373,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					return i + sum;
 				}else if (endLocation == false) { //after, thus the first index of this line
 					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
-					return sum + (this.wordSplitting? 1:0);
+					return sum + (this.sordSplitting? 1:0);
 				}
 			}
 			//this line could be left aligned, center aligned, or right aligned
@@ -381,14 +382,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			//start at the end, and shrink the string until we have nothing left
 			//i gets reused as the last j
 			
-			//If a character was consumed breaking this line, we want to jump one character in to
-			//account for that. Users don't want to click on the end of a line and go to the beginning
-			//of the next (which is what happens if we didn't do this).
-			//When word splitting is on, we get a reverse effect, but it isn't one that we can really
-			//fix. Clicking on the beginning of the line will give you the blinker at the end of the
-			//previous line.
-			if(charConsumed)
-				i--;
 			for(int j=i; j>-1; j--) {
 				//if it is less now, the index is one more than this
 				int newWidth = fontMetrics.stringWidth(line.substring(0, j));
@@ -548,6 +541,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean redo;
 		do {
 			redo = false;
+			finalLine = false;
 			while(i<texts.length) { //while we haven't exceeded the number of allotted lines
 				//create the text if needed
 				if(i<texts.length && texts[i] == null) 
@@ -591,7 +585,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//if the line is now too long to fit in row
 				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n') {
 					if(texts.length>1) {
-						LineBreak split = LineBreak.check(getAllowWordSplitting(), texts[i], rem);
+						LineBreak split = LineBreak.check(getWordSplitting(), texts[i], rem);
 						texts[i] = split.LINE; //for index calculation
 						rem = split.REMAINDER;
 						
@@ -649,7 +643,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			 */
 			//Check for first issue: If the blinker has not been set yet but should have (!setBlinker),
 			//and also if virtual space allows us to scroll.
-			if(!blinkerSet && getAllowVirtualSpace()) {
+			if(!blinkerSet && getHasVirtualSpace()) {
 				//The solution to the first issue is to shift all the rows up and redo the last row.
 				//Hopefully that will find the blinker. If not, we will end up here again until we do.
 				if(texts.length>1) {
@@ -692,7 +686,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		boolean endCutOff = false;
 		if(messageShown) {
 			//cut off extra if virtual space not allowed
-			if(!virtualSpace && !rem.isEmpty()) {
+			if(!hasVirtualSpace && !rem.isEmpty()) {
 				String tempMessage = getMessage();
 				setMessage(tempMessage.substring(0, tempMessage.length()-rem.length()));
 				//update the scroll bar
@@ -702,7 +696,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			endCutOff = !rem.isEmpty(); //set this before the scroll bar calculation modifies it
 			
 			//update the scroll bar
-			if(virtualSpace && textScroller!=null) {
+			if(hasVirtualSpace && textScroller!=null) {
 				if(texts.length==1) { //one lined text box
 					int textLength = 0;
 					if(texts[0]!=null)
@@ -720,7 +714,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						}else if(extraText.charAt(extraText.length()-1)=='\n') {
 							extraLines++;
 							extraText = ""; //reset the text
-							//if this is the last character
+							
 							if(rem.length()==1) //blinker at the very end
 								extraLines++;
 						}
@@ -1143,7 +1137,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String copy() {
-		if(isHotkeyEnabled())
+		if(getHotkeyEnabled())
 			return getSelectedText();
 		else
 			return null;
@@ -1154,7 +1148,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String cut() {
-		if(!isHotkeyEnabled())
+		if(!getHotkeyEnabled())
 			return null;
 		
 		String cut = getSelectedText();
@@ -1168,7 +1162,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void paste(String pasteText) {
-		if(enabled && isHotkeyEnabled()) {
+		if(enabled && getHotkeyEnabled()) {
 			if(selection) {
 				deleteSelection(pasteText);
 			}else {
@@ -1264,7 +1258,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return {@link #hotkeyEnabled}
 	 */
 	@Override
-	public boolean isHotkeyEnabled() {
+	public boolean getHotkeyEnabled() {
 		return hotkeyEnabled;
 	}
 	
@@ -1279,10 +1273,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Sets whether this text box should allow for text scrolling in the text box (true) or treat the borders
 	 * as limits for the text length (false).
-	 * @param allow sets {@link #virtualSpace}
+	 * @param allow sets {@link #hasVirtualSpace}
 	 */
-	public void allowVirtualSpace(boolean allow) {
-		this.virtualSpace = allow;
+	public void setHasVirtualSpace(boolean allow) {
+		this.hasVirtualSpace = allow;
 		if(!allow) { //reset the shift so everything can be deleted properly
 			setStartShift(0);
 		}
@@ -1291,10 +1285,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Returns whether this text box allows for text scrolling in the box (true) or treats borders as limits
 	 * for the text length (false).
-	 * @return {@link #virtualSpace}
+	 * @return {@link #hasVirtualSpace}
 	 */
-	public boolean getAllowVirtualSpace() {
-		return virtualSpace;
+	public boolean getHasVirtualSpace() {
+		return hasVirtualSpace;
 	}
 	
 	/**
@@ -1333,7 +1327,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	/**
-	 * Returns the scroll bar used to view text hidden in virtual space (if allowed by {@link #virtualSpace}).
+	 * Returns the scroll bar used to view text hidden in virtual space (if allowed by {@link #hasVirtualSpace}).
 	 * @return {@link #textScroller}
 	 */
 	public ScrollBar getTextScroller() {
@@ -1341,7 +1335,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	/**
 	 * Sets the scroll bar that will be used to view text hidden in virtual space if such is allowed by
-	 * {@link #virtualSpace}.
+	 * {@link #hasVirtualSpace}.
 	 * @param textScroller the scroll bar to be saved as {@link #textScroller}
 	 */
 	public void setTextScroller(ScrollBar textScroller) {
@@ -1360,17 +1354,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
-	 * @param allowSplit sets {@link #wordSplitting}
+	 * @param allowSplit sets {@link #sordSplitting}
 	 */
-	public void allowWordSplitting(boolean allowSplit) {
-		this.wordSplitting = allowSplit;
+	public void setWordSplitting(boolean allowSplit) {
+		this.sordSplitting = allowSplit;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text box
-	 * @return the value of {@link #wordSplitting}
+	 * @return the value of {@link #sordSplitting}
 	 */
-	public boolean getAllowWordSplitting() {
-		return wordSplitting;
+	public boolean getWordSplitting() {
+		return sordSplitting;
 	}
 	
 	@Override

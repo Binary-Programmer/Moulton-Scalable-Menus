@@ -12,9 +12,10 @@ import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * A menu component that holds a history of text. A scroll bar can be added to see more than is able to be shown in the
- * specified rectangle. Even if no scroll bar is added, the text history is still functional, just static. The scroll bar
- * should be saved as {@link #bar}. New lines can be added by use of {@link #addToList(String...)}.
+ * A menu component that holds a history of text. A scroll bar can be added to see more than is able
+ * to be shown in the specified rectangle. Even if no scroll bar is added, the text history is still
+ * functional, just static. The scroll bar should be saved as {@link #bar}. New lines can be added by
+ * use of {@link #addToList(String...)}.
  * <p>
  * A couple of optional features specific to text history include:<ul>
  * <li>{@link #addToTop} defines the view mode, or in other words, whether most recent messages should be displayed at the top or the bottom.
@@ -22,8 +23,9 @@ import moulton.scalable.utils.MenuComponent;
  * <li>{@link #textDemarkation} decides whether each entry should be separated by a separating line similar to an outline.
  * <li>{@link #wordSplitting} defines whether words can be split on ends of lines, or whether lines can only split on break characters.
  * </ul><p>
- * Although it is highly recommended to add entries to the text history by the provided method, if the list needs to be accessed directly by
- * a subclass, {@link #history} is where the entries are internally saved.
+ * Although it is highly recommended to add entries to the text history by the provided method, if
+ * the list needs to be accessed directly by a subclass, {@link #history} is where the entries are
+ * internally saved.
  * @author Matthew Moulton
  */
 public class TextHistory extends MenuComponent implements ScrollableComponent{
@@ -36,20 +38,20 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**The scroll bar to change which strings are displayed.
 	 * @see #setScrollBar(ScrollBar)*/
 	protected ScrollBar bar;
-	/**Whether or not the text history should add new strings to the top or bottom of the list. This correlates with 
-	 * NOT {@link ScrollBar#inverseRender}.
+	/**Whether or not the text history should add new strings to the top or bottom of the list. This
+	 * correlates with NOT {@link ScrollBar#inverseRender}.
 	 * @see #setViewMode(boolean)*/
 	protected boolean addToTop = false;
-	/**The maximum number of messages saved. After this number is reached, the oldest message is deleted once
-	 * the newest one is saved.
+	/**The maximum number of messages saved. After this number is reached, the oldest message is
+	 * deleted once the newest one is saved.
 	 * @see #setMaxMessages(int)
 	 * @see #getMaxMessages()*/
 	protected int maxMessages;
-	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text history,
-	 * encountering and end of line will force previous characters (until a break) to the next line.
-	 * Break characters include space, new line, and hyphens. Defaults to false.
-	 * @see #allowsWordSplitting()
-	 * @see #allowWordSplitting(boolean)*/
+	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the
+	 * text history, encountering and end of line will force previous characters (until a break) to
+	 * the next line. Break characters include space, new line, and hyphens. Defaults to false.
+	 * @see #getWordSplitting()
+	 * @see #setWordSplitting(boolean)*/
 	protected boolean wordSplitting = false;
 	/**Whether each text displayed should be separated from other texts by a black line. Defaults to false.
 	 * @see #setTextDemarkation(boolean)
@@ -67,8 +69,8 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	protected int[][] scrollCoords = new int[2][4];
 
 	/**
-	 * Creates a new TextHistory component and adds it to the parent panel by {@link MenuComponent#MenuComponent(Panel,
-	 * int, int)}.
+	 * Creates a new TextHistory component and adds it to the parent panel by
+	 * {@link MenuComponent#MenuComponent(Panel, int, int)}.
 	 * @param parent the parent panel that this component will reside on
 	 * @param x the x-component this is in the parent's grid
 	 * @param y the y-component this is in the parent's grid
@@ -83,8 +85,8 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 		this.maxMessages = maxMessages;
 	}
 	/**
-	 * Creates a new TextHistory component and adds it to the parent panel by {@link MenuComponent#MenuComponent(Panel,
-	 * String, String)}.
+	 * Creates a new TextHistory component and adds it to the parent panel by
+	 * {@link MenuComponent#MenuComponent(Panel, String, String)}.
 	 * @param parent the parent panel that this component will reside on
 	 * @param x the string expression determining the x-position of this component on the parent panel
 	 * @param y the string expression determining the y-position of this component on the parent panel
@@ -177,10 +179,10 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 						//if the line is too long
 						if(metrics.stringWidth(line)>w || line.charAt(line.length()-1)=='\n') {
 							//find the break
-							String[] afterBreak = lineSplit(line, remainder);
-							remainder = afterBreak[1];
+							LineBreak result = LineBreak.check(wordSplitting, line, remainder);
+							remainder = result.REMAINDER;
 							//the line is just the right length now. add to the list
-							thisText.add(afterBreak[0]);
+							thisText.add(result.LINE);
 							line = "";
 						}
 					}//if there was any left over, it should be added too
@@ -234,10 +236,10 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 						line += rem.charAt(0);
 						rem = rem.substring(1);
 						//if line is too long
-						if(metrics.stringWidth(line)>w || line.charAt(line.length()-1)=='\n'){
-							String[] afterBreak = lineSplit(line, rem); //split the line
-							rem = afterBreak[1];
-							line = ""; //reset the line
+						if(metrics.stringWidth(line)>w || line.charAt(line.length()-1)=='\n') {
+							LineBreak result = LineBreak.check(wordSplitting, line, rem);
+							rem = result.REMAINDER;
+							line = result.LINE;
 							lines++;
 						}
 					}
@@ -366,14 +368,14 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 * Sets whether word splitting on ends of lines is allowed
 	 * @param allowSplit sets {@link #wordSplitting}
 	 */
-	public void allowWordSplitting(boolean allowSplit) {
+	public void setWordSplitting(boolean allowSplit) {
 		this.wordSplitting = allowSplit;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text history
 	 * @return the value of {@link #wordSplitting}
 	 */
-	public boolean allowsWordSplitting() {
+	public boolean getWordSplitting() {
 		return wordSplitting;
 	}
 
@@ -398,46 +400,6 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 */
 	public void setTextDemarkation(boolean textDemarkation) {
 		this.textDemarkation = textDemarkation;
-	}
-	
-	/**
-	 * Finds a break character, if any, and splits the text from line into remainder where necessary
-	 * @param line the text that needs to be split, returned as the first argument in the array
-	 * @param remainder the text that is left over, returned as the first argument in the array
-	 * @return after the line is split, the results are given as {line, remainder}
-	 */
-	private String[] lineSplit(String line, String remainder) {
-		boolean wordSplit = allowsWordSplitting();
-		if(!wordSplit) {
-			int ii=line.length()-1;
-			for(; ii>-1; ii--) {
-				char c = line.charAt(ii);
-				if(c == '\n' || c == ' ') {
-					//add it back to the remainder
-					remainder = line.substring(ii+1) + remainder;
-					line = line.substring(0,ii);
-					break;
-				}else if(c == '-') {
-					if(ii<line.length()-1) {
-						//keep the - on this line
-						remainder = line.substring(ii+1) + remainder;
-						line = line.substring(0, ii+1);
-					}else {
-						remainder = line.substring(ii) + remainder;
-						line = line.substring(0, ii);
-					}
-					break;
-				}
-			}
-			if(ii == -1) { //no break character found, split the word
-				wordSplit = true;
-			}
-		}if(wordSplit){
-			int length = line.length();
-			remainder = line.charAt(length-1) + remainder;
-			line = line.substring(0, length-1);
-		}
-		return new String[] {line, remainder};
 	}
 	
 	/**

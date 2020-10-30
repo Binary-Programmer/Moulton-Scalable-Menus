@@ -30,7 +30,7 @@ public class PolygonalButton extends RadioButton{
 	 * @param xs the string expressions dictating the points on the parent panel that define this component.
 	 * @param ys the string expressions dictating the points on the parent panel that define this component.
 	 * @param color the color of the button when not pressed. By default, the pressed color will be one shade
-	 * darker and the uneditable color will be one shade lighter.
+	 * darker and the not enabled color will be one shade lighter.
 	 */
 	public PolygonalButton(String id, Panel parent, String [] xs, String [] ys, Color color){
 		super(id,parent,xs[0],ys[0], color);
@@ -47,7 +47,7 @@ public class PolygonalButton extends RadioButton{
 	 * @param xs the string expressions dictating the points on the parent panel that define this component.
 	 * @param ys the string expressions dictating the points on the parent panel that define this component.
 	 * @param color the color of the button when not pressed. By default, the pressed color will be one shade
-	 * darker and the uneditable color will be one shade lighter.
+	 * darker and the not enabled color will be one shade lighter.
 	 */
 	public PolygonalButton(String id, Panel parent, int x, int y, String [] xs, String [] ys, Color color){
 		super(id,parent,x,y, color);
@@ -72,7 +72,7 @@ public class PolygonalButton extends RadioButton{
 		}
 		if(outline){
 			g.setColor(Color.BLACK);
-			if(!enabled)
+			if(!isEnabled())
 				g.setColor(Color.GRAY);
 			g.drawPolygon(xpoints, ypoints, numberOfPoints);
 		}

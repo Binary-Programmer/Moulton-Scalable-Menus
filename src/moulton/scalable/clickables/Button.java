@@ -42,7 +42,7 @@ public class Button extends RadioButton {
 	 * @param width the width of the component, given in menu component value format
 	 * @param height the height of the component, given in menu component value format
 	 * @param font the font for the box
-	 * @param color the background color for the button when editable
+	 * @param color the background color for the button when enabled
 	 */
 	public Button(String id, String text, Panel parent, String x, String y, String width, String height, Font font, Color color) {
 		super(id, parent, x, y, color);
@@ -59,7 +59,7 @@ public class Button extends RadioButton {
 	 * @param x the integer x coordinate this button should appear on its panel
 	 * @param y the integer y coordinate this button should appear on its panel
 	 * @param font the font for the box
-	 * @param color the background color for the button when editable
+	 * @param color the background color for the button when enabled
 	 */
 	public Button(String id, String text, Panel parent, int x, int y, Font font, Color color){
 		super(id, parent, x, y, color);
@@ -73,7 +73,7 @@ public class Button extends RadioButton {
 	 * {@link MenuComponent#y}, {@link #width}, and {@link #height}.<p>
 	 * The method {@link RadioButton#getFillColor()} will be called to determine what color the body of this button
 	 * will be. The outline will be in black if it should be drawn (specified by {@link Clickable#outline}), as will
-	 * the text on the face of the button, unless the button is not editable.
+	 * the text on the face of the button, unless the button is not enabled.
 	 */
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		int x, y, w, h;
@@ -108,7 +108,7 @@ public class Button extends RadioButton {
 		}
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
-		g.setColor(enabled? Color.BLACK:Color.GRAY);
+		g.setColor(isEnabled()? Color.BLACK:Color.GRAY);
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
 
