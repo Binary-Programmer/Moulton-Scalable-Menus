@@ -20,7 +20,9 @@ import moulton.scalable.utils.GridFormatter;
 
 public class Manager7 extends MenuManager{
 	private TextEditBox fileContents;
+	private ScrollBar directoryScroll;
 	private Button saveButton;
+	
 	private String filePath = null;
 	private boolean controlOn = false;
 	private boolean shiftOn = false;
@@ -49,6 +51,10 @@ public class Manager7 extends MenuManager{
 			undoHistory[0] = null;
 		else
 			undoHistory[histIndex+1] = null;
+		
+		//if it is possible to undo, then it should be possible to save (if the path is set)
+		if(filePath != null)
+			saveButton.setEnabled(true);
 	}
 
 	@Override
@@ -62,7 +68,7 @@ public class Manager7 extends MenuManager{
 		addTouchResponsiveComponent(new Button("new", "New", controlPanel, 0, 0, font, Color.WHITE));
 		addTouchResponsiveComponent(new Button("load", "Load", controlPanel, 1, 0, font, Color.WHITE));
 		saveButton = new Button("save", "Save", controlPanel, 2, 0, font, Color.WHITE);
-		saveButton.setEditable(false);
+		saveButton.setEnabled(false);
 		addTouchResponsiveComponent(saveButton);
 		addTouchResponsiveComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
 		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height", font, new Color(0xe5e5e5));
@@ -88,10 +94,10 @@ public class Manager7 extends MenuManager{
 				addUndoEntry(fileContents.getMessage()); //allow undo from new
 				break;
 			case "load":
-				setPopup(new PathFinderPopup(true, "350", "200"));
+				createPopup(true);
 				break;
 			case "saveAs":
-				setPopup(new PathFinderPopup(false, "350", "200"));
+				createPopup(false);
 				break;
 			case "save":
 				FileWriter fw = null;
@@ -109,7 +115,7 @@ public class Manager7 extends MenuManager{
 						}
 					}
 				}
-				saveButton.setEditable(false);
+				saveButton.setEnabled(false);
 				break;
 			case "doSave":
 				String toPath = ((PathFinderPopup)popup).getPath();
@@ -130,7 +136,7 @@ public class Manager7 extends MenuManager{
 				}
 				
 				filePath = toPath; //just save it without loading stuff
-				saveButton.setEditable(false);
+				saveButton.setEnabled(false);
 				setPopup(null);
 				break;
 			case "doLoad":
@@ -142,12 +148,22 @@ public class Manager7 extends MenuManager{
 				break;
 			case "pathUp":
 				((PathFinderPopup)popup).goUpDirectory();
+				if(directoryScroll != null)
+					directoryScroll.setOffset(0);
 				break;
 			case "directoryButton":
 				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
+				if(directoryScroll != null)
+					directoryScroll.setOffset(0);
 				break;
 			}
 		}
+	}
+	
+	private void createPopup(boolean shouldLoad) {
+		PathFinderPopup pop = new PathFinderPopup(shouldLoad, "350", "200");
+		directoryScroll = pop.getContentBar();
+		setPopup(pop);
 	}
 	
 	private void setPath(String filePath) {
@@ -155,7 +171,7 @@ public class Manager7 extends MenuManager{
 		
 		if(filePath == null) {
 			fileContents.setMessage("");
-			saveButton.setEditable(false);
+			saveButton.setEnabled(false);
 		}else {
 			//actually load the file up too
 			Scanner scan = null;
@@ -169,9 +185,9 @@ public class Manager7 extends MenuManager{
 				fileContents.setMessage(fullString);
 				//if it is a txt file, we will not allow word splitting
 				if(filePath.substring(filePath.lastIndexOf('.')+1).equals("txt"))
-					fileContents.allowWordSplitting(false);
+					fileContents.setWordSplitting(false);
 				else
-					fileContents.allowWordSplitting(true);
+					fileContents.setWordSplitting(true);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {
@@ -187,7 +203,7 @@ public class Manager7 extends MenuManager{
 		if(id == null)
 			return;
 		if(id.equals("fileContents") && filePath != null) { //a change has been made to the file
-			saveButton.setEditable(true);
+			saveButton.setEnabled(true);
 		}else if(id.equals("fileName")) {
 			((PathFinderPopup)popup).emptySelection(((TextBox)c).getMessage().isEmpty());
 		}else if(id.equals("path")) {
@@ -233,7 +249,7 @@ public class Manager7 extends MenuManager{
 				clickableAction(new Button("new", null, null, 0, 0, null, null));
 				break;
 			case KeyEvent.VK_S: //ctr-S
-				if(saveButton.isEditable())
+				if(saveButton.isEnabled())
 					clickableAction(new Button("save", null, null, 0, 0, null, null));
 				else
 					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
@@ -267,7 +283,7 @@ public class Manager7 extends MenuManager{
 		//we are going to add some extra hotkeys for textbox
 		if(clicked instanceof TextEditBox) {
 			TextEditBox box = (TextEditBox) clicked;
-			if(box.isHotkeyEnabled()) {
+			if(box.getHotkeyEnabled()) {
 				//do something here for the arrow keys in regards to control
 				if(controlOn) {
 					if(shiftOn) {

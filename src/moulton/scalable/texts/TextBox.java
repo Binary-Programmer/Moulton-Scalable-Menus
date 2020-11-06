@@ -21,23 +21,17 @@ import moulton.scalable.draggables.ScrollableComponent;
  * The text that is contained in the box is saved as {@link #message}. A hint (if any) is saved as
  * {@link #hint}. If a scroll bar is to be associated with this text box, use {@link #textScroller}.
  * <p>
- * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or
- * disabled:<ul>
+ * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:
+ * <ul>
  * <li>{@link #sordSplitting} defines whether lines can be split on words or only on break characters.
- * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but
- * not shown
- * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is
- * in virtual space.
+ * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but not shown
+ * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is in virtual space.
  * <li>{@link #charMax} sets whether the text box has a maximum number of characters.
- * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for
- * security, for example: password boxes).
+ * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for security, for example: password boxes).
  * <li>{@link #deselectOnEnter} determines whether an input of enter will deselect the text box.
- * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message.
- * Not recommended to be true if {@code deselectOnEnter} is true.
- * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with
- * this text box. All hotkeys that this enables are defined by {@link HotkeyTextComponent}.
- * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set
- * to clicked.
+ * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message. Not recommended to be true if {@code deselectOnEnter} is true.
+ * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotkeyTextComponent}.
+ * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set to clicked.
  * </ul>
  * @author Matthew Moulton
  */
@@ -154,7 +148,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	//cached
 	/**The font metrics used by the Graphics object that was last rendered on*/
-	private FontMetrics fontMetrics;
+	protected FontMetrics fontMetrics;
 	
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -248,8 +242,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return the index in {@link #message}
 	 */
 	protected int findIndex(int mouseX, int mouseY) {
-		//TODO small issue where clicking below the last shown row goes too far virtually
-		//more obvious with the down key for TextEditBox.
 		if(fontMetrics!=null && message!=null && !message.isEmpty()) {
 			//Remember that clickBoundary is a two-dimensional array. The 0th index holds x coords,
 			//the 1st holds y coordinates.
@@ -269,14 +261,12 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			//find which row the click was on
 			int row = rows; //default to bottom (impossible index)
 			int bufferWidth = fontMetrics.stringWidth(bufferChar)/2;
-			Boolean endLocation = null; //false is before, true is after, null is none
 			if(mouseY-topY < 2*fontMetrics.getLeading() + centeringY) { //above the top row
 				if(rows>1) { //multi-line box
 					//the index will be the end of the row above the start shift
-					if(startShift>0) {
+					if(startShift>0)
 						row = -1;
-						endLocation = false;
-					}else //no start shift, and top of row just means index 0
+					else //no start shift, and top of row just means index 0
 						return 0;
 				}else { //one-line box
 					//for one-liners, just treat this as the very beginning since there is only one row
@@ -293,9 +283,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 			}if(row == rows) { //so if it was unchanged, below the last row
 				//if we have multiple rows and virtual space, then we have to keep processing to find which line
-				if(rows>1 && getHasVirtualSpace()) 
-					endLocation = false;
-				else //there is only one row or virtual space is off
+				if(rows<=1 || !getHasVirtualSpace()) //there is only one row or virtual space is off
 					return message.length();
 			}
 			
@@ -311,7 +299,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 			
 			int sum = 0; //variable that will keep track of the number of letters shown thus far
-			String rem = message; //the remainder to process. Clicking forces message instead of hint or other
+			String rem = message; //the remainder to process. We only find an index in the message- not hint
 			
 			//shift modifications
 			int shift=0;
@@ -368,14 +356,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 			//now we have the line
 			int i = line.length();
-			if(endLocation != null) { //edge cases
-				if(endLocation == true) { //before, thus the end of this line
-					return i + sum;
-				}else if (endLocation == false) { //after, thus the first index of this line
-					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
-					return sum + (this.sordSplitting? 1:0);
-				}
-			}
 			//this line could be left aligned, center aligned, or right aligned
 			int here = getLineXOffs(line, underscoreWidth/2, leftX, ww);
 			

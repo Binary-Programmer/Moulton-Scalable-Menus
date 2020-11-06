@@ -23,12 +23,6 @@ public class TextEditBox extends TextBox{
 		super(id, message, parent, x, y, font, color);
 	}
 	
-	/* TODO Fix vertical movement:
-	 * something funny is going on with vertical movement. When I get to the end of the file, as long
-	 * as the last line is not empty, pressing the down arrow will sometimes cause the blinker to wrap
-	 * back up several rows. Some of this is visual, but it seems that some of it is functional (as in
-	 * when it wraps up, if you type, it will in fact insert text at that location).
-	 */
 	public void moveVertical(boolean up) {
 		if(up)
 			lastBlinkerY -= hheight;
