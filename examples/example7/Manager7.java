@@ -20,7 +20,6 @@ import moulton.scalable.utils.GridFormatter;
 
 public class Manager7 extends MenuManager{
 	private TextEditBox fileContents;
-	private ScrollBar directoryScroll;
 	private Button saveButton;
 	
 	private String filePath = null;
@@ -117,6 +116,8 @@ public class Manager7 extends MenuManager{
 				}
 				saveButton.setEnabled(false);
 				break;
+				
+			//Path Finder Pop up actions
 			case "doSave":
 				String toPath = ((PathFinderPopup)popup).getPath();
 				fw = null;
@@ -148,13 +149,9 @@ public class Manager7 extends MenuManager{
 				break;
 			case "pathUp":
 				((PathFinderPopup)popup).goUpDirectory();
-				if(directoryScroll != null)
-					directoryScroll.setOffset(0);
 				break;
 			case "directoryButton":
 				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
-				if(directoryScroll != null)
-					directoryScroll.setOffset(0);
 				break;
 			}
 		}
@@ -162,7 +159,6 @@ public class Manager7 extends MenuManager{
 	
 	private void createPopup(boolean shouldLoad) {
 		PathFinderPopup pop = new PathFinderPopup(shouldLoad, "350", "200");
-		directoryScroll = pop.getContentBar();
 		setPopup(pop);
 	}
 	
@@ -202,9 +198,7 @@ public class Manager7 extends MenuManager{
 		String id = c.getId();
 		if(id == null)
 			return;
-		if(id.equals("fileContents") && filePath != null) { //a change has been made to the file
-			saveButton.setEnabled(true);
-		}else if(id.equals("fileName")) {
+		if(id.equals("fileName")) {
 			((PathFinderPopup)popup).emptySelection(((TextBox)c).getMessage().isEmpty());
 		}else if(id.equals("path")) {
 			((PathFinderPopup)popup).setPath(((TextBox)c).getMessage());

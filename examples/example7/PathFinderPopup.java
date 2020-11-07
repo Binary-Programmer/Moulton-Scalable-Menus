@@ -56,6 +56,8 @@ public class PathFinderPopup extends Popup{
 	
 	public void goUpDirectory() {
 		String path = pathDisplay.getMessage();
+		if(contentBar != null)
+			contentBar.setOffset(0);
 		if(path.lastIndexOf('\\') != path.indexOf('\\')) //if there are at least two \s
 			setPath(path.substring(0, path.lastIndexOf('\\')));
 		else {
@@ -99,18 +101,20 @@ public class PathFinderPopup extends Popup{
 	
 	public void select(String name) {
 		//if this leads to a directory, move to it. If a file, select it
-		String fullPath = pathDisplay.getMessage()+"\\"+name;
+		String fullPath = pathDisplay.getMessage();
+		if(fullPath.charAt(fullPath.length()-1) != '\\') //bottom dirs already have the \\ preface
+			fullPath += '\\';
+		fullPath += name;
 		File file = new File(fullPath);
-		if(file.isDirectory())
+		
+		if(file.isDirectory()) {
 			setPath(fullPath);
-		else if(file.isFile()) {
+			if(contentBar != null)
+				contentBar.setOffset(0);
+		}else if(file.isFile()) {
 			fileName.setMessage(name);
 			emptySelection(false);
 		}
-	}
-	
-	public ScrollBar getContentBar() {
-		return contentBar;
 	}
 
 }
