@@ -217,25 +217,57 @@ public class Manager7 extends MenuManager{
 				clickableAction(new Button("cancel", null, null, 0, 0, null, null));
 		}if(clicked instanceof TextEditBox) {
 			TextEditBox box = (TextEditBox)clicked;
-			if(shiftOn) {
+			if(!shiftOn && (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT ||
+					key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN))
+				box.removeSelection();
+			
+			if(controlOn) {
+				if(shiftOn) {
+					if(key == KeyEvent.VK_LEFT) //selection left to break
+						box.selectShift(true, true);
+					else if(key == KeyEvent.VK_RIGHT) //selection right to break
+						box.selectShift(false, true);
+				}else {
+					if(key == KeyEvent.VK_LEFT) //left shift to break
+						box.moveToBreak(true);
+					if(key == KeyEvent.VK_RIGHT) //right shift to break
+						box.moveToBreak(false);
+					if(key == KeyEvent.VK_BACK_SPACE) //backspace to break
+						box.deleteToBreak(true);
+					if(key == KeyEvent.VK_DELETE) //delete to break
+						box.deleteToBreak(false);
+				}
+				return;
+			}else {
 				if(key == KeyEvent.VK_UP)
 					box.selectVertical(true);
 				else if(key == KeyEvent.VK_DOWN)
 					box.selectVertical(false);
-			}else {
-				if(key == KeyEvent.VK_UP)
-					box.moveVertical(true);
-				else if(key == KeyEvent.VK_DOWN)
-					box.moveVertical(false);
+				
+				if(shiftOn) {
+					if(key == KeyEvent.VK_LEFT) //begin selection left
+						box.selectShift(true, false);
+					else if(key == KeyEvent.VK_RIGHT) //begin selection right
+						box.selectShift(false, false);
+					return;
+				}else {
+					if(key == KeyEvent.VK_UP)
+						box.moveVertical(true);
+					if(key == KeyEvent.VK_DOWN)
+						box.moveVertical(false);
+				}
 			}
+			super.keyPressed(key);
+			if(key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE)
+				addUndoEntry(fileContents.getMessage());
 		}
 		if(controlOn) {
 			if(shiftOn) {
 				if(key == KeyEvent.VK_S) //save as
 					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
 			}
-			boolean accepted = true;
 			switch(key) {
+			case KeyEvent.VK_O: //ctr-O
 			case KeyEvent.VK_L: //ctr-L
 				clickableAction(new Button("load", null, null, 0, 0, null, null));
 				break;
@@ -268,46 +300,9 @@ public class Manager7 extends MenuManager{
 					fileContents.setMessage(undoHistory[histIndex]);
 				}
 				break;
-			default:
-				accepted = false;
-			}
-			if(accepted) //don't process more if we already found the correct action to the input
-				return;
-		}
-		//we are going to add some extra hotkeys for textbox
-		if(clicked instanceof TextEditBox) {
-			TextEditBox box = (TextEditBox) clicked;
-			if(box.getHotkeyEnabled()) {
-				//do something here for the arrow keys in regards to control
-				if(controlOn) {
-					if(shiftOn) {
-						if(key == KeyEvent.VK_LEFT) //selection left to break
-							box.selectShift(true, true);
-						else if(key == KeyEvent.VK_RIGHT) //selection right to break
-							box.selectShift(false, true);
-					}else {
-						if(key == KeyEvent.VK_LEFT) //left shift to break
-							box.moveToBreak(true);
-						if(key == KeyEvent.VK_RIGHT) //right shift to break
-							box.moveToBreak(false);
-						if(key == KeyEvent.VK_BACK_SPACE) //backspace to break
-							box.deleteToBreak(true);
-						if(key == KeyEvent.VK_DELETE) //delete to break
-							box.deleteToBreak(false);
-					}
-					return;
-				}else if(shiftOn) {
-					if(key == KeyEvent.VK_LEFT) //begin selection left
-						box.selectShift(true, false);
-					else if(key == KeyEvent.VK_RIGHT) //begin selection right
-						box.selectShift(false, false);
-					return;
-				}
 			}
 		}
-		super.keyPressed(key);
-		if(key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE)
-			addUndoEntry(fileContents.getMessage());
+		
 	}
 	
 	public void keyReleased(int key) {

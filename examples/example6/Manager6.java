@@ -36,7 +36,7 @@ public class Manager6 extends MenuManager implements AnimationListener{
 	@Override
 	public void render(Graphics g) {
 		super.render(g);
-		if(scrollButtons[0].isEditable() || scrollButtons[1].isEditable())
+		if(scrollButtons[0].isEnabled() || scrollButtons[1].isEnabled())
 			part.setVerticalPartition("width/1.1");
 		else
 			part.setVerticalPartition("width");
@@ -84,15 +84,18 @@ public class Manager6 extends MenuManager implements AnimationListener{
 			flower.setAnimationPlay(true);
 		}else if(c.getId().equals("reappear")) {
 			flowerButton.setVisible(true);
-			flowerButton.setEditable(true);
+			flowerButton.setEnabled(true);
 			flower.startAnimation();
 			flower.setAnimationPlay(false);
 		}else if(c.getId().equals("clear")) {
 			box.setMessage("");
 		}else if(c.getId().equals("add")) {
+			//add some sample text to show off the partition
 			box.setMessage("Alphabet: Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu"
 					+ " Vv Ww Xx Yy Zz.\nRoman: I II III IV V VI VII VIII IX X");
-		}else if(c.getId().equals("up")) {
+		}
+		//to get the connected scroll bar buttons to work properly
+		else if(c.getId().equals("up")) {
 			bar.setOffset(bar.getOffset()-1);
 		}else if(c.getId().equals("down")) {
 			bar.setOffset(bar.getOffset()+1);

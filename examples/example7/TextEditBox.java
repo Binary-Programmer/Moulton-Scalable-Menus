@@ -23,6 +23,11 @@ public class TextEditBox extends TextBox{
 		super(id, message, parent, x, y, font, color);
 	}
 	
+	public void removeSelection() {
+		this.selection = false;
+		this.clickIndex = index;
+	}
+	
 	public void moveVertical(boolean up) {
 		if(up)
 			lastBlinkerY -= hheight;
@@ -35,7 +40,7 @@ public class TextEditBox extends TextBox{
 	public void selectVertical(boolean up) {
 		int ci = index;
 		moveVertical(up);
-		if(index != ci) {
+		if(index != ci && !selection) {
 			selection = true;
 			clickIndex = ci;
 		}
@@ -93,7 +98,7 @@ public class TextEditBox extends TextBox{
 			moveToBreak(left);
 		else
 			shiftIndex(left? -1:1);
-		if(index != ci) {
+		if(index != ci && !selection) {
 			selection = true;
 			clickIndex = ci;
 		}

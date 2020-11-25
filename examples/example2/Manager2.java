@@ -37,7 +37,7 @@ public class Manager2 extends MenuManager{
 		Font font = new Font("Arial",Font.PLAIN,20);
 		box = new TextBox("box","",grid,0,0,font,Color.LIGHT_GRAY);
 		box.setMessage("Here is some text so that this box won't be all empty and stuff. That would be bad.");
-		box.setEditable(false);
+		box.setEnabled(false);
 		addTouchResponsiveComponent(box);
 		
 		Panel here = new Panel(grid,1,0,Color.GREEN);
@@ -67,7 +67,7 @@ public class Manager2 extends MenuManager{
 	@Override
 	protected void clickableAction(Clickable c) {
 		if(c.getId().equals("button")) {
-			box.setEditable(!box.isEditable());
+			box.setEnabled(!box.isEnabled());
 		}else if(c.getId().equals("invisible")) {
 			setPopup(new NotificationPopup("You pressed the invisible button!", "ok", null, new Font("Arial",Font.PLAIN,12), false));
 		}else if(c.getId().equals("ok")) {

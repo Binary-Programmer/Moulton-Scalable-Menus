@@ -103,9 +103,7 @@ public class Manager4 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {
-		
-	}
+	protected void lostFocusAction(Clickable c) {}
 	
 	private BufferedImage rotateImage(BufferedImage image, int factorOf90Deg) {
 		//somehow you have changed the contents of image...

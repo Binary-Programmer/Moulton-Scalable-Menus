@@ -1,17 +1,57 @@
 package moulton.scalable.texts;
 
+/**
+ * The Line Break class serves as a utility for text based classes, such as the {@link TextHistory}
+ * and the {@link TextBox}. A LineBreak instance can be generated through
+ * {@link #check(boolean, String, String)}. The instance will have data about how the text should be
+ * broken, such as the remaining line ({@link #LINE}), the remaining text after the break
+ * ({@link #REMAINDER}), and whether any characters were consumed ({@link #CHAR_CONSUMED}). These
+ * fields are public for easy access, but final to prevent data corruption.
+ * @author Matthew Moulton
+ */
 public class LineBreak {
+	/**
+	 * The text that is recommended to remain on the line. This field does not include any characters
+	 * that were consumed. If those characters are needed for further calculations, use {@link #RAW_LINE}.
+	 */
 	public final String LINE;
+	/**
+	 * The text that is recommended to remain on the line in addition to any characters that were
+	 * considered to be consumed by the line break. If no characters were consumed, this will be
+	 * equal to {@link #LINE}.
+	 */
 	public final String RAW_LINE;
+	/**
+	 * Text that was broken from the first line and is recommended to be placed on a successive line.
+	 * {@link #check(boolean, String, String)} only computes one break at a time, so this text may need
+	 * to be broken further.
+	 */
 	public final String REMAINDER;
+	/**
+	 * Whether a character was consumed in the line break. If a character was consumed, {@link #LINE}
+	 * and {@link #REMAINDER} will exclude it. 
+	 */
 	public final boolean CHAR_CONSUMED;
 	
+	/**
+	 * Creates a line break instance as initializes the constant values. Sets {@link #CHAR_CONSUMED}
+	 * to false, and {@link #RAW_LINE} to {@link #LINE}.
+	 * @param line the text for the line
+	 * @param rem the text left over from line
+	 */
 	protected LineBreak(String line, String rem) {
 		LINE = line;
 		RAW_LINE = line;
 		REMAINDER = rem;
 		CHAR_CONSUMED = false;
 	}
+	/**
+	 * Creates a line break instance as initializes the constant values. Sets {@link #CHAR_CONSUMED}
+	 * to true.
+	 * @param line the text for the line, excluding the consumed character
+	 * @param rawLine the text for the line, including the consumed character
+	 * @param rem the text left over from line
+	 */
 	protected LineBreak(String line, String rawLine, String rem) {
 		LINE = line;
 		RAW_LINE = rawLine;
@@ -19,6 +59,29 @@ public class LineBreak {
 		CHAR_CONSUMED = true;
 	}
 	
+	/**
+	 * Splits the line of text and returns an instance holding the results of the split.
+	 * <p>
+	 * It is assumed that prior to this method call, the contents of line have been found
+	 * to be one character too long. Therefore, a split must occur for the line to fit properly.
+	 * If wordSplit is true, then the algorithm does not need to worry about splitting words,
+	 * and the last character from line will be placed at the beginning of rem. However, if
+	 * wordSplit is false, an appropriate splitting place (such as a space, hyphen, or new line
+	 * character) will be searched for. Yet, if no appropriate splitting place is found in the
+	 * contents of line, a split will be performed as if wordSplit was true.
+	 * <p>
+	 * White space characters (such as a space or new line) will be consumed if they are split
+	 * on. Consumed characters will not be included in the line result or the remainder, but
+	 * can be accessed as {@link #RAW_LINE}.
+	 * @param wordSplit whether words may be split midway when not necessary (this is useful if
+	 * spaces have no inherent meaning as dividers in the text (for example, in encrypted text).
+	 * For most cases, wordSplit = true is recommended.
+	 * @param line the offending line that is one character too long. Once line has been trimmed
+	 * by this method, the result will be available as {@link #LINE}.
+	 * @param rem the remainder text from this line. Text that does not fit in {@link #LINE} will
+	 * be placed at the front of this string, called {@link #REMAINDER} in the result.
+	 * @return the line break instance, containing the result data of the split.
+	 */
 	public static LineBreak check(boolean wordSplit, String line, String rem) {
 		boolean charConsumed = false;
 		String rawLine = null;

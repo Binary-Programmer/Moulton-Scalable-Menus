@@ -40,12 +40,12 @@ public class Manager5 extends MenuManager{
 			if(b.getText().equals("!")) {
 				b.setText("Ok");
 				//disable virtuality
-				main.allowVirtualSpace(false);
-				bottom.allowVirtualSpace(false);
+				main.setHasVirtualSpace(false);
+				bottom.setHasVirtualSpace(false);
 			}else {
 				b.setText("!");
-				main.allowVirtualSpace(true);
-				bottom.allowVirtualSpace(true);
+				main.setHasVirtualSpace(true);
+				bottom.setHasVirtualSpace(true);
 			}
 		}
 	}
