@@ -9,7 +9,7 @@ import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * A button that displays an animation on its button face.
+ * A button that displays an {@link Animation} on its button face.
  * @author Matthew Moulton
  */
 public class AnimatedButton extends RadioButton {

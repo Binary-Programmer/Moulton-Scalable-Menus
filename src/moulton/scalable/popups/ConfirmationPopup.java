@@ -57,6 +57,16 @@ public class ConfirmationPopup extends Popup {
 		init(text, okId, cancelId, title, font, exitButton, option);
 	}
 
+	/**
+	 * Called to set up the pop up
+	 * @param text the text that the pop up will contain
+	 * @param okId the id of the ok button
+	 * @param cancelId the id of the cancel button
+	 * @param title the title of the pop up
+	 * @param font the pop up's font
+	 * @param exitButton whether this pop up should contain an exit button
+	 * @param option whether this pop up should be yes/no (for true), or ok/cancel (for false)
+	 */
 	private void init(String text, String okId, String cancelId, String title, Font font, boolean exitButton, boolean option) {
 		base.setOutline(true);
 		blanketBackground = new Color(0x33DDDDDD, true);

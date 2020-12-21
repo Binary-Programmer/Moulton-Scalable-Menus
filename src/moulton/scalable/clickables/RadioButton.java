@@ -30,6 +30,15 @@ public abstract class RadioButton extends Clickable {
 	/**The color of the button when touched*/
 	protected Color colorTouched = null;
 	
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button with string expressions.
+	 * @param id the identification string of the button
+	 * @param parent the panel in which this button resides
+	 * @param x the left-most x position of this button
+	 * @param y the top-most y position of this button
+	 * @param color the color of this button's face
+	 */
 	public RadioButton(String id, Panel parent, String x, String y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;
@@ -38,6 +47,15 @@ public abstract class RadioButton extends Clickable {
 			colorLight = color.brighter();
 		}
 	}
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button to reside in a grid at the int coordinates.
+	 * @param id the identification string of the button
+	 * @param parent the panel in which this button resides
+	 * @param x the x grid index of this component
+	 * @param y the y grid index of this component
+	 * @param color the color of this button's face
+	 */
 	public RadioButton(String id, Panel parent, int x, int y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;

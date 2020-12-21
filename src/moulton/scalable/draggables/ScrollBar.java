@@ -309,6 +309,12 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 		return barOffs;
 	}
 	
+	/**
+	 * Verifies that this scroll bar is enabled then updates the attached scroll bars
+	 * ({@link #scrollNeg} and {@link #scrollPos}) as necessary. Called by {@link #setBarOffs(int)},
+	 * {@link #setTotalOffs(int)}, {@link #setTotalOffs(int, boolean)}, {@link #setOffset(int)}, and
+	 * {@link #setOffsets(int, int, int)}.
+	 */
 	protected void updateScrollButtons() {
 		boolean inUse = isEnabled() && barOffs<totalOffs;
 		if(scrollNeg != null)

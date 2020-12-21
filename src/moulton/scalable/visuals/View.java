@@ -17,6 +17,7 @@ public class View extends MenuComponent {
 	 * @see #setImage(BufferedImage)
 	 * @see #getImage()*/
 	protected BufferedImage image = null;
+	/**String expressions to represent the dimensions of this view*/
 	protected String width, height;
 	/**Whether the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
 	 * @see #isMaintainAspectRatio()
