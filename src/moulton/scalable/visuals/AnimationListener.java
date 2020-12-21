@@ -6,7 +6,6 @@ package moulton.scalable.visuals;
  * @author Matthew Moulton
  */
 public interface AnimationListener {
-	
 	/**
 	 * This action occurs when an animation reaches a natural end and stops. This will
 	 * <i>not</i> be called when the animation is paused by 
