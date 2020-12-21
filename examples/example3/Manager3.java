@@ -37,7 +37,7 @@ public class Manager3 extends MenuManager {
 		entry = new TextBox("entry","",menu,"0","height-50","?width-width/10","50", font,Color.LIGHT_GRAY);
 		entry.setHint("...");
 		ok = new Button("ok","Ok",menu,"width-width/10","height-50","?width","50",font,Color.GREEN);
-		hist.allowWordSplitting(false);
+		hist.setWordSplitting(false);
 		hist.setTextDemarkation(true);
 	}
 

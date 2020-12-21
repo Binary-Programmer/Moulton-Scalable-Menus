@@ -8,7 +8,7 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 * [Examples](#examples)
 
 ## Technologies
-The Project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
+The project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
 
 ## Setup
 Download either the source .java files or select a version of the pre-compiled .jar files. Add Moulton Scalable Menus as a dependency to your intended project.
@@ -71,4 +71,4 @@ Example 6 shows off text boxes with virtual space, scrolling vertically or horiz
 Example 5 shows off animated buttons and partitions.
 
 ### Example 7
-Example 7 shows off pop ups.
+Example 7 shows off pop ups and the TextEditBox, a subclass of TextBox that has extra functionality such as vertical arrow key support, shift selection, and control text navigation.

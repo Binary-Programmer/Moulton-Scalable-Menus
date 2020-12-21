@@ -37,5 +37,5 @@ public interface HotkeyTextComponent extends TextInputComponent{
 	 * @return whether the instance should allow the {@link MenuManager} to alter its contents by user hotkey
 	 * input
 	 */
-	public boolean isHotkeyEnabled();
+	public boolean getHotkeyEnabled();
 }

@@ -35,12 +35,16 @@ public class Panel extends MenuComponent {
 	 * time and then solving the algebraic expressions in the component that defines its location.*/
 	protected LinkedList<MenuComponent> comps = new LinkedList<MenuComponent>();
 	
+	/**The formatter for the grid-based components held by this panel.
+	 * Components can be added to the grid by {@link #addToGrid(MenuComponent, int, int)} and removed by
+	 * {@link #removeFromGrid(int, int, boolean)}, though {@link MenuComponent} handles this procedure
+	 * automatically for construction and parent setting. */
 	protected GridFormatter grid = new GridFormatter();
 	/**Whether or not text components should increase in size relative to height. When text size must be 
 	 * determined, if this panel has not set its value (defaults to null), it will defer to its parent panel.
 	 * If no preference has been set, text will not resize relatively.
 	 * @see #textResize
-	 * @see #setTextResize(boolean)
+	 * @see #setTextResize(Boolean)
 	 * @see #setTextResizeFactor(int)*/
 	private Boolean textResize = null;
 	/**The height of the panel (in pixels) at last render. Used by {@link MenuComponent} to know how much

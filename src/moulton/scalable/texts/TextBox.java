@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 
 import moulton.scalable.clickables.Clickable;
 import moulton.scalable.containers.Panel;
@@ -13,21 +14,23 @@ import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
 
 /**
- * This is a text box that users can enter data into, the available characters for which is defined by {@link TextFormat}. This class also has
- * the functionality of mouse dragging to select multiple characters to be manipulated, and thereby offers support for copy, cut, and paste functions.
+ * This is a text box that users can enter data into, the available characters for which is defined by
+ * {@link TextFormat}. This class also has the functionality of mouse dragging to select multiple characters
+ * to be manipulated, and thereby offers support for copy, cut, and paste functions.
  * <p>
- * The text that is contained in the box is saved as {@link #message}. A hint (if any) is saved as {@link #hint}. If a scroll bar is to be
- * associated with this text box, use {@link #textScroller}.
+ * The text that is contained in the box is saved as {@link #message}. A hint (if any) is saved as
+ * {@link #hint}. If a scroll bar is to be associated with this text box, use {@link #textScroller}.
  * <p>
- * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:<ul>
- * <li>{@link #wordSplitting} defines whether lines can be split on words or only on break characters.
- * <li>{@link #virtualSpace} decides whether the text box can have text in its message that is saved but not shown
+ * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:
+ * <ul>
+ * <li>{@link #sordSplitting} defines whether lines can be split on words or only on break characters.
+ * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but not shown
  * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is in virtual space.
  * <li>{@link #charMax} sets whether the text box has a maximum number of characters.
  * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for security, for example: password boxes).
  * <li>{@link #deselectOnEnter} determines whether an input of enter will deselect the text box.
  * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message. Not recommended to be true if {@code deselectOnEnter} is true.
- * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hotkeys that this enables are defined by {@link HotkeyTextComponent}.
+ * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotkeyTextComponent}.
  * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set to clicked.
  * </ul>
  * @author Matthew Moulton
@@ -57,68 +60,75 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**The color of the box when touched.
 	 * @see #setTouchedColor(Color)*/
 	protected Color colorTouched = null;
+	/**The string measured for buffering the sides in rendering. Each side of the text must be at least
+	 * half this width from the text box border. The actual padding value is calculated at render time
+	 * as to scale with the component's text size. Defaults as the underscore (_).*/
+	protected String bufferChar = "_";
 	
 	//text control fields
-	/**Whether or not the blinker is shown. The blinker will automatically blink every {@link #blinkTime} ms which is kept track of
+	/**Whether or not the blinker is shown. The blinker will automatically blink every {@link #blinkTime}
+	 * ms which is kept track of
 	 * by {@link #timer} and {@link #timeLast}.
 	 * @see #refreshBlinker()*/
 	protected boolean showBlinker = false;
-	/**The time in milliseconds the blinker should wait before toggling on/off. Default value is 1000 ms = 1 sec. -1 indicates that the
-	 * blinker should not toggle */
+	/**The time in milliseconds the blinker should wait before toggling on/off.
+	 * Default value is 1000 ms = 1 sec. A value of -1 indicates that the blinker should not toggle. */
 	protected int blinkTime = 1000;
 	/**The last time the time was added onto timer */
 	protected long timeLast;
 	/**The sum of time differences since last blink toggle of on/off. */
 	protected long timer;
-	/**The point at which the blinker is in the message. Also the point at which any new input will be inserted */
+	/**The point at which the blinker is in the message. Also the point where any new input will be inserted. */
 	protected int index = 0;
-	/**How much the index where the text box starts displaying is shifted. If the text box has more than one row,
-	 * a shift will be in rows. Otherwise, shifts will be horizontal. The shift can be controlled by the connected
-	 * scroll bar saved as {@link #textScroller}.
+	/**How much the index where the text box starts displaying is shifted. If the text box has more than one
+	 * row, a shift will be in rows. Otherwise, shifts will be horizontal. The shift can be controlled by
+	 * the connected scroll bar saved as {@link #textScroller}.
 	 * @see #setStartShift(int)*/
 	protected int startShift = 0;
-	/**The scroll bar to change {@link #startShift} and view text in unseen virtual space if allowed ({@link #virtualSpace}).
+	/**The scroll bar to change {@link #startShift} and view text in unseen virtual space if allowed
+	 * ({@link #hasVirtualSpace}).
 	 * @see #getTextScroller()
 	 * @see #setTextScroller(ScrollBar)*/
 	protected ScrollBar textScroller = null;
 	
 	//click and selection fields
-	/**The index of the mouse click. When the user drags the mouse, clickIndex stays the same but {@link #index} changes. The selection
-	 * is defined as the text between the two indices.<p>Can be determined by {@link #findIndex(int, int)}.*/
+	/**The index of the mouse click. When the user drags the mouse, clickIndex stays the same but
+	 * {@link #index} changes. The selection is defined as the text between the two indices.<p>
+	 * Can be determined by {@link #findIndex(int, int)}.*/
 	protected int clickIndex = 0;
-	/**Whether there currently is a selection of text. Also determines whether {@link #clickIndex} is relevant. That text selection
-	 * can be retrieved with {@link #getSelectedText()}.*/
+	/**Whether there currently is a selection of text. Also determines whether {@link #clickIndex} is
+	 * relevant. That text selection can be retrieved with {@link #getSelectedText()}.*/
 	protected boolean selection = false;
 	/**The pixel point of the last mouse click.*/
 	protected int[] mouseClickXY = new int[2];
 	
 	//optional functionality
-	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text box,
-	 * encountering and end of line will force previous characters (until a break) to the next line.
+	/**Whether word splitting is allowed for end of lines. In other words, whether in rendering the text
+	 * box, encountering and end of line will force previous characters (until a break) to the next line.
 	 * Break characters include space, new line, and hyphens. Defaults to false.
-	 * @see #getAllowWordSplitting()
-	 * @see #allowWordSplitting(boolean)*/
-	protected boolean wordSplitting = false;
+	 * @see #getWordSplitting()
+	 * @see #setWordSplitting(boolean)*/
+	protected boolean sordSplitting = false;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
-	 * @see #isHotkeyEnabled()
+	 * @see #getHotkeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
 	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
 	 * the default.
 	 * @see #setCharLimit(int)*/
 	protected int charMax = -1;
-	/**The character to replace the actual message content. The specified character will be repeated to match the
-	 * length of the message when shown. If null, no mask will be applied. If the character is invisible (value less
-	 * than 32), then an empty string will be returned. Defaults to null.
+	/**The character to replace the actual message content. The specified character will be repeated to
+	 * match the length of the message when shown. If null, no mask will be applied. If the character is
+	 * invisible (value less than 32), then an empty string will be returned. Defaults to null.
 	 * @see #setCharMask(Character)
 	 * @see #getShowMessage()*/
 	protected Character charMask = null;
 	/**Whether input can be put outside of the visible box. Defaults to true.
-	 * @see #getAllowVirtualSpace()
-	 * @see #allowVirtualSpace(boolean)*/
-	protected boolean virtualSpace = true;
-	/**If the text box {@link #getAllowVirtualSpace()} and some of the message is cut off in display, this will
-	 * decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
+	 * @see #getHasVirtualSpace()
+	 * @see #setHasVirtualSpace(boolean)*/
+	protected boolean hasVirtualSpace = true;
+	/**If the text box {@link #getHasVirtualSpace()} and some of the message is cut off in display, this
+	 * will decide whether a small mark will be displayed to indicate the cut off. Defaults to true.
 	 * @see #setCutOffMark(boolean)
 	 * @see #hasCutOffMark()*/
 	protected boolean cutOffMark = true;
@@ -136,8 +146,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #setClickSelectsAll(boolean)*/
 	protected boolean clickSelectsAll = false;
 	
+	//cached
 	/**The font metrics used by the Graphics object that was last rendered on*/
-	private FontMetrics fontMetrics;
+	protected FontMetrics fontMetrics;
 	
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -177,7 +188,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	/**
-	 * Sets the text format for this box. The text format determines which characters are valid for {@link #message}.
+	 * Sets the text format for this box. The text format determines which characters are valid for
+	 * {@link #message}.
 	 * @param tf the new text format, saved as {@link #format}.
 	 */
 	public void setTextFormat(TextFormat tf){
@@ -231,8 +243,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	protected int findIndex(int mouseX, int mouseY) {
 		if(fontMetrics!=null && message!=null && !message.isEmpty()) {
-			int hh = clickBoundary[1][3]-clickBoundary[1][0];
-			int ww = clickBoundary[0][1]-clickBoundary[0][0];
+			//Remember that clickBoundary is a two-dimensional array. The 0th index holds x coords,
+			//the 1st holds y coordinates.
+			//the TextBox formats the points in click boundary such that point 0 is the top-left,
+			//point 1 is the top-right, point 2 is the bottom right, and point 3 is the bottom-left
+			int topY = clickBoundary[1][0];
+			int bottomY = clickBoundary[1][3];
+			int leftX = clickBoundary[0][0];
+			int rightX = clickBoundary[0][1];
+			int hh = bottomY-topY;
+			int ww = rightX-leftX;
 			
 			int hheight = fontMetrics.getHeight();
 			String line = "";
@@ -240,15 +260,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			int centeringY = (hh-(rows*hheight))/2;
 			//find which row the click was on
 			int row = rows; //default to bottom (impossible index)
-			int bufferWidth = fontMetrics.stringWidth("_")/2;
-			Boolean endLocation = null; //false is before, true is after, null is none
-			if(mouseY-clickBoundary[1][0] < 2*fontMetrics.getLeading() + centeringY) { //above the top row
+			int bufferWidth = fontMetrics.stringWidth(bufferChar)/2;
+			if(mouseY-topY < 2*fontMetrics.getLeading() + centeringY) { //above the top row
 				if(rows>1) { //multi-line box
 					//the index will be the end of the row above the start shift
-					if(startShift>0) {
+					if(startShift>0)
 						row = -1;
-						endLocation = false;
-					}else //no start shift, and top of row just means index 0
+					else //no start shift, and top of row just means index 0
 						return 0;
 				}else { //one-line box
 					//for one-liners, just treat this as the very beginning since there is only one row
@@ -257,22 +275,22 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}else {
 				//start at top and work down
 				for(int i=0; i<rows; i++) {
-					if(mouseY-clickBoundary[1][0] < hheight*(i+1) + centeringY -1){
+					//find if the click location was less than the next row:
+					if(mouseY-topY < hheight*(i+1) + centeringY -1){
 						row = i;
 						break;
 					}
 				}
 			}if(row == rows) { //so if it was unchanged, below the last row
-				if(rows>1)
-					endLocation = true;
-				else //there is only one row, so go to very end
+				//if we have multiple rows and virtual space, then we have to keep processing to find which line
+				if(rows<=1 || !getHasVirtualSpace()) //there is only one row or virtual space is off
 					return message.length();
 			}
 			
 			//checks for single row boxes of left and right
 			if(rows <= 1) {
 				//if the mouse's x was in the left margin, then just one short of shift
-				if(mouseX < clickBoundary[0][0] + bufferWidth) {
+				if(mouseX < leftX + bufferWidth) {
 					if(startShift>0)
 						return startShift-1;
 					return 0;
@@ -281,13 +299,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 			
 			int sum = 0; //variable that will keep track of the number of letters shown thus far
-			String rem = message; //the remainder to process. Clicking forces message instead of hint or other
+			String rem = message; //the remainder to process. We only find an index in the message- not hint
 			
 			//shift modifications
 			int shift=0;
 			if(rows==1 && startShift>0 && message.length()>startShift) {
 				//if the mouse in right margin
-				if(mouseX > clickBoundary[0][1] - bufferWidth && message.length()>startShift+1) {
+				if(mouseX > rightX - bufferWidth && message.length()>startShift+1) {
 					shift = startShift+1;
 				}else
 					shift = startShift;
@@ -298,10 +316,12 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(rows>1)
 				shift = startShift;
 			
-			int underscoreWidth = fontMetrics.stringWidth("_");
+			int underscoreWidth = fontMetrics.stringWidth(bufferChar);
 			/*The inside width is the difference of the pixel width of the box and the underscore width.
 			 *This leaves spacing for half an underscore on both sides. */
 			int insideWidth = ww - underscoreWidth;
+			
+			boolean charConsumed = false; //a character consumed on the most recent line break
 			if(rem != null && !rem.isEmpty()){
 				//it only needs to go to row (instead of the whole message) because that is the data we need
 				for(int i=-shift; i<=row; i++) {
@@ -310,6 +330,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					String text = "";
 					int wwidth = 0; //the width in pixels of text on the line
 					
+					charConsumed = false; //resets for each line
 					while(wwidth<=insideWidth && !rem.isEmpty()) {
 						//transfer a character from rem to text
 						char nextChar = rem.charAt(0);
@@ -322,69 +343,25 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 					
 					if(wwidth>insideWidth && rows>1) { //the width is too long
-						boolean wordSplit = getAllowWordSplitting();
-						if(!wordSplit) {
-							int ii=text.length()-1;
-							for(; ii>-1; ii--) { //backtrack to find a suitable character to break on
-								char c = text.charAt(ii);
-								if(c == '\n' || c == ' ') { //these characters are just consumed in the break
-									rem = text.substring(ii+1) + rem;
-									text = text.substring(0, ii+1);
-									break;
-								}else if(c == '-') {
-									if(ii<text.length()-1) { //if the - was not the char too long
-										//keep the - on this line
-										rem = text.substring(ii+1) + rem;
-										text = text.substring(0, ii+1);
-									}else { //otherwise we have to put it on the next line
-										rem = text.substring(ii) + rem;
-										text = text.substring(0, ii);
-									}
-									break;
-								}
-							}
-							if(ii == -1) //no break character found, split the word
-								wordSplit = true;
-						}if(wordSplit) {
-							int length = text.length();
-							//if that character was a new line, just leave it on the text string to
-							//get counted then consumed
-							if(text.charAt(length-1) != '\n') {
-								//put a character from text back onto the remainder
-								rem = text.charAt(length-1) + rem;
-								text = text.substring(0, length-1);
-							}
-						}
+						LineBreak result = LineBreak.check(getWordSplitting(), text, rem);
+						text = result.LINE;
+						rem = result.REMAINDER;
+						charConsumed = result.CHAR_CONSUMED;
 					}
 					if(i!=row)
-						sum += text.length();
+						sum += text.length() + (charConsumed? 1:0);
 					else
 						line = text;
 				}
 			}
 			//now we have the line
 			int i = line.length();
-			if(endLocation != null) { //edge cases
-				if(endLocation == true) { //before, thus the end of this line
-					return i + sum;
-				}else if (endLocation == false) { //after, thus the first index of this line
-					//first that counts. when word splitting is allowed, this is a char in, otherwise, just the position
-					return sum + (this.wordSplitting? 1:0);
-				}
-			}
 			//this line could be left aligned, center aligned, or right aligned
-			int here = clickBoundary[0][0];
-			switch(alignment) {
-			case LEFT_ALIGNMENT:
-				here += underscoreWidth/2;
-				break;
-			case CENTER_ALIGNMENT:
-				here += ww/2 - (fontMetrics.stringWidth(line))/2;
-				break;
-			case RIGHT_ALIGNMENT:
-				here += ww - fontMetrics.stringWidth(line)-underscoreWidth/2;
-				break;
-			}
+			int here = getLineXOffs(line, underscoreWidth/2, leftX, ww);
+			
+			//start at the end, and shrink the string until we have nothing left
+			//i gets reused as the last j
+			
 			for(int j=i; j>-1; j--) {
 				//if it is less now, the index is one more than this
 				int newWidth = fontMetrics.stringWidth(line.substring(0, j));
@@ -403,14 +380,39 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		//if something didn't work, like if the message is empty or nothing, then return the message length, ie the index at the end of the message
 		return message.length();
 	}
+	/**
+	 * Gets the x-offset of where a line should begin based on the {@link #alignment}.
+	 * @param line the line to be rendered or to otherwise get the offset for.
+	 * @param bufferWidth the width of the buffer between the side of the text box and the beginning of
+	 * the text on that line. Typically half the width of an underscore character (_).
+	 * @param leftX the x value where the text box begins. The left-most x.
+	 * @param width the width of the box
+	 * @return the x-offset of where the given line should be drawn.
+	 */
+	protected int getLineXOffs(String line, int bufferWidth, int leftX, int width) {
+		int here = leftX;
+		switch(alignment) {
+		case LEFT_ALIGNMENT:
+			here += bufferWidth;
+			break;
+		case CENTER_ALIGNMENT:
+			here += width/2 - (fontMetrics.stringWidth(line))/2;
+			break;
+		case RIGHT_ALIGNMENT:
+			here += width - fontMetrics.stringWidth(line)-bufferWidth;
+			break;
+		}
+		return here;
+	}
 	
 	/**
 	 * Called in rendering. Gives the fill color of the box. If the box is not editable, white is used.
-	 * If the box is touched but does not have focus, colorTouched is used. Otherwise, the normal color is returned.
+	 * If the box is touched but does not have focus, colorTouched is used. Otherwise, the normal color
+	 * is returned.
 	 * @return the applicable color for rendering the fill of the box
 	 */
 	public Color getFillColor() {
-		if (!isEditable())
+		if (!isEnabled())
 			return Color.WHITE;
 		if(isTouched() && !getClicked() && colorTouched != null)
 			return colorTouched;
@@ -419,43 +421,26 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 
 	/**
-	 * Renders this text box with the provided graphics. If the box is displaying the message, is clicked, and
-	 * allows virtual text, it will shift the starting position ({@link #startShift}) to display where the blinker
-	 * would be placed. <p>
-	 * Calls . and . in the process. These can be overridden to easily adapt the functionality for subclasses.
+	 * Renders this text box with the provided graphics. If the box is displaying the message, is clicked,
+	 * and allows virtual text, it will shift the starting position ({@link #startShift}) to display where
+	 * the blinker would be placed. <p>
+	 * Calls {@link #drawTextLines(Graphics, String[], int, int, int, int, int, int)} and
+	 * {@link #drawBlinker(Graphics, int, int, int, int, int, int, int, int, int)} in the process.
+	 * These can be overridden to easily adapt the functionality for subclasses.
 	 */
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
-		int x, y, w, h;
-		if(getGridLocation()==null) {
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			// variant for input ending points instead of widths indicated by a starting question
-			if (this.width.charAt(0) == '?') {
-				//solve for the ending point
-				int x2 = xx + solveString(this.width.substring(1), ww, hh);
-				//deduce the width
-				w = x2 - x;
-			} else
-				w = solveString(this.width, ww, hh);
-			
-			if (this.height.charAt(0) == '?') {
-				int y2 = yy + solveString(this.height.substring(1), ww, hh);
-				h = y2 - y;
-			} else
-				h = solveString(this.height, ww, hh);
-		}else {
-			x = xx;
-			y = yy;
-			w = ww;
-			h = hh;
-		}
+		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
+		int x = rect.x;
+		int y = rect.y;
+		int w = rect.width;
+		int h = rect.height;
 		
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
-		g.setColor(editable? Color.BLACK: Color.GRAY);
+		g.setColor(enabled? Color.BLACK: Color.GRAY);
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
 		
@@ -496,7 +481,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			rem = getShowMessage();
 			g.setColor(Color.BLACK);
 			messageShown = true;
-		}else{
+		}else {
 			rem = hint;
 			g.setColor(Color.DARK_GRAY);
 			messageShown = false;
@@ -505,9 +490,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int blinkerRow = 0;
 		int blinkerX = 0;
 		int totalTextLength = rem.length();
-		//sets the blinker position regardless (useful for row or horiz shifting)
-		boolean setBlinker = false;
-		int underscoreWidth = fontMetrics.stringWidth("_");
+		//If we should set the blinker, then the set variable should be false. If we don't set the 
+		//blinker, then even though it hasn't been set, still pretend like it is.
+		boolean blinkerSet = !getClicked();
+		int underscoreWidth = fontMetrics.stringWidth(bufferChar);
 
 		if(h/hheight<1)
 			return;
@@ -525,21 +511,25 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			shift = startShift;
 		}
 
+		boolean finalLine = false; //in cases of newlines or overflow, we need to place an extra line
 		/*The inside width is the difference of the pixel width of the box and the underscore width.
 		 *This leaves spacing for half an underscore on both sides. */
 		int insideWidth = w - underscoreWidth;
 		//the iterator of the line we are working with
 		int i = 0;
+		//In some cases, we need to go back into the line loop after we thought that we finished
 		boolean redo;
 		do {
 			redo = false;
-			while(i<texts.length){
-				if(i<texts.length && texts[i] == null) //create the text if needed
+			finalLine = false;
+			while(i<texts.length) { //while we haven't exceeded the number of allotted lines
+				//create the text if needed
+				if(i<texts.length && texts[i] == null) 
 					texts[i] = "";
 				
 				//check for the blinker position
-				if(!setBlinker && rem.length()<=totalTextLength-index){
-					setBlinker = true;
+				if(!blinkerSet && rem.length()<=totalTextLength-index){
+					blinkerSet = true;
 					blinkerRow = i;
 					blinkerPlace = texts[i].length();
 					blinkerX = fontMetrics.stringWidth(texts[i]);
@@ -560,7 +550,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				//shift for single-line boxes
 				if(shift>0 && texts.length==1) {
 					//if the blinker has been set, the shift needs to decrease
-					if(setBlinker && isClicked) {
+					if(blinkerSet && isClicked) {
 						startShift -= shift; //adjust for next time
 						shift = 0; //render normal for the rest
 					}else {
@@ -573,56 +563,27 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				}
 				
 				//if the line is now too long to fit in row
-				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n'){
+				if(fontMetrics.stringWidth(texts[i])>insideWidth || texts[i].charAt(texts[i].length()-1)=='\n') {
 					if(texts.length>1) {
-						//if word split is not allowed, we will find a space or break
-						boolean wordSplit = getAllowWordSplitting();
-						if(!wordSplit) {
-							boolean loseChar = false;
-							boolean lineKeep = false;
-							int ii = texts[i].length()-1;
-							for(; ii>-1; ii--) {
-								char c = texts[i].charAt(ii);
-								if(c == ' ' || c == '\n') {
-									//the empty char should be consumed
-									loseChar = true;
-									break;
-								}else if(c == '-') {
-									loseChar = ii<texts[i].length()-1;
-									if(loseChar)
-										lineKeep = true;
-									break;
-								}
-							}
-							if(ii == -1) { //no space char found
-								//go ahead with normal line break
-								wordSplit = true;
-							}else { //found a break char
-								rem = texts[i].substring(ii+ (loseChar?1:0)) + rem;
-								if(lineKeep)
-									ii++;
-								texts[i] = texts[i].substring(0, ii);
-								//blinker or click affected by the row change
-								if(setBlinker && blinkerRow == i && blinkerPlace>ii)
-									setBlinker = false;
-								if(setClick && clickRow == i && clickPlace>ii)
-									setClick = false;
-							}
-						}//otherwise we can just remove the last added character
-						if(wordSplit) {
-							//if that character was a new line, consume it
-							if(texts[i].charAt(texts[i].length()-1) == '\n')
-								texts[i] = texts[i].substring(0, texts[i].length()-1);
-							else {
-								int length = texts[i].length();
-								rem = texts[i].charAt(length-1) + rem;
-								texts[i] = texts[i].substring(0, length-1);
-							}
-						}
+						LineBreak split = LineBreak.check(getWordSplitting(), texts[i], rem);
+						texts[i] = split.LINE; //for index calculation
+						rem = split.REMAINDER;
+						
+						//if the line break yielded nothing after and this is the end, then we need to
+						//signal that there is still a line down there to access
+						if(i==texts.length-1 && rem.isEmpty())
+							finalLine = true;
+						
+						//check if the blinker or click is affected by the change
+						int splitLocation = split.LINE.length();
+						if(blinkerSet && blinkerRow == i && blinkerPlace>splitLocation)
+							blinkerSet = false;
+						if(setClick && clickRow == i && clickPlace>splitLocation)
+							setClick = false;
 						
 						//shift modifications
 						if(shift>0) {
-							if(setBlinker && isClicked) { //if the blinker has already been placed
+							if(blinkerSet && isClicked) { //if the blinker has already been placed
 								//then we should shift to the blinker's place
 								//we will only need to shift up if startShift is greater than 0
 								startShift -= shift; //adjust for next time
@@ -643,8 +604,28 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					}
 				}
 			}
-			//if the blinker hasn't been set yet, it is further in the message
-			if(!setBlinker && getAllowVirtualSpace() && getClicked() && !rem.isEmpty()) {
+			
+			/* 
+			 * As we have reached the end of the allotted rows, there are two distinct problems that
+			 * may have arisen during earlier rendering. It is possible that neither has occurred,
+			 * but we still need to check for both.
+			 * 
+			 * First issue: If we have not placed the blinker yet but we were supposed to. In this
+			 * occurrence, the blinker position must be later on in the message. The procedure by
+			 * which we render (going through all of the message even when startShift will make us
+			 * ignore those lines), guarantees that the blinker position could not have been earlier.
+			 * If it was, we would have found it. Therefore, the position *must* be later on in the
+			 * message.
+			 * 
+			 * Second issue: It is a very rare case, but sometimes the frame of the application is
+			 * resized, and a text box acquires more space. Instead of having empty lines at the
+			 * bottom with a start shift, the text box should try to render as much as possible.
+			 */
+			//Check for first issue: If the blinker has not been set yet but should have (!setBlinker),
+			//and also if virtual space allows us to scroll.
+			if(!blinkerSet && getHasVirtualSpace()) {
+				//The solution to the first issue is to shift all the rows up and redo the last row.
+				//Hopefully that will find the blinker. If not, we will end up here again until we do.
 				if(texts.length>1) {
 					//shift all rows up
 					int ii=1;
@@ -663,28 +644,29 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 				redo = true; //go back into the loop
 				i--; //do the last line again
 				startShift++; //save for next time
-			}else if(messageShown && startShift>0 && rem.isEmpty()) {
-				//if there was empty space and unneeded offset
-				//if so, we have to do a complete redo
-				if((texts.length>1 && i<texts.length-1) || (texts.length==1 && 
-						fontMetrics.stringWidth(message.charAt(startShift-1)+texts[i])
-						< insideWidth && message.charAt(startShift-1)!='\n')) {
-					rem = getShowMessage();
-					setBlinker = false;
-					setClick = !selection;
-					texts = new String[h/hheight];
-					i = 0;
-					//decrease startShift to try to capture more text in the box
-					shift = --startShift;
-					redo = true;
-				}
+			}
+			//Check for the second issue: If the entire message has been processed (rem.isEmpty()),
+			//but we shifted (startShift>0) and we end up with an unprocessed line at the bottom
+			//(texts[texts.length-1]==null). It has to be *unprocessed* since sometimes returns or
+			//character overflow can put the blinker on the next line without anything to draw.
+			if(rem.isEmpty() && startShift>0 && texts.length>0 && texts[texts.length-1]==null) {
+				//if so, we have to do a complete redo, where we will move the shift up to include more
+				rem = getShowMessage();
+				blinkerSet = false;
+				setClick = !selection;
+				texts = new String[h/hheight];
+				i = 0;
+				//decrease startShift to try to capture more text in the box
+				shift = --startShift;
+				redo = true;
 			}
 		}while(redo);
+		
 		//do some more operations on the leftover text if it is the message
 		boolean endCutOff = false;
 		if(messageShown) {
 			//cut off extra if virtual space not allowed
-			if(!virtualSpace && !rem.isEmpty()) {
+			if(!hasVirtualSpace && !rem.isEmpty()) {
 				String tempMessage = getMessage();
 				setMessage(tempMessage.substring(0, tempMessage.length()-rem.length()));
 				//update the scroll bar
@@ -692,8 +674,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					textScroller.setBarOffs(0);
 			}
 			endCutOff = !rem.isEmpty(); //set this before the scroll bar calculation modifies it
+			
 			//update the scroll bar
-			if(virtualSpace && textScroller!=null) {
+			if(hasVirtualSpace && textScroller!=null) {
 				if(texts.length==1) { //one lined text box
 					int textLength = 0;
 					if(texts[0]!=null)
@@ -701,7 +684,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 					textScroller.setOffsets(totalTextLength, textLength, startShift);
 				}else {
 					//calculate the total number of lines
-					int extraLines = 0;
+					int extraLines = finalLine? 1:0;
 					String extraText = "";
 					while(!rem.isEmpty()) {
 						extraText += rem.charAt(0);
@@ -711,6 +694,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 						}else if(extraText.charAt(extraText.length()-1)=='\n') {
 							extraLines++;
 							extraText = ""; //reset the text
+							
+							if(rem.length()==1) //blinker at the very end
+								extraLines++;
 						}
 						rem = rem.substring(1); //remove the used character
 					}if(!extraText.isEmpty())
@@ -757,7 +743,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		}
 		
 		/* A start point and end point needs to be defined for the selection. Although clickIndex is where the click began, backwards dragging is
-		 * supported, which requires that we ascertain which is actually first. In rows[] and places[], 0 is the startpoint, and 1 is the end.
+		 * supported, which requires that we ascertain which is actually first. In rows[] and places[], 0 is the start point, and 1 is the end.
 		 */
 		int rows[] = {0,0};
 		int places[] = {0,0};
@@ -792,19 +778,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			int selWidth = fontMetrics.stringWidth(texts[ii].substring(start,end));
 
 			g.setColor(Color.BLACK);
-			int xOffs = 0;
-			//use a switch to determine the x offset
-			switch(alignment){
-			case LEFT_ALIGNMENT:
-				xOffs = x + underscoreWidth/2;
-				break;
-			case CENTER_ALIGNMENT:
-				xOffs = x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2;
-				break;
-			case RIGHT_ALIGNMENT:
-				xOffs = x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2);
-				break;
-			}
+			int xOffs = getLineXOffs(texts[ii], underscoreWidth/2, x, w);
 			//draw the rectangles and selection texts
 			int centerY = (h - (texts.length*hheight))/2;
 			g.fillRect(xOffs + fontMetrics.stringWidth(texts[ii].substring(0,start)), y + hheight*ii + centerY, selWidth, hheight);
@@ -831,17 +805,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		for(int ii=0; ii<texts.length; ii++) {
 			if(texts[ii]==null) //the text is done, move onto the next step
 				break;
-			switch(alignment){
-			case LEFT_ALIGNMENT:
-				g.drawString(texts[ii], x + underscoreWidth/2, y + hheight*ii + textOffset);
-				break;
-			case CENTER_ALIGNMENT:
-				g.drawString(texts[ii], x - (fontMetrics.stringWidth(texts[ii]))/2 + w/2, y + hheight*ii + textOffset);
-				break;
-			case RIGHT_ALIGNMENT:
-				g.drawString(texts[ii], x + w - (fontMetrics.stringWidth(texts[ii])+underscoreWidth/2), y + hheight*ii + textOffset);
-				break;
-			}
+			
+			int xx = getLineXOffs(texts[ii], underscoreWidth/2, x, w);
+			g.drawString(texts[ii], xx, y + hheight*ii + textOffset);
 		}
 	}
 	/**
@@ -885,7 +851,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Returns the message displayed on this text box.
 	 * @return {@link #message}
 	 */
-	public synchronized String getMessage() {
+	public String getMessage() {
 		return message;
 	}
 	
@@ -914,7 +880,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * been set. 
 	 * @param string the string provided as a replacement
 	 */
-	public synchronized void setMessage(String string) {
+	public void setMessage(String string) {
 		if(string == null)
 			string = "";
 		if(format != null)
@@ -924,8 +890,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
 		index = message.length(); //set the index to the end
-		if(message.length()<1 && textScroller != null) //the scroll bar should be unset
-			textScroller.setTotalOffs(0);
+		if(message.length()<1) {
+			startShift = 0;
+			if(textScroller != null) //the scroll bar should be unset
+				textScroller.setTotalOffs(0);
+		}
 	}
 	
 	/**
@@ -936,7 +905,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @param string the String to append on
 	 */
 	@Override
-	public synchronized void appendMessage(String string) {
+	public void appendMessage(String string) {
 		//handles any new line characters appropriately
 		if(!acceptEnter && string.indexOf('\n')!=-1) {
 			String[] sections = string.split("\n");
@@ -948,21 +917,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		}
 		
 		//deletes the selection if there is one
-		if(selection) {
-			int start, end;
-			if(clickIndex < index) {
-				start = clickIndex;
-				end = index;
-			}else {
-				start = index;
-				end = clickIndex;
-			}
-			message = message.substring(0, start) + message.substring(end);
-			//set the new index where the deletion starts
-			index = start;
-			//also, there is no more selection since we just deleted it
-			selection = false;
-		}
+		if(selection)
+			deleteSelection(null);
 		
 		if(format != null)
 			string = format.parseText(string);
@@ -983,64 +939,54 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void removeMessage(int chars) {
+		//we need to know which direction to delete from
 		boolean leftDelete = chars >= 0;
 		if(!leftDelete)
 			chars *= -1;
 		
 		//deletes the selection if there is one
 		if(selection) {
-			int start, end;
-			if(clickIndex < index) {
-				start = clickIndex;
-				end = index;
-			}else {
-				start = index;
-				end = clickIndex;
-			}
-			String newMessage = "";
-			if(start>0)
-				newMessage += message.substring(0, start);
-			if(end<message.length())
-				newMessage += message.substring(end);
-			setMessage(newMessage);
-			//set the new index where the deletion starts
-			index = start;
+			deleteSelection(null);
 			//then decrements the number of characters to delete before passing on
-			if(chars>0)
-				chars--;
-			//also, there is no more selection since we just deleted it
-			selection = false;
+			chars--;
 		}
 		//then removes the commanded characters
-		if(chars<1) //if there is nothing to delete, exit
-			return;
-		
-		int left, right;
-		if(leftDelete){
-			left = index - chars;
-			right = index;
-		}else{
-			left = index;
-			right = index + chars;
+		if(chars>0) { //if there is still something to delete
+			int left, right;
+			if(leftDelete) {
+				left = index - chars;
+				right = index;
+			}else {
+				left = index;
+				right = index + chars;
+			}
+			
+			if(left<0) left = 0;
+			if(right<0) right = 0;
+			if(left>message.length()) left = message.length();
+			if(right>message.length()) right = message.length();
+			
+			if(leftDelete) {
+				index -= chars;
+				if(index < 0)
+					index = 0;
+			}
+			
+			if(left != right) {
+				String temp = "";
+				if(left>0){
+					temp += message.substring(0, left);
+				}if(right<message.length())
+					temp += message.substring(right);
+				message = temp;
+			}
 		}
 		
-		if(left<0) left = 0;
-		if(right<0) right = 0;
-		if(left>message.length()) left = message.length();
-		if(right>message.length()) right = message.length();
-		
-		if(index>0 && leftDelete){
-			index -= chars;
-			if(index<0) index = 0;
-		}
-		
-		if(left != right){
-			String temp = "";
-			if(left>0){
-				temp += message.substring(0, left);
-			}if(right<message.length())
-				temp += message.substring(right);
-			message = temp;
+		//verify that the message isn't empty
+		if(message.length()<1) {
+			startShift = 0;
+			if(textScroller != null) //the scroll bar should be unset
+				textScroller.setTotalOffs(0);
 		}
 		
 		refreshBlinker();
@@ -1055,8 +1001,54 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		removeMessage((leftDelete? 1:-1) * chars);
 	}
 	
+	/**
+	 * Deletes the selection for the text box. Assumes that there is a selection to delete. Checks whether
+	 * the text box is editable before the action is performed. Uses {@link #setMessage(String)}, so the
+	 * text must follow text box constraints of length and filters.
+	 * @param replace the text to replace the deleted selection with. Keep null for a normal deletion.
+	 */
+	protected void deleteSelection(String replace) {
+		if(!enabled)
+			return;
+		
+		int start, end;
+		if(clickIndex < index) {
+			start = clickIndex;
+			end = index;
+		}else {
+			start = index;
+			end = clickIndex;
+		}
+		String newMessage = "";
+		if(start>0)
+			newMessage += message.substring(0, start);
+		if(replace != null) {
+			newMessage += replace;
+			//now we need to find the new index:
+			//we don't know if any of the pasted text will get filtered out, so we set the message,
+			//and that is our index. Then we can add in the ending (if any)
+			
+			String ending = null;
+			if(end<message.length())
+				ending= message.substring(end);
+			setMessage(newMessage);
+			index = message.length();
+			if(ending != null)
+				setMessage(newMessage + ending);
+		}else {
+			//if we are just doing a simple delete, the index is easy to find:
+			if(end<message.length())
+				newMessage += message.substring(end);
+			//set the new index where the deletion starts
+			index = start;
+			setMessage(newMessage);
+		}
+		//also, there is no more selection since we just deleted it
+		selection = false;
+	}
+	
 	@Override
-	public synchronized double[] drag(double dx, double dy) {
+	public double[] drag(double dx, double dy) {
 		//this should be for drag selecting text. Then cut and paste shortcuts should work
 		if(mouseClickXY == null)
 			return new double[]{0d,0d};
@@ -1125,7 +1117,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String copy() {
-		if(isHotkeyEnabled())
+		if(getHotkeyEnabled())
 			return getSelectedText();
 		else
 			return null;
@@ -1136,30 +1128,12 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String cut() {
-		if(!isHotkeyEnabled())
+		if(!getHotkeyEnabled())
 			return null;
 		
 		String cut = getSelectedText();
-		if(selection) {
-			int start, end;
-			if(clickIndex < index) {
-				start = clickIndex;
-				end = index;
-			}else {
-				start = index;
-				end = clickIndex;
-			}
-			if(editable) {
-				if(message.length() > end)
-					setMessage(message.substring(0, start)+ message.substring(end));
-				else //there is no end part to add on
-					setMessage(message.substring(0, start));
-			}
-			//set the new index where the deletion starts
-			index = start;
-			//also, there is no more selection since we just deleted it
-			selection = false;
-		}
+		if(selection)
+			deleteSelection(null);
 		return cut;
 	}
 
@@ -1168,29 +1142,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void paste(String pasteText) {
-		if(editable && isHotkeyEnabled()) {
+		if(enabled && getHotkeyEnabled()) {
 			if(selection) {
-				int start, end;
-				if(clickIndex < index) {
-					start = clickIndex;
-					end = index;
-				}else {
-					start = index;
-					end = clickIndex;
-				}
-				int messageLength = message.length() - (end-start);
-				String newText = "";
-				if(start > 0)
-					newText += message.substring(0, start);
-				newText += pasteText;
-				if(end < message.length())
-					newText += message.substring(end);
-				setMessage(newText);
-				//we don't technically know the length beforehand since the pasted text may pass through a filter
-				int pasteLength = message.length() - messageLength;
-				//define new indices
-				index = start + pasteLength;
-				selection = false;
+				deleteSelection(pasteText);
 			}else {
 				appendMessage(pasteText);
 			}
@@ -1284,7 +1238,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return {@link #hotkeyEnabled}
 	 */
 	@Override
-	public boolean isHotkeyEnabled() {
+	public boolean getHotkeyEnabled() {
 		return hotkeyEnabled;
 	}
 	
@@ -1299,10 +1253,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Sets whether this text box should allow for text scrolling in the text box (true) or treat the borders
 	 * as limits for the text length (false).
-	 * @param allow sets {@link #virtualSpace}
+	 * @param allow sets {@link #hasVirtualSpace}
 	 */
-	public void allowVirtualSpace(boolean allow) {
-		this.virtualSpace = allow;
+	public void setHasVirtualSpace(boolean allow) {
+		this.hasVirtualSpace = allow;
 		if(!allow) { //reset the shift so everything can be deleted properly
 			setStartShift(0);
 		}
@@ -1311,10 +1265,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	/**
 	 * Returns whether this text box allows for text scrolling in the box (true) or treats borders as limits
 	 * for the text length (false).
-	 * @return {@link #virtualSpace}
+	 * @return {@link #hasVirtualSpace}
 	 */
-	public boolean getAllowVirtualSpace() {
-		return virtualSpace;
+	public boolean getHasVirtualSpace() {
+		return hasVirtualSpace;
 	}
 	
 	/**
@@ -1353,7 +1307,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	/**
-	 * Returns the scroll bar used to view text hidden in virtual space (if allowed by {@link #virtualSpace}).
+	 * Returns the scroll bar used to view text hidden in virtual space (if allowed by {@link #hasVirtualSpace}).
 	 * @return {@link #textScroller}
 	 */
 	public ScrollBar getTextScroller() {
@@ -1361,7 +1315,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	/**
 	 * Sets the scroll bar that will be used to view text hidden in virtual space if such is allowed by
-	 * {@link #virtualSpace}.
+	 * {@link #hasVirtualSpace}.
 	 * @param textScroller the scroll bar to be saved as {@link #textScroller}
 	 */
 	public void setTextScroller(ScrollBar textScroller) {
@@ -1380,17 +1334,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
-	 * @param allowSplit sets {@link #wordSplitting}
+	 * @param allowSplit sets {@link #sordSplitting}
 	 */
-	public void allowWordSplitting(boolean allowSplit) {
-		this.wordSplitting = allowSplit;
+	public void setWordSplitting(boolean allowSplit) {
+		this.sordSplitting = allowSplit;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text box
-	 * @return the value of {@link #wordSplitting}
+	 * @return the value of {@link #sordSplitting}
 	 */
-	public boolean getAllowWordSplitting() {
-		return wordSplitting;
+	public boolean getWordSplitting() {
+		return sordSplitting;
 	}
 	
 	@Override

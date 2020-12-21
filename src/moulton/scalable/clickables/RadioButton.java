@@ -30,6 +30,15 @@ public abstract class RadioButton extends Clickable {
 	/**The color of the button when touched*/
 	protected Color colorTouched = null;
 	
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button with string expressions.
+	 * @param id the identification string of the button
+	 * @param parent the panel in which this button resides
+	 * @param x the left-most x position of this button
+	 * @param y the top-most y position of this button
+	 * @param color the color of this button's face
+	 */
 	public RadioButton(String id, Panel parent, String x, String y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;
@@ -38,6 +47,15 @@ public abstract class RadioButton extends Clickable {
 			colorLight = color.brighter();
 		}
 	}
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button to reside in a grid at the int coordinates.
+	 * @param id the identification string of the button
+	 * @param parent the panel in which this button resides
+	 * @param x the x grid index of this component
+	 * @param y the y grid index of this component
+	 * @param color the color of this button's face
+	 */
 	public RadioButton(String id, Panel parent, int x, int y, Color color) {
 		super(id, parent, x, y);
 		this.color = color;
@@ -77,12 +95,12 @@ public abstract class RadioButton extends Clickable {
 	 * If the button is clicked, {@link #colorDark} is used. If the button is touched and has a touch color ({@link #colorTouched}),
 	 * that is used. Otherwise, the normal {@link #color} is returned.
 	 * @return the applicable color for rendering the fill of the button
-	 * @see #isEditable()
+	 * @see #isEnabled()
 	 * @see #getClicked()
 	 * @see #isTouched()
 	 */
 	public Color getFillColor() {
-		if (!isEditable())
+		if (!isEnabled())
 			return colorLight;
 		if(getClicked())
 			return colorDark;

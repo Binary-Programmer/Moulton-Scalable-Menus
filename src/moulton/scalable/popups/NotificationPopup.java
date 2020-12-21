@@ -49,6 +49,14 @@ public class NotificationPopup extends Popup {
 		init(text, okId, title, font, exitButton);
 	}
 	
+	/**
+	 * Called to set up the pop up
+	 * @param text the text that the pop up will contain
+	 * @param okId the id of the ok button
+	 * @param title the title of the pop up
+	 * @param font the pop up's font
+	 * @param exitButton whether this pop up should contain an exit button
+	 */
 	private void init(String text, String okId, String title, Font font, boolean exitButton) {
 		base.setOutline(true);
 		blanketBackground = new Color(0x33DDDDDD, true);

@@ -21,6 +21,7 @@ import moulton.scalable.utils.GridFormatter;
 public class Manager7 extends MenuManager{
 	private TextEditBox fileContents;
 	private Button saveButton;
+	
 	private String filePath = null;
 	private boolean controlOn = false;
 	private boolean shiftOn = false;
@@ -49,6 +50,10 @@ public class Manager7 extends MenuManager{
 			undoHistory[0] = null;
 		else
 			undoHistory[histIndex+1] = null;
+		
+		//if it is possible to undo, then it should be possible to save (if the path is set)
+		if(filePath != null)
+			saveButton.setEnabled(true);
 	}
 
 	@Override
@@ -62,7 +67,7 @@ public class Manager7 extends MenuManager{
 		addTouchResponsiveComponent(new Button("new", "New", controlPanel, 0, 0, font, Color.WHITE));
 		addTouchResponsiveComponent(new Button("load", "Load", controlPanel, 1, 0, font, Color.WHITE));
 		saveButton = new Button("save", "Save", controlPanel, 2, 0, font, Color.WHITE);
-		saveButton.setEditable(false);
+		saveButton.setEnabled(false);
 		addTouchResponsiveComponent(saveButton);
 		addTouchResponsiveComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
 		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height", font, new Color(0xe5e5e5));
@@ -88,10 +93,10 @@ public class Manager7 extends MenuManager{
 				addUndoEntry(fileContents.getMessage()); //allow undo from new
 				break;
 			case "load":
-				setPopup(new PathFinderPopup(true, "350", "200"));
+				createPopup(true);
 				break;
 			case "saveAs":
-				setPopup(new PathFinderPopup(false, "350", "200"));
+				createPopup(false);
 				break;
 			case "save":
 				FileWriter fw = null;
@@ -109,8 +114,10 @@ public class Manager7 extends MenuManager{
 						}
 					}
 				}
-				saveButton.setEditable(false);
+				saveButton.setEnabled(false);
 				break;
+				
+			//Path Finder Pop up actions
 			case "doSave":
 				String toPath = ((PathFinderPopup)popup).getPath();
 				fw = null;
@@ -130,7 +137,7 @@ public class Manager7 extends MenuManager{
 				}
 				
 				filePath = toPath; //just save it without loading stuff
-				saveButton.setEditable(false);
+				saveButton.setEnabled(false);
 				setPopup(null);
 				break;
 			case "doLoad":
@@ -150,12 +157,17 @@ public class Manager7 extends MenuManager{
 		}
 	}
 	
+	private void createPopup(boolean shouldLoad) {
+		PathFinderPopup pop = new PathFinderPopup(shouldLoad, "350", "200");
+		setPopup(pop);
+	}
+	
 	private void setPath(String filePath) {
 		this.filePath = filePath;
 		
 		if(filePath == null) {
 			fileContents.setMessage("");
-			saveButton.setEditable(false);
+			saveButton.setEnabled(false);
 		}else {
 			//actually load the file up too
 			Scanner scan = null;
@@ -169,9 +181,9 @@ public class Manager7 extends MenuManager{
 				fileContents.setMessage(fullString);
 				//if it is a txt file, we will not allow word splitting
 				if(filePath.substring(filePath.lastIndexOf('.')+1).equals("txt"))
-					fileContents.allowWordSplitting(false);
+					fileContents.setWordSplitting(false);
 				else
-					fileContents.allowWordSplitting(true);
+					fileContents.setWordSplitting(true);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} finally {
@@ -186,9 +198,7 @@ public class Manager7 extends MenuManager{
 		String id = c.getId();
 		if(id == null)
 			return;
-		if(id.equals("fileContents") && filePath != null) { //a change has been made to the file
-			saveButton.setEditable(true);
-		}else if(id.equals("fileName")) {
+		if(id.equals("fileName")) {
 			((PathFinderPopup)popup).emptySelection(((TextBox)c).getMessage().isEmpty());
 		}else if(id.equals("path")) {
 			((PathFinderPopup)popup).setPath(((TextBox)c).getMessage());
@@ -207,25 +217,57 @@ public class Manager7 extends MenuManager{
 				clickableAction(new Button("cancel", null, null, 0, 0, null, null));
 		}if(clicked instanceof TextEditBox) {
 			TextEditBox box = (TextEditBox)clicked;
-			if(shiftOn) {
+			if(!shiftOn && (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT ||
+					key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN))
+				box.removeSelection();
+			
+			if(controlOn) {
+				if(shiftOn) {
+					if(key == KeyEvent.VK_LEFT) //selection left to break
+						box.selectShift(true, true);
+					else if(key == KeyEvent.VK_RIGHT) //selection right to break
+						box.selectShift(false, true);
+				}else {
+					if(key == KeyEvent.VK_LEFT) //left shift to break
+						box.moveToBreak(true);
+					if(key == KeyEvent.VK_RIGHT) //right shift to break
+						box.moveToBreak(false);
+					if(key == KeyEvent.VK_BACK_SPACE) //backspace to break
+						box.deleteToBreak(true);
+					if(key == KeyEvent.VK_DELETE) //delete to break
+						box.deleteToBreak(false);
+				}
+				return;
+			}else {
 				if(key == KeyEvent.VK_UP)
 					box.selectVertical(true);
 				else if(key == KeyEvent.VK_DOWN)
 					box.selectVertical(false);
-			}else {
-				if(key == KeyEvent.VK_UP)
-					box.moveVertical(true);
-				else if(key == KeyEvent.VK_DOWN)
-					box.moveVertical(false);
+				
+				if(shiftOn) {
+					if(key == KeyEvent.VK_LEFT) //begin selection left
+						box.selectShift(true, false);
+					else if(key == KeyEvent.VK_RIGHT) //begin selection right
+						box.selectShift(false, false);
+					return;
+				}else {
+					if(key == KeyEvent.VK_UP)
+						box.moveVertical(true);
+					if(key == KeyEvent.VK_DOWN)
+						box.moveVertical(false);
+				}
 			}
+			super.keyPressed(key);
+			if(key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE)
+				addUndoEntry(fileContents.getMessage());
 		}
 		if(controlOn) {
 			if(shiftOn) {
 				if(key == KeyEvent.VK_S) //save as
 					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
 			}
-			boolean accepted = true;
 			switch(key) {
+			case KeyEvent.VK_O: //ctr-O
 			case KeyEvent.VK_L: //ctr-L
 				clickableAction(new Button("load", null, null, 0, 0, null, null));
 				break;
@@ -233,7 +275,7 @@ public class Manager7 extends MenuManager{
 				clickableAction(new Button("new", null, null, 0, 0, null, null));
 				break;
 			case KeyEvent.VK_S: //ctr-S
-				if(saveButton.isEditable())
+				if(saveButton.isEnabled())
 					clickableAction(new Button("save", null, null, 0, 0, null, null));
 				else
 					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
@@ -258,46 +300,9 @@ public class Manager7 extends MenuManager{
 					fileContents.setMessage(undoHistory[histIndex]);
 				}
 				break;
-			default:
-				accepted = false;
-			}
-			if(accepted) //don't process more if we already found the correct action to the input
-				return;
-		}
-		//we are going to add some extra hotkeys for textbox
-		if(clicked instanceof TextEditBox) {
-			TextEditBox box = (TextEditBox) clicked;
-			if(box.isHotkeyEnabled()) {
-				//do something here for the arrow keys in regards to control
-				if(controlOn) {
-					if(shiftOn) {
-						if(key == KeyEvent.VK_LEFT) //selection left to break
-							box.selectShift(true, true);
-						else if(key == KeyEvent.VK_RIGHT) //selection right to break
-							box.selectShift(false, true);
-					}else {
-						if(key == KeyEvent.VK_LEFT) //left shift to break
-							box.moveToBreak(true);
-						if(key == KeyEvent.VK_RIGHT) //right shift to break
-							box.moveToBreak(false);
-						if(key == KeyEvent.VK_BACK_SPACE) //backspace to break
-							box.deleteToBreak(true);
-						if(key == KeyEvent.VK_DELETE) //delete to break
-							box.deleteToBreak(false);
-					}
-					return;
-				}else if(shiftOn) {
-					if(key == KeyEvent.VK_LEFT) //begin selection left
-						box.selectShift(true, false);
-					else if(key == KeyEvent.VK_RIGHT) //begin selection right
-						box.selectShift(false, false);
-					return;
-				}
 			}
 		}
-		super.keyPressed(key);
-		if(key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE)
-			addUndoEntry(fileContents.getMessage());
+		
 	}
 	
 	public void keyReleased(int key) {

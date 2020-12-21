@@ -253,7 +253,7 @@ public abstract class MenuManager {
 	public void keyTyped(char key) {
 		if(clicked instanceof HotkeyTextComponent) {
 			HotkeyTextComponent c = (HotkeyTextComponent)clicked;
-			if(c.isHotkeyEnabled()) {
+			if(c.getHotkeyEnabled()) {
 				//letters typed while control is held are not the same values as without
 				//for example, ctr-a is 1, ctr-b is 2, whereas a is 97 and b is 98
 				if(key == (char)3) { //copy

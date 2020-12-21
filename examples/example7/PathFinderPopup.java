@@ -18,6 +18,7 @@ public class PathFinderPopup extends Popup{
 	private Button okButton;
 	private ListPanel contents;
 	private Font smallFont;
+	private ScrollBar contentBar;
 
 	public PathFinderPopup(boolean load, String width, String height) {
 		super(width, height, Color.WHITE);
@@ -38,12 +39,12 @@ public class PathFinderPopup extends Popup{
 		fileName.setOutline(true);
 		fileName.setHint("file name");
 		okButton = new Button(load?"doLoad":"doSave","Ok",base,"width*.75+5","height-25","width*.25-10","20",font,Color.LIGHT_GRAY);
-		okButton.setEditable(false);
+		okButton.setEnabled(false);
 		addTouchResponsiveComponent(okButton);
 		
 		contents = new ListPanel("20",base,"0","55","width-20","height-85","width-20",Color.WHITE);
 		contents.setOutline(true);
-		ScrollBar contentBar = new ScrollBar(true, base, "width-20","55","20","height-85",Color.LIGHT_GRAY);
+		contentBar = new ScrollBar(true, base, "width-20","55","20","height-85",Color.LIGHT_GRAY);
 		contentBar.setScrollRate(2);
 		contents.setHeightScrollBar(contentBar);
 		
@@ -55,6 +56,8 @@ public class PathFinderPopup extends Popup{
 	
 	public void goUpDirectory() {
 		String path = pathDisplay.getMessage();
+		if(contentBar != null)
+			contentBar.setOffset(0);
 		if(path.lastIndexOf('\\') != path.indexOf('\\')) //if there are at least two \s
 			setPath(path.substring(0, path.lastIndexOf('\\')));
 		else {
@@ -93,16 +96,22 @@ public class PathFinderPopup extends Popup{
 	}
 	
 	public void emptySelection(boolean empty) {
-		okButton.setEditable(!empty);
+		okButton.setEnabled(!empty);
 	}
 	
 	public void select(String name) {
 		//if this leads to a directory, move to it. If a file, select it
-		String fullPath = pathDisplay.getMessage()+"\\"+name;
+		String fullPath = pathDisplay.getMessage();
+		if(fullPath.charAt(fullPath.length()-1) != '\\') //bottom dirs already have the \\ preface
+			fullPath += '\\';
+		fullPath += name;
 		File file = new File(fullPath);
-		if(file.isDirectory())
+		
+		if(file.isDirectory()) {
 			setPath(fullPath);
-		else if(file.isFile()) {
+			if(contentBar != null)
+				contentBar.setOffset(0);
+		}else if(file.isFile()) {
 			fileName.setMessage(name);
 			emptySelection(false);
 		}
