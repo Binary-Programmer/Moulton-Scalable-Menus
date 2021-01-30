@@ -23,7 +23,7 @@ import moulton.scalable.draggables.ScrollableComponent;
  * <p>
  * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:
  * <ul>
- * <li>{@link #sordSplitting} defines whether lines can be split on words or only on break characters.
+ * <li>{@link #wordSplitting} defines whether lines can be split on words or only on break characters.
  * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but not shown
  * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is in virtual space.
  * <li>{@link #charMax} sets whether the text box has a maximum number of characters.
@@ -108,7 +108,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Break characters include space, new line, and hyphens. Defaults to false.
 	 * @see #getWordSplitting()
 	 * @see #setWordSplitting(boolean)*/
-	protected boolean sordSplitting = false;
+	protected boolean wordSplitting = false;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
 	 * @see #getHotkeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
@@ -1334,17 +1334,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
-	 * @param allowSplit sets {@link #sordSplitting}
+	 * @param allowSplit sets {@link #wordSplitting}
 	 */
 	public void setWordSplitting(boolean allowSplit) {
-		this.sordSplitting = allowSplit;
+		this.wordSplitting = allowSplit;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text box
-	 * @return the value of {@link #sordSplitting}
+	 * @return the value of {@link #wordSplitting}
 	 */
 	public boolean getWordSplitting() {
-		return sordSplitting;
+		return wordSplitting;
 	}
 	
 	@Override
