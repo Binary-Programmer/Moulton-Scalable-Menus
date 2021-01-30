@@ -239,16 +239,15 @@ public class Manager7 extends MenuManager{
 				}
 				return;
 			}else {
-				if(key == KeyEvent.VK_UP)
-					box.selectVertical(true);
-				else if(key == KeyEvent.VK_DOWN)
-					box.selectVertical(false);
-				
 				if(shiftOn) {
 					if(key == KeyEvent.VK_LEFT) //begin selection left
 						box.selectShift(true, false);
 					else if(key == KeyEvent.VK_RIGHT) //begin selection right
 						box.selectShift(false, false);
+					if(key == KeyEvent.VK_UP)
+						box.selectVertical(true);
+					else if(key == KeyEvent.VK_DOWN)
+						box.selectVertical(false);
 					return;
 				}else {
 					if(key == KeyEvent.VK_UP)
