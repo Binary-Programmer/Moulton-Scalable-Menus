@@ -293,7 +293,7 @@ public abstract class MenuManager {
 				if(textInputComp instanceof TextBox && ((TextBox)textInputComp).getDeselectOnEnter())
 					setClicked(null,-1,-1);
 			}else if (key>31){
-				textInputComp.appendMessage(key+"");
+				textInputComp.appendMessage(String.valueOf(key));
 			} //if the key is less than 31 but not checked for, it is just a control character
 		}
 	}

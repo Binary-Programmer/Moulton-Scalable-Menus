@@ -2,6 +2,7 @@ package moulton.scalable.visuals;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import moulton.scalable.clickables.RadioButton;
@@ -25,6 +26,9 @@ public class ImageButton extends RadioButton {
 	protected BufferedImage clickedImage;
 	/**The algebraic equations to determine the bounds of this button. */
 	protected String width, height;
+	/**The algebraic expression to determine the padding between the button boundaries and the image.
+	 * @see #setPadding(String, String)*/
+	protected String vertPadding, horizPadding;
 
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -93,30 +97,11 @@ public class ImageButton extends RadioButton {
 	 */
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
-		int x, y, w, h;
-		if(getGridLocation()==null) {
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			// variant for input ending points instead of widths indicated by a starting question
-			if (this.width.charAt(0) == '?') {
-				//solve for the ending point
-				int x2 = xx + solveString(this.width.substring(1), ww, hh);
-				//deduce the width
-				w = x2 - x;
-			} else
-				w = solveString(this.width, ww, hh);
-			
-			if (this.height.charAt(0) == '?') {
-				int y2 = yy + solveString(this.height.substring(1), ww, hh);
-				h = y2 - y;
-			} else
-				h = solveString(this.height, ww, hh);
-		}else {
-			x = xx;
-			y = yy;
-			w = ww;
-			h = hh;
-		}
+		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
+		int x = rect.x;
+		int y = rect.y;
+		int w = rect.width;
+		int h = rect.height;
 		
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
@@ -127,15 +112,27 @@ public class ImageButton extends RadioButton {
 		BufferedImage imageToDraw = getDrawImage();
 		if (imageToDraw != null) {
 			int imgWidth, imgHeight;
-			if(w/(double)imageToDraw.getWidth() < h/(double)imageToDraw.getHeight()){
+			int availableW = w, availableH = h;
+			int horizPad = 0, vertPad = 0;
+			if(horizPadding != null) {
+				horizPad = solveString(horizPadding, ww, hh);
+				availableW -= horizPad;
+			}
+			if(vertPadding != null) {
+				vertPad = solveString(vertPadding, ww, hh);
+				availableH -= vertPad;
+			}
+			
+			if(availableW/(double)imageToDraw.getWidth() < availableH/(double)imageToDraw.getHeight()){
 				//the ratio of width to imagewidth is lowest, thus we will keep its ratio
-				imgWidth = w;
-				imgHeight= (w*imageToDraw.getHeight())/imageToDraw.getWidth();
+				imgWidth = availableW;
+				imgHeight= (availableW*imageToDraw.getHeight())/imageToDraw.getWidth();
 			}else{
 				//keep the ratio of height to imageheight
-				imgHeight= h;
-				imgWidth = (h*imageToDraw.getWidth())/imageToDraw.getHeight();
+				imgHeight= availableH;
+				imgWidth = (availableH*imageToDraw.getWidth())/imageToDraw.getHeight();
 			}
+			
 			g.drawImage(imageToDraw, x+(w-imgWidth)/2, y+(h-imgHeight)/2, imgWidth, imgHeight, null);
 		}
 		
@@ -199,5 +196,15 @@ public class ImageButton extends RadioButton {
 			colorDark = color.darker();
 		}	
 		this.colorTouched = touchedColor;
+	}
+	
+	/**
+	 * Sets the padding for this image button. The padding is the space between the button border and the image.
+	 * @param vertPadding A string expression to represent the amount of vertical padding desired. Sets {@link #vertPadding}.
+	 * @param horizPadding A string expression to represent the amount of horizontal padding desired. Sets {@link #horizPadding}.
+	 */
+	public void setPadding(String vertPadding, String horizPadding) {
+		this.vertPadding = vertPadding;
+		this.horizPadding = horizPadding;
 	}
 }

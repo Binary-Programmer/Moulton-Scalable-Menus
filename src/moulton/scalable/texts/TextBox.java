@@ -669,6 +669,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(!hasVirtualSpace && !rem.isEmpty()) {
 				String tempMessage = getMessage();
 				setMessage(tempMessage.substring(0, tempMessage.length()-rem.length()));
+				index = message.length();
 				//update the scroll bar
 				if(textScroller!=null)
 					textScroller.setBarOffs(0);
@@ -889,7 +890,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			message = string;
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
-		index = message.length(); //set the index to the end
+		
+		if(index > message.length())
+			index = message.length();
 		if(message.length()<1) {
 			startShift = 0;
 			if(textScroller != null) //the scroll bar should be unset
@@ -1032,7 +1035,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(end<message.length())
 				ending= message.substring(end);
 			setMessage(newMessage);
-			index = message.length();
+			
 			if(ending != null)
 				setMessage(newMessage + ending);
 		}else {

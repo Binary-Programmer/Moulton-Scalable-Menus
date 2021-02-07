@@ -65,10 +65,10 @@ Example 3 shows off the `moulton.scalable.texts.TextHistory`.
 Example 4 shows off radio buttons, image buttons, and animations.
 
 ### Example 5
-Example 6 shows off text boxes with virtual space, scrolling vertically or horizontally.
+Example 5 shows off text boxes with virtual space, scrolling vertically or horizontally.
 
 ### Example 6
-Example 5 shows off animated buttons and partitions. The partition is used to make the text scroll bar disappear when the text length is not sufficiently long, and reappear when the text in the box would need to take more space than available. The animated button is configured to react to button presses and to the animation's end.
+Example 6 shows off animated buttons and partitions. The partition is used to make the text scroll bar disappear when the text length is not sufficiently long, and reappear when the text in the box would need to take more space than available. The animated button is configured to react to button presses and to the animation's end.
 
 ### Example 7
 Example 7 shows off pop ups and the TextEditBox, a subclass of TextBox that has extra functionality such as vertical arrow key support, shift selection, and control text navigation.
