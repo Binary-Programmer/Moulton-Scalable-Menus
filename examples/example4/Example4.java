@@ -1,5 +1,6 @@
 package example4;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -16,8 +17,9 @@ import javax.swing.JPanel;
 import moulton.scalable.containers.Container;
 
 public class Example4 extends JPanel implements Container, MouseListener, KeyListener, MouseMotionListener, MouseWheelListener{
-	private Manager4 manager = null;
 	private static final long serialVersionUID = 1L;
+	private Manager4 manager = null;
+	private JFrame frame;
 	private boolean running = true;
 	
 	public static void main(String args[]){
@@ -25,7 +27,7 @@ public class Example4 extends JPanel implements Container, MouseListener, KeyLis
 	}
 	
 	public Example4(){
-		JFrame frame = new JFrame("Example 4");
+		frame = new JFrame("Example 4");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(this);
 		manager = new Manager4(this);
@@ -152,6 +154,11 @@ public class Example4 extends JPanel implements Container, MouseListener, KeyLis
 			manager.mouseScrolled(e.getX(), e.getY(), e.getWheelRotation());
 			repaint();
 		}
+	}
+	
+	@Override
+	public void setCursor(int cursorType) {
+		frame.setCursor(Cursor.getPredefinedCursor(cursorType));
 	}
 
 }

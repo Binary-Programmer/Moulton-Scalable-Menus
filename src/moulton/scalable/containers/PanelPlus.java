@@ -31,8 +31,23 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	 * width.
 	 */
 	protected String fullWidth, fullHeight;
-	
-	/**How much the shown window on the panel is shifted in the x and y direction.*/
+	/**
+	 * Stands for last full width and last full height, meaning the values that {@link #fullWidth} and 
+	 * {@link #fullHeight} evaluated to at last render. Used to tell the scroll bar its maximum offset.
+	 * Set by {@link #render(Graphics, int, int, int, int)}. Not intended to be set directly but subclasses
+	 * unless rendering takes place.
+	 * 
+	 * @see Panel#lastWidth
+	 * @see Panel#lastHeight
+	 * @see #lastX
+	 * @see #lastY
+	 * */
+	protected int lastFullW, lastFullH;
+	/**How much the shown window on the panel is shifted in the x and y direction.
+	 * @see #getXOffs()
+	 * @see #getYOffs()
+	 * @see #setXOffs(int)
+	 * @see #setYOffs(int)*/
 	protected int xOffs=0, yOffs=0;
 
 	/**The connected scroll bar for x axis scrolling.
@@ -113,41 +128,45 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		lastHeight = h;
 		
 		//the full dimensions
-		int fullW = solveString(fullWidth, ww, hh);
-		int fullH = solveString(fullHeight, ww, hh);
+		lastFullW = solveString(fullWidth, ww, hh);
+		lastFullH = solveString(fullHeight, ww, hh);
 		//if the shown dimension is greater than the full, set full to shown
-		if(w>fullW) fullW = w;
-		if(h>fullH) fullH = h;
+		if(w>lastFullW) lastFullW = w;
+		if(h>lastFullH) lastFullH = h;
 		
 		//change the scroll bars to reflect self
 		if(widthBar!=null) {
 			//normal settings
 			if(widthBarTotalOffsets == null){
 				//total offs will be the fullWidth
-				widthBar.setTotalOffs(fullW);
+				widthBar.setTotalOffs(lastFullW);
 				//the number of bar offs will be pixels visible
 				widthBar.setBarOffs(w);
 			}else { //overridden setting
-				int totalOffs = solveString(widthBarTotalOffsets, fullW, fullH);
+				int totalOffs = solveString(widthBarTotalOffsets, lastFullW, lastFullH);
 				widthBar.setTotalOffs(totalOffs);
-				widthBar.setBarOffs((totalOffs * w)/fullW);
+				widthBar.setBarOffs((totalOffs * w)/lastFullW);
 			}
 		}if(heightBar!=null) {
 			if(heightBarTotalOffsets == null) {
-				heightBar.setTotalOffs(fullH);
+				heightBar.setTotalOffs(lastFullH);
 				heightBar.setBarOffs(h);
 			}else {
-				int totalOffs = solveString(heightBarTotalOffsets, fullW, fullH);
+				int totalOffs = solveString(heightBarTotalOffsets, lastFullW, lastFullH);
 				widthBar.setTotalOffs(totalOffs);
-				widthBar.setBarOffs((totalOffs * h)/fullH);
+				widthBar.setBarOffs((totalOffs * h)/lastFullH);
 			}
 		}
 
 		//get updated values from the scroll bars just in case something changed
 		if(widthBar != null)
-			xOffs = (fullW*widthBar.getOffset())/widthBar.getTotalOffs();
+			xOffs = (lastFullW*widthBar.getOffset())/widthBar.getTotalOffs();
+		else
+			setXOffs(xOffs);
 		if(heightBar != null)
-			yOffs = (fullH*heightBar.getOffset())/heightBar.getTotalOffs();
+			yOffs = (lastFullH*heightBar.getOffset())/heightBar.getTotalOffs();
+		else
+			setYOffs(yOffs);
 
 		//create a new image for the shown area
 		if(w <= 0 || h <= 0)
@@ -166,7 +185,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			for(MenuComponent mc: both) {
 				if(mc!=null && mc.isVisible()) {
 					//render each component onto the image with full dimensions.
-					Rectangle self = new Rectangle(-xOffs, -yOffs, fullW, fullH);
+					Rectangle self = new Rectangle(-xOffs, -yOffs, lastFullW, lastFullH);
 					if(mc.getGridLocation() != null)
 						self = grid.findCompCoordinates(mc, self);
 					
@@ -214,10 +233,16 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		else
 			heightBarTotalOffsets = totalOffs;
 	}
+	/**
+	 * Returns {@link #widthBar}.
+	 */
 	@Override
 	public ScrollBar getWidthScrollBar() {
 		return widthBar;
 	}
+	/**
+	 * Returns {@link #heightBar}.
+	 */
 	@Override
 	public ScrollBar getHeightScrollBar() {
 		return heightBar;
@@ -255,6 +280,62 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		parentOffset[0] += lastX;
 		parentOffset[1] += lastY;
 		return parentOffset;
+	}
+	
+	/**
+	 * Returns the number of pixels the position this panel is horizontally offset virtually.
+	 * @return {@link #xOffs}
+	 */
+	public int getXOffs() {
+		return xOffs;
+	}
+	/**
+	 * Sets the number of pixels that this panel should be horizontally offset virtually. Or in other
+	 * words, when the {@link #fullWidth} is greater than the shown width, the offset controls what part
+	 * of the full width is shown. If the offset is 0, then xs [0-shownWidth] will be shown. <p>
+	 * Attempts to set xOffs to negative values or values > fullWidth-shownWidth will be altered to the
+	 * nearest possible value from [0, fullWidth-shownWidth]. For example, trying to set xOffs = -5 will
+	 * result in xOffs = 0. <p>
+	 * Updates the {@link #getWidthScrollBar()} if there is one.
+	 * @param xOff the int value to replace {@link #xOffs}
+	 */
+	public void setXOffs(int xOff) {
+		if(xOff < 0)
+			xOff = 0;
+		if(xOff > lastFullW-lastWidth)
+			xOff = lastFullW-lastWidth;
+		
+		xOffs = xOff;
+		if(widthBar != null)
+			widthBar.setOffset((xOffs*widthBar.getTotalOffs())/lastFullW);
+	}
+	
+	/**
+	 * Returns the number of pixels the position this panel is vertically offset virtually.
+	 * @return {@link #yOffs}
+	 */
+	public int getYOffs() {
+		return yOffs;
+	}
+	/**
+	 * Sets the number of pixels that this panel should be vertically offset virtually. Or in other
+	 * words, when the {@link #fullHeight} is greater than the shown height, the offset controls what part
+	 * of the full height is shown. If the offset is 0, then xs [0-shownHeight] will be shown. <p>
+	 * Attempts to set yOffs to negative values or values > fullHeight-shownHeight will be altered to the
+	 * nearest possible value from [0, fullHeight-shownHeight]. For example, trying to set yOffs = -5 will
+	 * result in yOffs = 0. <p>
+	 * Updates the {@link #getHeightScrollBar()} if there is one.
+	 * @param yOff the int value to replace {@link #yOffs}
+	 */
+	public void setYOffs(int yOff) {
+		if(yOff < 0)
+			yOff = 0;
+		if(yOff > lastFullH-lastHeight)
+			yOff = lastFullH-lastHeight;
+			
+		yOffs = yOff;
+		if(heightBar != null)
+			heightBar.setOffset((yOffs*heightBar.getTotalOffs())/lastFullH);
 	}
 
 }

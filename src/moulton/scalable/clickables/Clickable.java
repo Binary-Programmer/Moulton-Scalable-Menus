@@ -1,5 +1,6 @@
 package moulton.scalable.clickables;
 
+import java.awt.Cursor;
 import java.awt.Polygon;
 
 import moulton.scalable.containers.MenuManager;
@@ -40,6 +41,12 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * Defaults to true.
 	 * @see #isDeselectedOnRelease()*/
 	protected static boolean deselectOnRelease = true;
+	
+	protected int cursorType = Cursor.HAND_CURSOR;
+	
+	protected EventAction touchAction = null;
+	protected EventAction clickAction = null;
+	protected EventAction lostFocusAction = null;
 	
 	/**
 	 * A two-dimensional array holding the pixel x and y points for the polygon that represents this component's clickable area.
@@ -219,6 +226,30 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	public String toString() {
 		return id+":"+super.toString();
+	}
+	
+	@Override
+	public int getTouchedCursorType() {
+		return cursorType;
+	}
+	
+	public EventAction getTouchAction() {
+		return touchAction;
+	}
+	public EventAction getClickAction() {
+		return clickAction;
+	}
+	public EventAction getLostFocusAction() {
+		return lostFocusAction;
+	}
+	public void setTouchAction(EventAction action) {
+		this.touchAction = action;
+	}
+	public void setClickAction(EventAction action) {
+		this.clickAction = action;
+	}
+	public void setLostFocusAction(EventAction action) {
+		this.lostFocusAction = action;
 	}
 	
 }

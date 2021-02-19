@@ -1,6 +1,7 @@
 package moulton.scalable.texts;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -165,9 +166,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		super(id, parent, x, y);
 		this.width = width;
 		this.height = height;
-		this.message = message;
-		this.color = color;
-		this.font = font;
+		init(message, color, font);
 	}
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -180,11 +179,23 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	public TextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
 		super(id,parent,x,y);
+		init(message, color, font);
+	}
+	
+	/**
+	 * Just a few set up properties here. Attempting to cut down on code duplication. This is
+	 * private just since it is trivial in purpose.
+	 * @param message the message
+	 * @param color the color
+	 * @param font the font
+	 */
+	private void init(String message, Color color, Font font) {
 		if(message == null)
 			message = "";
 		this.message = message;
 		this.color = color;
 		this.font = font;
+		this.cursorType = Cursor.TEXT_CURSOR;
 	}
 	
 	/**

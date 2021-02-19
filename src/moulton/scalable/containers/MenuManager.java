@@ -1,5 +1,6 @@
 package moulton.scalable.containers;
 
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.Toolkit;
@@ -155,7 +156,11 @@ public abstract class MenuManager {
 						radio.getGroup().select(radio);
 				}
 				//call the action for the click
-				clickableAction(clicked);
+				boolean clickAction = true; //if the clickAction method should be called on this
+				if(clicked.getClickAction() != null)
+					clickAction = clicked.getClickAction().onEvent();
+				if(clickAction)
+					clickableAction(clicked);
 			}
 			//check if it lost focus
 			//If release deselects- deselect. If not, no deselect even if unsuccessful click
@@ -241,7 +246,11 @@ public abstract class MenuManager {
 				box.setMessage(tf.emptyText());
 			}
 		}
-		lostFocusAction(c);
+		boolean lostFocusAction = true; //Whether lostFocusAction() should be called on this
+		if(c.getLostFocusAction() != null)
+			lostFocusAction = c.getLostFocusAction().onEvent();
+		if(lostFocusAction)
+			lostFocusAction(c);
 	}
 	
 	/**
@@ -344,13 +353,20 @@ public abstract class MenuManager {
 		
 		if(touchList == null)
 			return;
+		int cursorType = Cursor.DEFAULT_CURSOR;
 		for(TouchResponsiveComponent touchComp: touchList) {
 			if(touchComp.isTouchedAt(x, y)) {
 				touchComp.setTouched(true);
+				if(touchComp.getTouchAction() != null)
+					touchComp.getTouchAction().onEvent();
+				cursorType = touchComp.getTouchedCursorType();
 			}else if(touchComp.isTouched()) { //if it was touched
 				touchComp.setTouched(false); //it is no longer
+				if(touchComp.getTouchAction() != null)
+					touchComp.getTouchAction().onEvent();
 			}
 		}
+		cont.setCursor(cursorType);
 	}
 	
 	/**
