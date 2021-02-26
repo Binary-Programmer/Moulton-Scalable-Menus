@@ -122,8 +122,16 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			w = ww;
 			h = hh;
 		}
-		lastX = x;
-		lastY = y;
+		//TODO test this- I just added the next few lines
+		if(parent != null) {
+			int[][] trueVals = parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this);
+			lastX = trueVals[0][0];
+			lastY = trueVals[1][0];			
+		} else {
+			lastX = x;
+			lastY = y;
+		}
+		//width and height stay the same regardless of the offset
 		lastWidth = w;
 		lastHeight = h;
 		

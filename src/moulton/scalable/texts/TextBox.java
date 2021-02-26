@@ -195,7 +195,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		this.message = message;
 		this.color = color;
 		this.font = font;
-		this.cursorType = Cursor.TEXT_CURSOR;
 	}
 	
 	/**
@@ -858,6 +857,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 		}
 	}
+	
+	@Override
+	public int getTouchedCursorType() {
+		return Cursor.TEXT_CURSOR;
+	}
+	
+	@Override
+	public boolean isDeselectedOnRelease() {
+		return false;
+	}
 
 	/**
 	 * Returns the message displayed on this text box.
@@ -1174,11 +1183,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			selection = true;
 		clickIndex = 0;
 		index = message.length();
-	}
-	
-	@Override
-	public boolean isDeselectedOnRelease() {
-		return false;
 	}
 	
 	/**

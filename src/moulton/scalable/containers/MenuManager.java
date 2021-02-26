@@ -326,9 +326,14 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * This will report to the selected Draggable how much the mouse has moved since the draggable was first clicked.
-	 * When the draggable uses some of the change, it can update the mouse coordinates by returning an array of how
-	 * much was used. (Index 0 for x, index 1 for y.)
+	 * This will report to the selected Draggable how much the mouse has moved since the draggable
+	 * was first clicked. When the draggable uses some of the change, it can update the mouse
+	 * coordinates by returning an array of how much was used. (Index 0 for x, index 1 for y.)
+	 * <p>
+	 * This method is also responsible for executing touch events and updating the cursor if necessary.
+	 * If multiple touched components alter the cursor type, the most recently added to the touch list
+	 * will take precedence.
+	 * 
 	 * @param x the mouse x coordinate in pixels
 	 * @param y the mouse y coordinate in pixels
 	 */
@@ -359,7 +364,10 @@ public abstract class MenuManager {
 				touchComp.setTouched(true);
 				if(touchComp.getTouchAction() != null)
 					touchComp.getTouchAction().onEvent();
-				cursorType = touchComp.getTouchedCursorType();
+				//In case that two components affect the cursor, draw the most recent one
+				//However, ignore if the component does not care about the cursor even though touched.
+				if(touchComp.getTouchedCursorType() != Cursor.DEFAULT_CURSOR)
+					cursorType = touchComp.getTouchedCursorType();
 			}else if(touchComp.isTouched()) { //if it was touched
 				touchComp.setTouched(false); //it is no longer
 				if(touchComp.getTouchAction() != null)

@@ -36,14 +36,8 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * @see #setTouched(boolean)
 	 * @see #isTouchedAt(int, int)*/
 	protected boolean touched = false;
-	/**Whether or not the component should lose focus once the mouse lets go.
-	 * Some components, like text boxes, need to retain focus so the user can enter secondary input.
-	 * Defaults to true.
-	 * @see #isDeselectedOnRelease()*/
-	protected static boolean deselectOnRelease = true;
 	
-	protected int cursorType = Cursor.HAND_CURSOR;
-	
+	//TODO add descriptions for these
 	protected EventAction touchAction = null;
 	protected EventAction clickAction = null;
 	protected EventAction lostFocusAction = null;
@@ -216,22 +210,33 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Returns whether or not the component should lose focus once the mouse lets go.
-	 * Some components, like text boxes, need to retain focus so the user can enter secondary input.
-	 * @return {@link #deselectOnRelease}
+	 * Returns whether or not the component should lose focus once the mouse lets go. 
+	 * Defaults to true. <p>
+	 * Some classes, like text boxes, need to retain focus so the user can enter secondary input.
+	 * These classes need to override this method.
+	 * @return whether the component should lose focus on mouse release
 	 */
 	public boolean isDeselectedOnRelease() {
 		return true;
+	}
+	
+	/**
+	 * Returns the cursor type to draw. Defaults to {@link Cursor#HAND_CURSOR}. <p>
+	 * If a clickable subclass needs to have a different cursor type (like TEXT_CURSOR for text boxes),
+	 * then this method should be overridden.
+	 * If a subclass should not change which cursor type is used, {@link Cursor#DEFAULT_CURSOR}
+	 * should be returned here.
+	 */
+	@Override
+	public int getTouchedCursorType() {
+		return Cursor.HAND_CURSOR;
 	}
 	
 	public String toString() {
 		return id+":"+super.toString();
 	}
 	
-	@Override
-	public int getTouchedCursorType() {
-		return cursorType;
-	}
+	//TODO add descriptions for below:
 	
 	public EventAction getTouchAction() {
 		return touchAction;

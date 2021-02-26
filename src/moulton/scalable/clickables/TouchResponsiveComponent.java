@@ -46,7 +46,7 @@ public interface TouchResponsiveComponent {
 	 * Should return the cursor type that should be used when this component is touched. The
 	 * result will be handled by {@link MenuManager} and passed off to the container via
 	 * {@link Container#setCursor(int)}.
-	 * @return the cursor type constant
+	 * @return the cursor type constant, to be used by {@link Container#setCursor(int)}
 	 */
 	public int getTouchedCursorType();
 	

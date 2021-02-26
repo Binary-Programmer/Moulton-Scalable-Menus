@@ -116,6 +116,7 @@ public class Panel extends MenuComponent {
 			h = hh;
 		}
 		lastHeight = h;
+		lastWidth = w;
 
 		// draw color
 		if(color!=null){
