@@ -31,12 +31,12 @@ import moulton.scalable.draggables.ScrollableComponent;
  * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for security, for example: password boxes).
  * <li>{@link #deselectOnEnter} determines whether an input of enter will deselect the text box.
  * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message. Not recommended to be true if {@code deselectOnEnter} is true.
- * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotkeyTextComponent}.
+ * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotKeyTextComponent}.
  * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set to clicked.
  * </ul>
  * @author Matthew Moulton
  */
-public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent, ScrollableComponent {
+public class TextBox extends Clickable implements DraggableComponent, HotKeyTextComponent, ScrollableComponent {
 	//core fields
 	/**The display string of the text box.
 	 * @see #getMessage()
@@ -111,7 +111,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @see #setWordSplitting(boolean)*/
 	protected boolean wordSplitting = false;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
-	 * @see #getHotkeyEnabled()
+	 * @see #isHotKeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
 	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
@@ -424,7 +424,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public Color getFillColor() {
 		if (!isEnabled())
 			return Color.WHITE;
-		if(isTouched() && !getClicked() && colorTouched != null)
+		if(isTouched() && !isClicked() && colorTouched != null)
 			return colorTouched;
 		
 		return color;
@@ -483,7 +483,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int textOffset = fontMetrics.getAscent() + fontMetrics.getLeading() + (h-(texts.length*hheight))/2;
 
 		boolean messageShown;
-		boolean isClicked = getClicked(); //we should only shift to the blinker if the box is selected
+		boolean isClicked = isClicked(); //we should only shift to the blinker if the box is selected
 		//the string that will be displayed. usually message but sometimes the hint
 		String rem;
 		//message should always be not null. Even if it is empty, it should still be not null
@@ -502,7 +502,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int totalTextLength = rem.length();
 		//If we should set the blinker, then the set variable should be false. If we don't set the 
 		//blinker, then even though it hasn't been set, still pretend like it is.
-		boolean blinkerSet = !getClicked();
+		boolean blinkerSet = !isClicked();
 		int underscoreWidth = fontMetrics.stringWidth(bufferChar);
 
 		if(h/hheight<1)
@@ -1140,7 +1140,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String copy() {
-		if(getHotkeyEnabled())
+		if(isHotKeyEnabled())
 			return getSelectedText();
 		else
 			return null;
@@ -1151,7 +1151,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String cut() {
-		if(!getHotkeyEnabled())
+		if(!isHotKeyEnabled())
 			return null;
 		
 		String cut = getSelectedText();
@@ -1165,7 +1165,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void paste(String pasteText) {
-		if(enabled && getHotkeyEnabled()) {
+		if(enabled && isHotKeyEnabled()) {
 			if(selection) {
 				deleteSelection(pasteText);
 			}else {
@@ -1256,7 +1256,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return {@link #hotkeyEnabled}
 	 */
 	@Override
-	public boolean getHotkeyEnabled() {
+	public boolean isHotKeyEnabled() {
 		return hotkeyEnabled;
 	}
 	

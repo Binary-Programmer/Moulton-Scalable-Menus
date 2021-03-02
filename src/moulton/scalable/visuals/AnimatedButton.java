@@ -159,11 +159,11 @@ public class AnimatedButton extends RadioButton {
 	 */
 	protected Animation getDrawAnimation() {
 		//if it is neither touched nor clicked, return the normal image
-		if(!getClicked() && !isTouched())
+		if(!isClicked() && !isTouched())
 			return mainAnimation;
 		
 		//otherwise, it gets more complicated. If it is clicked, return the click image if there is one
-		if(getClicked() && clickedAnimation!=null)
+		if(isClicked() && clickedAnimation!=null)
 			return clickedAnimation;
 		//clicked buttons are touched, so if it is touched and there is a touch image, return that
 		if(isTouched() && touchedAnimation!=null)

@@ -18,28 +18,43 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**A unique string designed to identify this component when an event occurs.
 	 * @see #getId()*/
 	protected String id;
+	/**Whether or not this component is selected by the press of the mouse currently.
+	 * @see #setClicked(boolean, int, int)
+	 * @see #isClicked()
+	 * @see #clickableAt(int, int)*/
+	protected boolean clicked = false;
 	/**Whether or not the component can be clicked and used.
 	 * @see #isEnabled()
 	 * @see #setEnabled(boolean)*/
 	protected boolean enabled = true;
-	/**Whether or not this component is selected by the press of the mouse currently.
-	 * @see #setClicked(boolean, int, int)
-	 * @see #getClicked()
-	 * @see #clickableAt(int, int)*/
-	protected boolean clicked = false;
-	/**Whether or not this component should render a black outline on the border of the component.
-	 * @see #setOutline(boolean)
-	 * @see #getOutline()*/
-	protected boolean outline = false;
 	/**Whether the clickable is currently touched by the mouse.
 	 * @see #isTouched()
 	 * @see #setTouched(boolean)
 	 * @see #isTouchedAt(int, int)*/
 	protected boolean touched = false;
+	/**Whether or not this component should render a black outline on the border of the component.
+	 * @see #setOutline(boolean)
+	 * @see #getOutline()*/
+	protected boolean outline = false;
 	
-	//TODO add descriptions for these
+	//TODO put a description
+	protected Clickable formChain = null;
+	/**The action that should be executed when the the component is first touched or loses touch.
+	 * This action is called by {@link MenuManager#mouseMoved(int, int)}.
+	 * @see #getTouchAction()
+	 * @see #setTouchAction(EventAction)*/
 	protected EventAction touchAction = null;
+	/**The action that should be executed when the component is successfully clicked.
+	 * This action is called by {@link MenuManager#mouseReleased(int, int)}.
+	 * If the EventAction returns true, the click event is not considered consumed.
+	 * @see #getClickAction()
+	 * @see #setClickAction(EventAction)*/
 	protected EventAction clickAction = null;
+	/**The action that should be executed when the component loses focus.
+	 * This action is called by {@link MenuManager#componentLostFocus(Clickable)}.
+	 * If the EventAction returns true, the lost focus event is not considered consumed.
+	 * @see #getLostFocusAction()
+	 * @see #setLostFocusAction(EventAction)*/
 	protected EventAction lostFocusAction = null;
 	
 	/**
@@ -74,11 +89,13 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 		this.id = id;
 	}
 	
+	
+	//CLICK ACTIONS
 	/**
 	 * Returns whether or not the component is selected by the press of the mouse.
 	 * @return {@link #clicked}
 	 */
-	public boolean getClicked(){
+	public boolean isClicked(){
 		return clicked;
 	}
 	
@@ -129,6 +146,33 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 		this.clicked = clicked;
 	}
 	
+	
+	//CORE BEHAVIOR
+	/**
+	 * Returns the id of this component. The id is a unique string designed to identify this component when an event occurs.
+	 * @return {@link #id}
+	 */
+	public String getId(){
+		return id;
+	}
+	
+	public String toString() {
+		return id+":"+super.toString();
+	}
+	
+	/**
+	 * Returns whether or not the component should lose focus once the mouse lets go. 
+	 * Defaults to true. <p>
+	 * Some classes, like text boxes, need to retain focus so the user can enter secondary input.
+	 * These classes need to override this method.
+	 * @return whether the component should lose focus on mouse release
+	 */
+	public boolean isDeselectedOnRelease() {
+		return true;
+	}
+	
+	
+	//TOUCH FEATURES
 	/**
 	 * Whether a component is touched at (x,y) or clicked at that location is the same.
 	 * @see #clickableAt(int, int)
@@ -154,13 +198,19 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Returns the id of this component. The id is a unique string designed to identify this component when an event occurs.
-	 * @return {@link #id}
+	 * Returns the cursor type to draw. Defaults to {@link Cursor#HAND_CURSOR}. <p>
+	 * If a clickable subclass needs to have a different cursor type (like TEXT_CURSOR for text boxes),
+	 * then this method should be overridden.
+	 * If a subclass should not change which cursor type is used, {@link Cursor#DEFAULT_CURSOR}
+	 * should be returned here.
 	 */
-	public String getId(){
-		return id;
+	@Override
+	public int getTouchedCursorType() {
+		return Cursor.HAND_CURSOR;
 	}
 	
+	
+	//INDIVIDUAL AESTHETICS AND BEHAVIOR
 	/**
 	 * Sets whether or not the clickable should be able to be used or just shown.
 	 * @param enabled {@link #enabled}
@@ -209,50 +259,55 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 		return outline;
 	}
 	
+	public Clickable getFormChain() {
+		return formChain;
+	}
+	public void setFormChain(Clickable formChain) {
+		this.formChain = formChain;
+	}
+	
+	
+	//EVENT ACTIONS
 	/**
-	 * Returns whether or not the component should lose focus once the mouse lets go. 
-	 * Defaults to true. <p>
-	 * Some classes, like text boxes, need to retain focus so the user can enter secondary input.
-	 * These classes need to override this method.
-	 * @return whether the component should lose focus on mouse release
+	 * The Clickable class defines a touch action that should be executed when this component is
+	 * touched or when it stops being touched.
+	 * @return {@link #touchAction}
 	 */
-	public boolean isDeselectedOnRelease() {
-		return true;
-	}
-	
-	/**
-	 * Returns the cursor type to draw. Defaults to {@link Cursor#HAND_CURSOR}. <p>
-	 * If a clickable subclass needs to have a different cursor type (like TEXT_CURSOR for text boxes),
-	 * then this method should be overridden.
-	 * If a subclass should not change which cursor type is used, {@link Cursor#DEFAULT_CURSOR}
-	 * should be returned here.
-	 */
-	@Override
-	public int getTouchedCursorType() {
-		return Cursor.HAND_CURSOR;
-	}
-	
-	public String toString() {
-		return id+":"+super.toString();
-	}
-	
-	//TODO add descriptions for below:
-	
 	public EventAction getTouchAction() {
 		return touchAction;
 	}
+	/**
+	 * Returns the action that should be executed on a successful click on this component.
+	 * @return {@link #clickAction}
+	 */
 	public EventAction getClickAction() {
 		return clickAction;
 	}
+	/**
+	 * Returns the action that should be executed when this component loses focus.
+	 * @return {@link #lostFocusAction}
+	 */
 	public EventAction getLostFocusAction() {
 		return lostFocusAction;
 	}
+	/**
+	 * Sets the touch action that should execute when this class is first touched or loses touch.
+	 * @param action to replace {@link #touchAction}
+	 */
 	public void setTouchAction(EventAction action) {
 		this.touchAction = action;
 	}
+	/**
+	 * Sets the action that should execute on a successful click of this component.
+	 * @param action {@link #clickAction}
+	 */
 	public void setClickAction(EventAction action) {
 		this.clickAction = action;
 	}
+	/**
+	 * Sets the action that should execute when the component loses focus.
+	 * @param action {@link #lostFocusAction}
+	 */
 	public void setLostFocusAction(EventAction action) {
 		this.lostFocusAction = action;
 	}

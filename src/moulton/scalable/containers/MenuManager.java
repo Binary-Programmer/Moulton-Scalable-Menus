@@ -20,7 +20,7 @@ import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.popups.Popup;
-import moulton.scalable.texts.HotkeyTextComponent;
+import moulton.scalable.texts.HotKeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
 import moulton.scalable.texts.TextInputComponent;
@@ -127,7 +127,7 @@ public abstract class MenuManager {
 				Clickable c = (Clickable)mc;
 				if(c.clickableAt(x,y)){ //is clicked
 					setClicked(c,x,y);
-				}else if(c.getClicked()){ //if something still thought it was clicked
+				}else if(c.isClicked()){ //if something still thought it was clicked
 					c.setClicked(false, x, y);
 				}
 			}
@@ -137,8 +137,11 @@ public abstract class MenuManager {
 	/**
 	 * The Moulton Scalable Menus handles the mouse release once this method has been called by another source. 
 	 * This method checks to see whether the component that the user first clicked on is the same that they released
-	 * on. Sets {@link #clicked} as necessary and calls {@link #clickableAction(Clickable)} if the component
-	 * selection was successful.
+	 * on. Sets {@link #clicked} as necessary.
+	 * <p>
+	 * If the click was successful, it is determined whether the clickable has an associated click event by
+	 * calling {@link Clickable#getClickAction()}. If not, or if the action does not consume the event, the
+	 * manager then calls {@link #clickableAction(Clickable)}.
 	 * and the mouse (x,y) coordinate as determined by the mouse event is still on that component.
 	 * @param x the x coordinate of the mouse when released
 	 * @param y the y coordinate of the mouse when released
@@ -232,9 +235,18 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Called when the component lost focus and needs to report changes. After this is called to ensure
-	 * no component inconsistencies, {@link #lostFocusAction(Clickable)} is called. This will be called
-	 * before the component loses focus.
+	 * Called when the component lost focus and may need to report changes. If the component has a registered
+	 * lost focus event {@link Clickable#getLostFocusAction()}, then that will be called. If not, or if the
+	 * event remains unconsumed, {@link #lostFocusAction(Clickable)} will be called.
+	 * <p>
+	 * For components that lose focus on release ({@link Clickable#isDeselectedOnRelease()}),
+	 * losing focus is defined as going from a clicked state to a non-clicked state. The losing focus event
+	 * will occur regardless of whether the click was successful.
+	 * <p>
+	 * For components that do not lose focus on release, the meaning is slightly different. The component
+	 * will keep focus only if the click is successful (if not, it will lose focus and trigger this event
+	 * just like <code>deselectOnRelease</code> was true), and if so, it will lose focus as soon as another
+	 * component is first clicked (regardless of whether that click is successful).
 	 * @param c the Clickable menu component that lost focus and needs to report changes to its menu
 	 */
 	public void componentLostFocus(Clickable c){
@@ -260,9 +272,9 @@ public abstract class MenuManager {
 	 * @param key the key that was pressed
 	 */
 	public void keyTyped(char key) {
-		if(clicked instanceof HotkeyTextComponent) {
-			HotkeyTextComponent c = (HotkeyTextComponent)clicked;
-			if(c.getHotkeyEnabled()) {
+		if(clicked instanceof HotKeyTextComponent) {
+			HotKeyTextComponent c = (HotKeyTextComponent)clicked;
+			if(c.isHotKeyEnabled()) {
 				//letters typed while control is held are not the same values as without
 				//for example, ctr-a is 1, ctr-b is 2, whereas a is 97 and b is 98
 				if(key == (char)3) { //copy
@@ -290,7 +302,13 @@ public abstract class MenuManager {
 				}
 			}
 		}
-		//if none of the hotkeys were valid, continue with normal functioning
+		if(key == '\t') { //tab is a positioning character using forms
+			if(clicked != null && clicked.getFormChain() != null) {
+				setClicked(clicked.getFormChain(), -1, -1); //phantom click select of the next
+				return; //don't process the tab as a character otherwise
+			}
+		}
+		//if none of the hot keys were valid, continue with normal functioning
 		if(clicked instanceof TextInputComponent){
 			TextInputComponent textInputComp = (TextInputComponent) clicked;
 			//if it is a valid looking character, just append it
@@ -428,7 +446,7 @@ public abstract class MenuManager {
 	 * @param y the y-location of the mouse when clicked. Measured in pixels.
 	 */
 	public void setClicked(Clickable clicked, int x, int y) {
-		if(this.clicked != null && clicked != this.clicked) {//tell the old clicked that it has been replaced
+		if(this.clicked != null && clicked != this.clicked) { //tell the old clicked that it has been replaced
 			this.clicked.setClicked(false, x, y);
 			//also any lost focus actions triggered
 			componentLostFocus(this.clicked);

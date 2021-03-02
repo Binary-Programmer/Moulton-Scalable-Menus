@@ -151,11 +151,11 @@ public class ImageButton extends RadioButton {
 	 */
 	protected BufferedImage getDrawImage() {
 		//if it is neither touched nor clicked, return the normal image
-		if(!getClicked() && !isTouched())
+		if(!isClicked() && !isTouched())
 			return image;
 		
 		//otherwise, it gets more complicated. If it is clicked, return the click image if there is one
-		if(getClicked() && clickedImage!=null)
+		if(isClicked() && clickedImage!=null)
 			return clickedImage;
 		//clicked buttons are touched, so if it is touched and there is a touch image, return that
 		if(isTouched() && touchedImage!=null)

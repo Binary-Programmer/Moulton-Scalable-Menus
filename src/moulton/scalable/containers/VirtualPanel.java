@@ -12,12 +12,13 @@ import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * An improved Panel class that can be scrolled and can thus hold hidden elements. The PanelPlus can serve as a 
- * Panel parent for any MenuComponent. Keep in mind that the width of child components will be based relative to
- * full width and height of the parent panel rather than just the shown ones.
+ * An improved Panel class that can be scrolled and can thus hold hidden elements in "virtual space".
+ * The VirtualPanel can serve as a Panel parent for any MenuComponent. Keep in mind that the width of
+ * child components will be based relative to full width and height of the parent panel rather than
+ * just the dimensions.
  * @author Matthew Moulton
  */
-public class PanelPlus extends Panel implements ScrollableComponent{
+public class VirtualPanel extends Panel implements ScrollableComponent{
 	/**
 	 * The full width and full height values are the minimum values of the actual sizes of the panel. That is,
 	 * at render time, if the regular width (shownWidth) or regular height (shownHeight) of this panel is less
@@ -25,7 +26,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	 * of a scroll panel. <p>
 	 * 
 	 * As said, these values are minimums: if the value of the regular width or height is greater than their
-	 * full counterparts, this <code>PanelPlus</code> will fill to those dimensions. This can be very useful if
+	 * full counterparts, this <code>VirtualPanel</code> will fill to those dimensions. This can be very useful if
 	 * there is a lower bound that a scroll panel should support values under. For example, giving fullWidth the
 	 * value of "400", scroll bar use will be available only if fewer than 400 pixels are available for the shown
 	 * width.
@@ -75,7 +76,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	 * @param fullHeight the entire height of the panel. In general, intended to be greater than shownHeight
 	 * @param color the background color for the box when editable
 	 */
-	public PanelPlus(Panel parent, String x, String y, String shownWidth, String shownHeight, String fullWidth, String fullHeight, Color color) {
+	public VirtualPanel(Panel parent, String x, String y, String shownWidth, String shownHeight, String fullWidth, String fullHeight, Color color) {
 		super(parent, x, y, shownWidth, shownHeight, color);
 		this.fullWidth = fullWidth;
 		this.fullHeight = fullHeight;
@@ -90,7 +91,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	 * determined at run time by the space on the grid allotted to this panel.
 	 * @param color the background color for the box when editable
 	 */
-	public PanelPlus(Panel parent, int x, int y, String fullWidth, String fullHeight, Color color) {
+	public VirtualPanel(Panel parent, int x, int y, String fullWidth, String fullHeight, Color color) {
 		super(parent, x, y, color);
 		this.fullWidth = fullWidth;
 		this.fullHeight = fullHeight;
@@ -122,15 +123,11 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 			w = ww;
 			h = hh;
 		}
-		//TODO test this- I just added the next few lines
-		if(parent != null) {
-			int[][] trueVals = parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this);
-			lastX = trueVals[0][0];
-			lastY = trueVals[1][0];			
-		} else {
-			lastX = x;
-			lastY = y;
-		}
+		
+		//lastX and lastY have already been set to be true to offset- after all, it is drawing on its parent.
+		//It is the children that are being deceived for the purposes of rendering.
+		lastX = x;
+		lastY = y;
 		//width and height stay the same regardless of the offset
 		lastWidth = w;
 		lastHeight = h;
@@ -225,7 +222,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 		heightBar = bar;
 	}
 	/**
-	 * At render time, PanelPlus changes {@link ScrollBar#totalOffs} and {@link ScrollBar#barOffs} of {@link #widthBar} and {@link #heightBar}.
+	 * At render time, VirtualPanel changes {@link ScrollBar#totalOffs} and {@link ScrollBar#barOffs} of {@link #widthBar} and {@link #heightBar}.
 	 * The values of {@link ScrollBar#totalOffs} are set to {@link #fullWidth} and {@link #fullHeight}, respectively.<p>
 	 * Use this method to override that setting with another value. {@link ScrollBar#barOffs} will be deduced from the value given. Keep in mind
 	 * that "width" and "height" in this context will refer to {@link #fullWidth} and {@link #fullHeight}. Thus, calling
@@ -263,7 +260,7 @@ public class PanelPlus extends Panel implements ScrollableComponent{
 	}
 	
 	/**
-	 * The PanelPlus gets the offset from its parent panel ({@link Panel#getRenderOffset(MenuComponent)}), then
+	 * The VirtualPanel gets the offset from its parent panel ({@link Panel#getRenderOffset(MenuComponent)}), then
 	 * adds the offset this has saved from the last render, saved as {@link #lastX} and {@link #lastY}.
 	 */
 	@Override
