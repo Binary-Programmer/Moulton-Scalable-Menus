@@ -37,7 +37,12 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * @see #getOutline()*/
 	protected boolean outline = false;
 	
-	//TODO put a description
+	/**The clickable specified here is the next clickable to be selected in the context of a form.
+	 * A complete chain can be formed when multiple clickables are linked together in this way. When
+	 * the user has a component in the chain selected and presses tab, selection goes to the next
+	 * component.
+	 * @see #getFormChain()
+	 * @see #setFormChain(Clickable)*/
 	protected Clickable formChain = null;
 	/**The action that should be executed when the the component is first touched or loses touch.
 	 * This action is called by {@link MenuManager#mouseMoved(int, int)}.
@@ -259,9 +264,17 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 		return outline;
 	}
 	
+	/**
+	 * Returns the next clickable in the form chain.
+	 * @return {@link #formChain}
+	 */
 	public Clickable getFormChain() {
 		return formChain;
 	}
+	/**
+	 * Sets the clickable that should be next in the form chain.
+	 * @param formChain to replace {@link #formChain}
+	 */
 	public void setFormChain(Clickable formChain) {
 		this.formChain = formChain;
 	}

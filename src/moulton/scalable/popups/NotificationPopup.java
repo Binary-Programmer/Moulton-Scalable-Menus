@@ -10,6 +10,7 @@ import moulton.scalable.containers.MenuManager;
 import moulton.scalable.geometrics.Line;
 import moulton.scalable.texts.Alignment;
 import moulton.scalable.texts.Caption;
+import moulton.scalable.texts.LineBreak;
 
 /**
  * This is an example of what can be done with popups. Sometimes the user needs to be notified of some event
@@ -77,67 +78,47 @@ public class NotificationPopup extends Popup {
 		int okWidth = fm.stringWidth("Ok");
 		addTouchResponsiveComponent(new Button(okId, "Ok", base, "centerx-"+okWidth, "height-1-"+doubleHeight, ""+okWidth*2, ""+doubleHeight, font, Color.LIGHT_GRAY));
 		
-		final int DEFAULT_WIDTH = doubleHeight * 3;
-		final int MAX_WIDTH = doubleHeight * 8;
+		final int DEFAULT_WIDTH = doubleHeight * 3; //default width of popup we arbitrarily set
+		final int MAX_WIDTH = doubleHeight * 7; //the max width (as according to the height given).
 		int textWidth = fm.stringWidth(text);
 		int linesOfText = 1;
 		if(textWidth < DEFAULT_WIDTH) {
 			textWidth = DEFAULT_WIDTH;
 		}else {
-			textWidth += doubleHeight;
-			if(textWidth > MAX_WIDTH) {
-				final int MAX_NOT_PAD = MAX_WIDTH - doubleHeight;
-				int i = text.length()-1;
-				for(; i > 0; i--) {
-					//to the proper length
-					if(fm.stringWidth(text.substring(0, i)) < MAX_NOT_PAD) {
-						//insert the new line
-						i = findNaturalBreak(text, 0, i);
-						text = text.substring(0, i) + '\n' + text.substring(i);
+			if(fm.stringWidth(text) > MAX_WIDTH) { //only continue if our text is too long
+				textWidth = MAX_WIDTH;
+				String rem = text;
+				text = ""; //text will be our final result with \n to separate lines
+				eachLine: while(rem.length() > 0) {
+					String line = "";
+					while(rem.length() > 0 && fm.stringWidth(line) <= MAX_WIDTH) {
+						//pass the first char from rem to line
+						char next = rem.charAt(0); 
+						rem = rem.substring(1);
+						line += next;
+						if(next == '\n') { //"short circuit"
+							text += line;
+							linesOfText++;
+							continue eachLine;
+						}
+					}
+					//now line is too long, or we ran out of rem
+					if(rem.length() == 0)
+						text += line; //append what we have
+					else { //fix the issue that the line is too long
+						LineBreak result = LineBreak.check(false, line, rem);
+						text += result.LINE + '\n';
+						rem = result.REMAINDER;
 						linesOfText++;
-						textWidth = MAX_WIDTH;
-						break;
 					}
 				}
-				i++;
-				int stop = i;
-				for(; stop<text.length(); stop++) {
-					if(fm.stringWidth(text.substring(i, stop)) >= MAX_NOT_PAD) {
-						stop = findNaturalBreak(text, i, stop);
-						text = text.substring(0, stop) + '\n' + text.substring(stop);
-						linesOfText++;
-						i = stop;
-					}
-				}
-			}
+			}else
+				textWidth = fm.stringWidth(text);
 		}
 		new Caption(text, base, "0", "centery", font, "width");
 		
-		this.width = ""+textWidth;
+		this.width = ""+(textWidth+doubleHeight); //doubleHeight serves as padding
 		this.height = ""+(doubleHeight*3 + linesOfText*fontHeight);
-	}
-	
-	/**
-	 * Finds a natural word break in the given string text. The search for the break index starts at the
-	 * index specified by breakFrom then continues going backwards at most to the startIndex.
-	 * @param text the text that needs to be broken
-	 * @param startIndex the earliest index that breaks could appropriately be found at
-	 * @param breakFrom the index where the search for breaks should start
-	 * @return the index found where the text should break. If no break character is located within the
-	 * proper boundaries, breakFrom is returned.
-	 */
-	protected int findNaturalBreak(String text, int startIndex, int breakFrom) {
-		int ii = breakFrom;
-		for(; ii>startIndex; ii--) {
-			char c = text.charAt(ii);
-			if(c == ' ' || c == '-' || c == '\n')
-				break;
-		}
-		if(ii == startIndex) //no space char found
-			//go ahead with normal line break
-			return breakFrom;
-		else  //found a break char
-			return ii;
 	}
 
 }

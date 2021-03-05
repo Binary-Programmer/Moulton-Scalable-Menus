@@ -65,6 +65,14 @@ public abstract class MenuManager {
 	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)*/
 	protected LinkedList<TouchResponsiveComponent> touchCheckList = new LinkedList<>();
 	
+	/**A clickable that can be set to the next in a form chain if the next should just be a deselection.*/
+	public static final Clickable FORM_END = new Clickable(null, null, 0, 0) {
+		public void render(Graphics g, int xx, int yy, int ww, int hh) {}
+		public void setFormChain(Clickable formChain) {
+			throw new RuntimeException("You may not set a next form to Form End!");
+		}
+	};
+	
 	/**
 	 * Saves the cont field as {@link #cont}.
 	 * @param cont the container for the menus to manage.
@@ -84,7 +92,7 @@ public abstract class MenuManager {
 	 * component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
-	protected abstract void clickableAction(Clickable c);
+	public abstract void clickableAction(Clickable c);
 	
 	/**
 	 * Implement to add functionality to any clickable components in the menu managed once they lose focus. Focus is defined
@@ -92,7 +100,7 @@ public abstract class MenuManager {
 	 * when something else is clicked. A good way to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
-	protected abstract void lostFocusAction(Clickable c);
+	public abstract void lostFocusAction(Clickable c);
 	
 	/**
 	 * The Moulton Scalable Menus handles the mouse press once this method has been called by a mouse listener external to Moulton Scalable

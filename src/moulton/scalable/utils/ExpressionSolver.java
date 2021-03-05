@@ -40,8 +40,8 @@ public class ExpressionSolver {
 	 * evaulating expressions like <code>cossin0</code>, since sin0 is the argument for cosine. Instead, use
 	 * parentheses like <code>cos(sin0)</code>, which will correctly result to 1. Additionally, <code>cospi</code>
 	 * is acceptable because all variables are replaced by their values before any evaluation. 
-	 * @param expression
-	 * @return
+	 * @param expression the expression to be solved
+	 * @return the double result of the solved expression
 	 */
 	public double solveString(String expression){
 		//remove all whitespace characters
@@ -271,7 +271,7 @@ public class ExpressionSolver {
 	
 	/**
 	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and is not
-	 * < 0.0. Therefore, this method will determine if there is a leading negation sign.
+	 * less than 0.0. Therefore, this method will determine if there is a leading negation sign.
 	 * @param d the double to test
 	 * @return whether the double to test is negative.
 	 */

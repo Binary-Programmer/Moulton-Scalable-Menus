@@ -1,5 +1,10 @@
 package moulton.scalable.clickables;
 
+/**
+ * The EventAction is an interface serving like a functor. It has a single method to be called,
+ * {@link #onEvent()}, which should trigger the execution of the action.
+ * @author Matthew Moulton
+ */
 public interface EventAction {
 	
 	/**
