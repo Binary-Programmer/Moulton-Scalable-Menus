@@ -85,7 +85,7 @@ public class Manager7 extends MenuManager{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId() != null) {
 			switch(c.getId()) {
 			case "new":
@@ -147,12 +147,6 @@ public class Manager7 extends MenuManager{
 			case "cancel":
 				setPopup(null);
 				break;
-			case "pathUp":
-				((PathFinderPopup)popup).goUpDirectory();
-				break;
-			case "directoryButton":
-				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
-				break;
 			}
 		}
 	}
@@ -194,7 +188,7 @@ public class Manager7 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {
+	public void lostFocusAction(Clickable c) {
 		String id = c.getId();
 		if(id == null)
 			return;
@@ -239,16 +233,15 @@ public class Manager7 extends MenuManager{
 				}
 				return;
 			}else {
-				if(key == KeyEvent.VK_UP)
-					box.selectVertical(true);
-				else if(key == KeyEvent.VK_DOWN)
-					box.selectVertical(false);
-				
 				if(shiftOn) {
 					if(key == KeyEvent.VK_LEFT) //begin selection left
 						box.selectShift(true, false);
 					else if(key == KeyEvent.VK_RIGHT) //begin selection right
 						box.selectShift(false, false);
+					if(key == KeyEvent.VK_UP)
+						box.selectVertical(true);
+					else if(key == KeyEvent.VK_DOWN)
+						box.selectVertical(false);
 					return;
 				}else {
 					if(key == KeyEvent.VK_UP)

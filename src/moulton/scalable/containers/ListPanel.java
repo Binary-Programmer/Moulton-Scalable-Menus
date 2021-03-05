@@ -9,7 +9,7 @@ import java.util.Collection;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * A subclass of {@link PanelPlus}. Built to hold a variable number of elements in the list. These elements
+ * A subclass of {@link VirtualPanel}. Built to hold a variable number of elements in the list. These elements
  * must be of type {@link MenuComponent}, whether they be panels or individual components. Elements can be
  * added when components set their parent, which thereby calls {@link #addComponent(MenuComponent, int)}.
  * Elements can be removed from the list by {@link #removeComponent(int, boolean)}. All components can be
@@ -17,7 +17,7 @@ import moulton.scalable.utils.MenuComponent;
  * {@link #getListLength()}.
  * @author Matthew Moulton
  */
-public class ListPanel extends PanelPlus {
+public class ListPanel extends VirtualPanel {
 	/**The height of each row specified by an algebraic expression.*/
 	protected String rowHeight;
 
@@ -162,7 +162,7 @@ public class ListPanel extends PanelPlus {
 	}
 	
 	/**
-	 * Draws on the graphics object to represent this ListPanel. The ListPanel changes its {@link PanelPlus#fullHeight}
+	 * Draws on the graphics object to represent this ListPanel. The ListPanel changes its {@link VirtualPanel#fullHeight}
 	 * at render time to have each row drawn at the proper {@link #rowHeight}. Render can also create
 	 * dummy null values in the grid to space out the rows properly.
 	 */

@@ -1,6 +1,7 @@
 package moulton.scalable.clickables;
 
 import moulton.scalable.containers.MenuManager;
+import moulton.scalable.containers.Container;
 
 /**
  * Interface for components that should be responsive to being touched, meaning having the mouse cursor on part of
@@ -32,4 +33,21 @@ public interface TouchResponsiveComponent {
 	 * @return the variable's touched condition as of last time it was updated.
 	 */
 	public boolean isTouched();
+	
+	/**
+	 * Touch Responsive Components may optionally provide an EventAction that should be executed when the
+	 * component is first touched and when it stops being touched. At the time the EventAction is executed,
+	 * the component should know its new touch status through {@link #setTouched(boolean)}.
+	 * @return the event action to execute. null is acceptable.
+	 */
+	public EventAction getTouchAction();
+	
+	/**
+	 * Should return the cursor type that should be used when this component is touched. The
+	 * result will be handled by {@link MenuManager} and passed off to the container via
+	 * {@link Container#setCursor(int)}.
+	 * @return the cursor type constant, to be used by {@link Container#setCursor(int)}
+	 */
+	public int getTouchedCursorType();
+	
 }

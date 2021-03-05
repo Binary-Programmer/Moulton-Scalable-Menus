@@ -50,7 +50,7 @@ public class Manager1 extends MenuManager{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		String id = c.getId();
 		if(id != null) {
 			switch(id) {
@@ -80,6 +80,6 @@ public class Manager1 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {}
+	public void lostFocusAction(Clickable c) {}
 
 }

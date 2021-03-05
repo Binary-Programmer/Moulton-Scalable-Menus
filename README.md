@@ -8,7 +8,7 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 * [Examples](#examples)
 
 ## Technologies
-The project requires Java 1.7 to compile. Pre-compiled jars are also available for download.
+The project requires a Java version of at least 1.7 to compile. Pre-compiled jars are also available for download.
 
 ## Setup
 Download either the source .java files or select a version of the pre-compiled .jar files. Add Moulton Scalable Menus as a dependency to your intended project.
@@ -38,7 +38,7 @@ The menu manager is in control of directly managing the menu system. The menu ma
 There are three abstract methods that the menu must implement to accomplish these tasks: `createMenu()`, `clickableAction(moulton.scalable.clickables.Clickable)`, and `lostFocusAction(moulton.scalable.clickables.Clickable)`. Understanding these three key methods is vital to making a responsive menu system.
 
 #### Create Menu: `createMenu()`
-This is where the menu manager expects you to create the menu. The menu system is built to handle a tree structure of menu components, each of which extend `moulton.scalable.utils.MenuComponent`. Panels may hold other components (such as buttons, text boxes, shapes, images, captions) and other panels. The menu manager has a root Panel called `menu`. For any component to be rendered on the menu, it must be included as a child component of menu. For a better overview of menu components, please read [Menu Components](MenuComponents.md).
+This is where the menu manager expects you to create the menu. The menu system is built to handle a tree structure of menu components, each of which extend `moulton.scalable.utils.MenuComponent`. Panels may hold other components (such as buttons, text boxes, shapes, images, captions) and other panels. The menu manager has a root Panel called `menu`. For any component to be rendered on the menu, it must be included as a child component of menu. For a better overview of menu components, please read [Menu Components](./docs/MenuComponents.md).
 
 The create menu method will not be called automatically when the Menu Manager is created. Thus, it *must* be called by the library user for the menu components to be created.
 
@@ -56,7 +56,9 @@ Example dummy projects have been provided to show off certain features and demon
 Example 1 shows off the grid system of `moulton.scalable.containers.Panel` including column and row weights, frames, and margins. Example 1 also demonstrates the usage of pop ups.
 
 ### Example 2
-Example 2 shows off virtual space of `moulton.scalable.containers.PanelPlus` used with `moulton.scalable.draggables.ScrollBar`, invisible and polygonal buttons, images, and non-editable and variably editable text boxes.
+Example 2 shows off virtual space of `moulton.scalable.containers.VirtualPanel` used with `moulton.scalable.draggables.ScrollBar`, invisible and polygonal buttons, images, and non-editable and variably editable text boxes.
+
+Example 2 also shows how forms could be implemented (in the bottom right corner) by using the form chain and a `moulton.scalable.clickable.FormButton`.
 
 ### Example 3
 Example 3 shows off the `moulton.scalable.texts.TextHistory`.
@@ -65,10 +67,10 @@ Example 3 shows off the `moulton.scalable.texts.TextHistory`.
 Example 4 shows off radio buttons, image buttons, and animations.
 
 ### Example 5
-Example 6 shows off text boxes with virtual space, scrolling vertically or horizontally.
+Example 5 shows off text boxes with virtual space, scrolling vertically or horizontally.
 
 ### Example 6
-Example 5 shows off animated buttons and partitions.
+Example 6 shows off animated buttons and partitions. The partition is used to make the text scroll bar disappear when the text length is not sufficiently long, and reappear when the text in the box would need to take more space than available. The animated button is configured to react to button presses and to the animation's end.
 
 ### Example 7
 Example 7 shows off pop ups and the TextEditBox, a subclass of TextBox that has extra functionality such as vertical arrow key support, shift selection, and control text navigation.

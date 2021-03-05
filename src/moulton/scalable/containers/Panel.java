@@ -116,6 +116,7 @@ public class Panel extends MenuComponent {
 			h = hh;
 		}
 		lastHeight = h;
+		lastWidth = w;
 
 		// draw color
 		if(color!=null){
@@ -150,7 +151,7 @@ public class Panel extends MenuComponent {
 	
 	/**
 	 * Although Panel tells its children components to render where they truly are on the screen, offset is allowed
-	 * to be use in subclasses. For example, {@link PanelPlus} uses a subimage which components are drawn on, and that
+	 * to be use in subclasses. For example, {@link VirtualPanel} uses a subimage which components are drawn on, and that
 	 * subimage is later drawn onto the screen. Children components may need to get their true location on the screen,
 	 * for use in mouse touch and clicking boundaries for example.
 	 * @param comp the companion to find the render offset for

@@ -86,8 +86,8 @@ public abstract class RadioButton extends Clickable {
 	 * that the selected button is this.
 	 */
 	@Override
-	public boolean getClicked() {
-		return super.getClicked() || (getGroup()!=null && getGroup().getSelected() == this);
+	public boolean isClicked() {
+		return super.isClicked() || (getGroup()!=null && getGroup().getSelected() == this);
 	}
 	
 	/**
@@ -96,13 +96,13 @@ public abstract class RadioButton extends Clickable {
 	 * that is used. Otherwise, the normal {@link #color} is returned.
 	 * @return the applicable color for rendering the fill of the button
 	 * @see #isEnabled()
-	 * @see #getClicked()
+	 * @see #isClicked()
 	 * @see #isTouched()
 	 */
 	public Color getFillColor() {
 		if (!isEnabled())
 			return colorLight;
-		if(getClicked())
+		if(isClicked())
 			return colorDark;
 		if(isTouched() && colorTouched != null)
 			return colorTouched;

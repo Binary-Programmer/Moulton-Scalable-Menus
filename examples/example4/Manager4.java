@@ -92,7 +92,7 @@ public class Manager4 extends MenuManager{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId().equals("toggle")) {
 			Button toggleButton = (Button)c;
 			if(toggleButton.getText().equals("ON"))
@@ -103,7 +103,7 @@ public class Manager4 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {}
+	public void lostFocusAction(Clickable c) {}
 	
 	private BufferedImage rotateImage(BufferedImage image, int factorOf90Deg) {
 		//somehow you have changed the contents of image...

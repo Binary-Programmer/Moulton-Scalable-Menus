@@ -393,7 +393,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	public Color getFillColor() {
 		if (!isEnabled())
 			return color;
-		if(getClicked())
+		if(isClicked())
 			return colorDark;
 		if(isTouched() && colorTouched != null)
 			return colorTouched;

@@ -1,6 +1,7 @@
 package moulton.scalable.texts;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -23,19 +24,19 @@ import moulton.scalable.draggables.ScrollableComponent;
  * <p>
  * Beyond the typical function, there are a few custom attributes for the text box that can be enabled or disabled:
  * <ul>
- * <li>{@link #sordSplitting} defines whether lines can be split on words or only on break characters.
+ * <li>{@link #wordSplitting} defines whether lines can be split on words or only on break characters.
  * <li>{@link #hasVirtualSpace} decides whether the text box can have text in its message that is saved but not shown
  * <li>{@link #cutOffMark} determines whether the box should have a visual indication if any of its text is in virtual space.
  * <li>{@link #charMax} sets whether the text box has a maximum number of characters.
  * <li>{@link #charMask} is the character to be used instead of displaying the actual message (used for security, for example: password boxes).
  * <li>{@link #deselectOnEnter} determines whether an input of enter will deselect the text box.
  * <li>{@link #acceptEnter} defines whether this text box can have the \n character input to its message. Not recommended to be true if {@code deselectOnEnter} is true.
- * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotkeyTextComponent}.
+ * <li>{@link #hotkeyEnabled} decides whether hot keys (such as copy, cut, and paste) should be usable with this text box. All hot keys that this enables are defined by {@link HotKeyTextComponent}.
  * <li>{@link #clickSelectsAll} determines whether all the text should be selected when the text box is set to clicked.
  * </ul>
  * @author Matthew Moulton
  */
-public class TextBox extends Clickable implements DraggableComponent, HotkeyTextComponent, ScrollableComponent {
+public class TextBox extends Clickable implements DraggableComponent, HotKeyTextComponent, ScrollableComponent {
 	//core fields
 	/**The display string of the text box.
 	 * @see #getMessage()
@@ -108,9 +109,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * Break characters include space, new line, and hyphens. Defaults to false.
 	 * @see #getWordSplitting()
 	 * @see #setWordSplitting(boolean)*/
-	protected boolean sordSplitting = false;
+	protected boolean wordSplitting = false;
 	/**Whether the hotkey commands, copy, cut, paste, should be usable for this text box. Defaults to true.
-	 * @see #getHotkeyEnabled()
+	 * @see #isHotKeyEnabled()
 	 * @see #setHotkeyEnabled(boolean)*/
 	protected boolean hotkeyEnabled = true;
 	/**The maximum number of characters that can be held in the text box. -1 indicates no limit, which is
@@ -165,9 +166,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		super(id, parent, x, y);
 		this.width = width;
 		this.height = height;
-		this.message = message;
-		this.color = color;
-		this.font = font;
+		init(message, color, font);
 	}
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -180,6 +179,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	public TextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
 		super(id,parent,x,y);
+		init(message, color, font);
+	}
+	
+	/**
+	 * Just a few set up properties here. Attempting to cut down on code duplication. This is
+	 * private just since it is trivial in purpose.
+	 * @param message the message
+	 * @param color the color
+	 * @param font the font
+	 */
+	private void init(String message, Color color, Font font) {
 		if(message == null)
 			message = "";
 		this.message = message;
@@ -414,7 +424,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	public Color getFillColor() {
 		if (!isEnabled())
 			return Color.WHITE;
-		if(isTouched() && !getClicked() && colorTouched != null)
+		if(isTouched() && !isClicked() && colorTouched != null)
 			return colorTouched;
 		
 		return color;
@@ -436,8 +446,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int w = rect.width;
 		int h = rect.height;
 		
-		g.setColor(getFillColor());
-		g.fillRect(x, y, w, h);
+		Color fillColor = getFillColor();
+		if(fillColor != null) {
+			g.setColor(fillColor);
+			g.fillRect(x, y, w, h);			
+		}
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
 		g.setColor(enabled? Color.BLACK: Color.GRAY);
@@ -473,7 +486,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int textOffset = fontMetrics.getAscent() + fontMetrics.getLeading() + (h-(texts.length*hheight))/2;
 
 		boolean messageShown;
-		boolean isClicked = getClicked(); //we should only shift to the blinker if the box is selected
+		boolean isClicked = isClicked(); //we should only shift to the blinker if the box is selected
 		//the string that will be displayed. usually message but sometimes the hint
 		String rem;
 		//message should always be not null. Even if it is empty, it should still be not null
@@ -492,7 +505,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 		int totalTextLength = rem.length();
 		//If we should set the blinker, then the set variable should be false. If we don't set the 
 		//blinker, then even though it hasn't been set, still pretend like it is.
-		boolean blinkerSet = !getClicked();
+		boolean blinkerSet = !isClicked();
 		int underscoreWidth = fontMetrics.stringWidth(bufferChar);
 
 		if(h/hheight<1)
@@ -669,6 +682,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(!hasVirtualSpace && !rem.isEmpty()) {
 				String tempMessage = getMessage();
 				setMessage(tempMessage.substring(0, tempMessage.length()-rem.length()));
+				index = message.length();
 				//update the scroll bar
 				if(textScroller!=null)
 					textScroller.setBarOffs(0);
@@ -846,6 +860,16 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			}
 		}
 	}
+	
+	@Override
+	public int getTouchedCursorType() {
+		return Cursor.TEXT_CURSOR;
+	}
+	
+	@Override
+	public boolean isDeselectedOnRelease() {
+		return false;
+	}
 
 	/**
 	 * Returns the message displayed on this text box.
@@ -874,6 +898,13 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	}
 	
 	/**
+	 * Clears the {@link #message}.
+	 */
+	public void clearMessage() {
+		this.message = "";
+	}
+	
+	/**
 	 * Attempts to set {@link #message} to the specified string. If this text box has a TextFormat saved in {@link #format},
 	 * the string provided will be parsed as defined in {@link TextFormat#parseText(String)} and the result will be saved as
 	 * {@link #message}. Also, the string will be shortened to {@link #charMax} if necessary and if {@link #charMax} has
@@ -889,7 +920,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			message = string;
 		if(charMax>-1 && message.length()>charMax)
 			message = message.substring(0, charMax);
-		index = message.length(); //set the index to the end
+		
+		if(index > message.length())
+			index = message.length();
 		if(message.length()<1) {
 			startShift = 0;
 			if(textScroller != null) //the scroll bar should be unset
@@ -1032,7 +1065,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			if(end<message.length())
 				ending= message.substring(end);
 			setMessage(newMessage);
-			index = message.length();
+			
 			if(ending != null)
 				setMessage(newMessage + ending);
 		}else {
@@ -1117,7 +1150,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String copy() {
-		if(getHotkeyEnabled())
+		if(isHotKeyEnabled())
 			return getSelectedText();
 		else
 			return null;
@@ -1128,7 +1161,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public String cut() {
-		if(!getHotkeyEnabled())
+		if(!isHotKeyEnabled())
 			return null;
 		
 		String cut = getSelectedText();
@@ -1142,7 +1175,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 */
 	@Override
 	public void paste(String pasteText) {
-		if(enabled && getHotkeyEnabled()) {
+		if(enabled && isHotKeyEnabled()) {
 			if(selection) {
 				deleteSelection(pasteText);
 			}else {
@@ -1160,11 +1193,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 			selection = true;
 		clickIndex = 0;
 		index = message.length();
-	}
-	
-	@Override
-	public boolean isDeselectedOnRelease() {
-		return false;
 	}
 	
 	/**
@@ -1238,7 +1266,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	 * @return {@link #hotkeyEnabled}
 	 */
 	@Override
-	public boolean getHotkeyEnabled() {
+	public boolean isHotKeyEnabled() {
 		return hotkeyEnabled;
 	}
 	
@@ -1334,17 +1362,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotkeyText
 	
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
-	 * @param allowSplit sets {@link #sordSplitting}
+	 * @param allowSplit sets {@link #wordSplitting}
 	 */
 	public void setWordSplitting(boolean allowSplit) {
-		this.sordSplitting = allowSplit;
+		this.wordSplitting = allowSplit;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text box
-	 * @return the value of {@link #sordSplitting}
+	 * @return the value of {@link #wordSplitting}
 	 */
 	public boolean getWordSplitting() {
-		return sordSplitting;
+		return wordSplitting;
 	}
 	
 	@Override

@@ -1,13 +1,19 @@
 package moulton.scalable.utils;
 
-/*1 Jan 2020
+/* 23 Dec 2020
  * This is a modification of my ExpressionSolver class altered to better suit
  * Moulton Scalable Menus.
  */
-/**Solves algebraic expressions in double precision. There are eight operators that can be used:
+/**Solves algebraic expressions in double precision. Note that all whitespace is removed before
+ * expression processing. There are eight operators that can be used:
  * <pre>( ) ^ r * / + -</pre> The 'r' is root. For example, "2r4" is the square root of 4. All other
- * operators perform as expected. There are also five supported functions:
- * <pre>cos sin tan log ln</pre> There are also 6 variables that may be used in the expression: <pre>
+ * operators perform as expected. There are also seven supported functions:
+ * <pre>cos sin tan log ln max min</pre> Single argument functions, such as cos, sin, tan, log, and
+ * ln, do not need parentheses, ie "cos1" = "cos(1)". Two argument functions, such as max and min,
+ * operate almost like operators, taking the number before and the number after as arguments. For  
+ * example, "3 max 4" = 4. Again, no parentheses are necessary unless implicit multiplication is
+ * desired. In that case, use parentheses, such as "5 (2 min 1)" = 5, instead of "5 1 min 2".
+ * <p> There are also 6 variables that may be used in the expression: <pre>
  * centerx centery width height pi e</pre> where the first three refer to the dimensions of the {@link MenuComponent}'s
  * container, and the last two are the mathematical constants.<p> For example, "centerx - (width/10) * lne",
  * when the width of the container is 100, will result to 40.0.
@@ -29,9 +35,13 @@ public class ExpressionSolver {
 	}
 	
 	/**
-	 * Solves the equation as expected.
-	 * @param expression the equation to solve
-	 * @return the answer in double precision
+	 * Solves the given expression. Note that because of issues of circular dependencies in order of operations,
+	 * the functions must receive numerical arguments instead of expressions themselves. For example, avoid
+	 * evaulating expressions like <code>cossin0</code>, since sin0 is the argument for cosine. Instead, use
+	 * parentheses like <code>cos(sin0)</code>, which will correctly result to 1. Additionally, <code>cospi</code>
+	 * is acceptable because all variables are replaced by their values before any evaluation. 
+	 * @param expression the expression to be solved
+	 * @return the double result of the solved expression
 	 */
 	public double solveString(String expression){
 		//remove all whitespace characters
@@ -46,7 +56,8 @@ public class ExpressionSolver {
 		for(int i=0; i<VARIABLES.length; i++){
 			int index = expression.indexOf(VARIABLES[i]);
 			while(index!=-1){
-				expression = rebuildEquation(expression.substring(0, index), values[i], expression.substring(index+VARIABLES[i].length()),true);
+				expression = rebuildEquation(expression.substring(0, index), values[i],
+						expression.substring(index+VARIABLES[i].length()),true);
 				index = expression.indexOf(VARIABLES[i]);
 			}
 		}
@@ -65,7 +76,7 @@ public class ExpressionSolver {
 		while(expression.indexOf('(')!=-1){ //P
 			//the last ( and the first ) after go together
 			int start = expression.lastIndexOf('(');
-			int end = expression.indexOf(')');
+			int end = expression.lastIndexOf(')');
 			if(end == -1) //if it wasn't found, just use the end of the expression
 				end = expression.length();
 			
@@ -80,6 +91,9 @@ public class ExpressionSolver {
 		expression = performOperation(expression, "tan", true);
 		expression = performOperation(expression, "log", true);
 		expression = performOperation(expression, "ln", true);
+		expression = performOperation(expression, "max", false);
+		expression = performOperation(expression, "min", false);
+		
 		//now order of operations for the rest
 		expression = performOperation(expression, "^", false);
 		expression = performOperation(expression, "r", false);
@@ -170,6 +184,12 @@ public class ExpressionSolver {
 			case "ln":
 				value = Math.log(second);
 				break;
+			case "max":
+				value = Math.max(first, second);
+				break;
+			case "min":
+				value = Math.min(first, second);
+				break;
 			default:
 				throw new ArithmeticException(operation+" is not a supported operation!");
 			}
@@ -250,7 +270,7 @@ public class ExpressionSolver {
 	}
 	
 	/**
-	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and does not
+	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and is not
 	 * less than 0.0. Therefore, this method will determine if there is a leading negation sign.
 	 * @param d the double to test
 	 * @return whether the double to test is negative.
