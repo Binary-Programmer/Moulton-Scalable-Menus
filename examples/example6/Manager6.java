@@ -79,7 +79,7 @@ public class Manager6 extends MenuManager implements AnimationListener{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId().equals("flower")) {
 			flower.setAnimationPlay(true);
 		}else if(c.getId().equals("reappear")) {
@@ -103,7 +103,7 @@ public class Manager6 extends MenuManager implements AnimationListener{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {}
+	public void lostFocusAction(Clickable c) {}
 
 	@Override
 	public void animationEndEvent(Animation animation) {

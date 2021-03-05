@@ -85,7 +85,7 @@ public class Manager7 extends MenuManager{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId() != null) {
 			switch(c.getId()) {
 			case "new":
@@ -188,7 +188,7 @@ public class Manager7 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {
+	public void lostFocusAction(Clickable c) {
 		String id = c.getId();
 		if(id == null)
 			return;

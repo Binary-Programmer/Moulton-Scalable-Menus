@@ -33,7 +33,7 @@ public class Manager5 extends MenuManager{
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId().equals("virtuality")) {
 			//do stuff here
 			Button b = (Button)c;
@@ -51,6 +51,6 @@ public class Manager5 extends MenuManager{
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {}
+	public void lostFocusAction(Clickable c) {}
 
 }

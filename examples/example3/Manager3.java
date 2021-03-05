@@ -42,7 +42,7 @@ public class Manager3 extends MenuManager {
 	}
 
 	@Override
-	protected void clickableAction(Clickable c) {
+	public void clickableAction(Clickable c) {
 		if(c.getId().equals("ok") && !entry.getMessage().isEmpty()) {
 			hist.addToList(entry.getMessage());
 			entry.setMessage("");
@@ -50,7 +50,7 @@ public class Manager3 extends MenuManager {
 	}
 
 	@Override
-	protected void lostFocusAction(Clickable c) {}
+	public void lostFocusAction(Clickable c) {}
 	
 	@Override
 	public void keyTyped(char key) {

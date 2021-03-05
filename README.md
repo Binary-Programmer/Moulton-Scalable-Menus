@@ -56,7 +56,9 @@ Example dummy projects have been provided to show off certain features and demon
 Example 1 shows off the grid system of `moulton.scalable.containers.Panel` including column and row weights, frames, and margins. Example 1 also demonstrates the usage of pop ups.
 
 ### Example 2
-Example 2 shows off virtual space of `moulton.scalable.containers.PanelPlus` used with `moulton.scalable.draggables.ScrollBar`, invisible and polygonal buttons, images, and non-editable and variably editable text boxes.
+Example 2 shows off virtual space of `moulton.scalable.containers.VirtualPanel` used with `moulton.scalable.draggables.ScrollBar`, invisible and polygonal buttons, images, and non-editable and variably editable text boxes.
+
+Example 2 also shows how forms could be implemented (in the bottom right corner) by using the form chain and a `moulton.scalable.clickable.FormButton`.
 
 ### Example 3
 Example 3 shows off the `moulton.scalable.texts.TextHistory`.

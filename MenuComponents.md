@@ -82,7 +82,7 @@ The grid margin is the space between components in the grid. The margin is divid
 Row weights and column weights can be used to increase the size of specific rows or columns in the grid. By default, all rows and columns have a weight of 1.0. A row with a weight of 2.0 would have double the height of a row with a width of 1.0. Similarly, a column with a weight of 0.5 would have half the width of a column with a weight of 1.0.
 
 ### Virtual Space
-Virtual space is a powerful concept where components exist within the menu design but are not necessarily visible to the user. An example of a component with virtual space is a small text box that holds many lines of text, but only the lines directly adjacent to where the user is entering data is visible. Components that use virtual space commonly use scroll bars to give the user access to the whole structure. The generic `moulton.scalable.containers.Panel` does not allow for virtual space, but the classes and subclasses of `moulton.scalable.containers.PanelPlus`, `moulton.scalable.texts.TextBox`, and `moulton.scalable.texts.TextHistory` do.
+Virtual space is a powerful concept where components exist within the menu design but are not necessarily visible to the user. An example of a component with virtual space is a small text box that holds many lines of text, but only the lines directly adjacent to where the user is entering data is visible. Components that use virtual space commonly use scroll bars to give the user access to the whole structure. The generic `moulton.scalable.containers.Panel` does not allow for virtual space, but the classes and subclasses of `moulton.scalable.containers.VirtualPanel`, `moulton.scalable.texts.TextBox`, and `moulton.scalable.texts.TextHistory` do.
 
 ## Components
 Now that it has broadly been explained how the components work, an overview of component types available for use is given.
@@ -92,9 +92,9 @@ Panels serve as the backbone for the tree structure of the menu. All panels exte
 
 `moulton.scalable.containers.PartitionPanel` is a subclass of the Panel class with boundaries alterable during runtime. This contrasts from the regular Panel because these boundary changes occur outside of size changes, for example, if the user wanted to change the size of a panel relative to others. [Example 6](README.md#example-6) demonstrates the use of the `PartitionPanel` to make a disappearing and reappearing side scroll bar.
 
-`moulton.scalable.containers.PanelPlus` gives the programmer the ability to utilize virtual space for the menu design. These are best paired with horizontal and/or vertical scroll bars to let the user maneuver.
+`moulton.scalable.containers.VirtualPanel` gives the programmer the ability to utilize virtual space for the menu design. These are best paired with horizontal and/or vertical scroll bars to let the user maneuver.
 
-`moulton.scalable.containers.ListPanel` is a subclass of the PanelPlus, specially designed to hold and display components in a dynamically sized list.
+`moulton.scalable.containers.ListPanel` is a subclass of the VirtualPanel, specially designed to hold and display components in a dynamically sized list.
 
 ### Clickables
 Foremost among clickables are buttons, which all inherit from the abstract class `moulton.scalable.clickables.RadioButton`. Don't be confused by the name: all buttons have the functionality in place to be radio buttons, but only if they are in a `moulton.scalable.clickables.RadioGroup`. The most commonly used button is `moulton.scalable.clickables.Button`, but there are also image buttons, animated buttons, and polygonal buttons.
