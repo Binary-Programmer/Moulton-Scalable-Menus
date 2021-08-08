@@ -19,7 +19,7 @@ public abstract class MenuComponent {
 	 * @see #getParent()*/
 	protected Panel parent;
 	/**The coordinate of the component specified by an algebraic expression.*/
-	protected String x,y;
+	protected String x, y;
 	/**The default value for {@link #text_resize_factor}. */
 	public static final int DEFAULT_ORIGINAL_TEXT_SIZE = 370;
 	/**A value that determines the size of text components when resized through {@link #getTextVertResize(int)}.
@@ -83,8 +83,7 @@ public abstract class MenuComponent {
 	 * @param contHeight the height of the container screen: used in calculations
 	 * @return the integer value associated with the code
 	 */
-	protected int solveString(String code, int contWidth, int contHeight){
-		if(code==null || code.isEmpty()) return 0;
+	protected int solveString(String code, int contWidth, int contHeight) {
 		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
 		return (int)solver.solveString(code);
 	}
@@ -187,16 +186,9 @@ public abstract class MenuComponent {
 			return parent.textResize();
 	}
 	
-	/**This has been deprecated. Please use getRenderRect(...) instead
-	 * 
-	 * Many components are inherently rectangularly shaped, thus this method is provided to facilitate coordinate
-	 * calculations of x, y, width, and height for the component. If the component is in a grid (found by checking
-	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
-	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.<br>
-	 * For rectangular components, prefixing a width or height string with a ? will indicate that the component ends
-	 * there, in other words, the dimension in question is bounded by its analogous position axis (x for width, y for
-	 * height) and the value of what comes after the ?. For example, if x=width/8 and width=?width, then the width
-	 * of the component would result to (width-width/8).
+	/**This has been deprecated. Please use {@link #getRenderRect(int, int, int, int, String, String)}
+	 * instead, which takes precisely the same arguments but gives a different return.
+	 *
 	 * @param xx the lower x bound of the component's canvas
 	 * @param yy the lower y bound of the component's canvas
 	 * @param ww the width for the component to draw
@@ -207,43 +199,37 @@ public abstract class MenuComponent {
 	 */
 	@Deprecated
 	protected int[] getRectRenderCoords(int xx, int yy, int ww, int hh, String width, String height) {
-		int x, y, w, h;
-		if(getGridLocation()==null) {
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			if (width.charAt(0) == '?') {
-				int x2 = xx + solveString(width.substring(1), ww, hh);
-				w = x2 - x;
-			} else
-				w = solveString(width, ww, hh);
-			
-			if (height.charAt(0) == '?') {
-				int y2 = yy + solveString(height.substring(1), ww, hh);
-				h = y2 - y;
-			} else
-				h = solveString(height, ww, hh);
-		}else {
-			x = xx;
-			y = yy;
-			w = ww;
-			h = hh;
-		}
-		return new int[] {x, y, w, h};
+		Rectangle result = getRenderRect(xx, yy, ww, hh, width, height);
+		return new int[] {result.x, result.y, result.width, result.height};
 	}
 	
 	/**
 	 * Many components are inherently rectangularly shaped, thus this method is provided to facilitate coordinate
 	 * calculations of x, y, width, and height for the component. If the component is in a grid (found by checking
 	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
-	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.<br>
-	 * For rectangular components, prefixing a width or height string with a ? will indicate that the component ends
-	 * there, in other words, the dimension in question is bounded by its analogous position axis (x for width, y for
-	 * height) and the value of what comes after the ?. For example, if x=width/8 and width=?width, then the width
-	 * of the component would result to (width-width/8).
+	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.
+	 * <p>
+	 * In addition to the standard variables provided by {@link ExpressionSolver}, rectangular components allow
+	 * for more customization. First of all, there are four new variables to use:
+	 * <pre>CENTERX CENTERY WIDTH HEIGHT</pre>
+	 * Instead of referring to the available canvas space, these capital variants refer to the component being
+	 * drawn. WIDTH is the value that <code>width</code> evaluates to, and HEIGHT is the value that
+	 * <code>height</code> evaluates to. CENTERX is the value of x that would make the component centered in the
+	 * canvas horizontally. It is equivalent to "(width - WIDTH)/2". Similarly, CENTERY is the value of y that would
+	 * make the component centered in the canvas vertically. It is equivalent to "(height - HEIGHT)/2". It must be
+	 * noted that since the capital variables are dependent on the component's width and height, they may <i>not</i>
+	 * be used in those equations!
+	 * <p>
+	 * Although the capital variants may not be used in the equations for width or height, the ? operator may.
+	 * Prefixing a width or height string with a ? will indicate that the component ends there, in other words, the
+	 * dimension in question is bounded by the value of what comes after the ?. For example, if x="width/8" and
+	 * width="?width", then the width of the component would result to (width-width/8). Sometimes rounding errors
+	 * occur in the calculation, but using the ? operator will guarantee the component covers the intended space.
+	 * Note: the ? operator may <i>not</i> be used in conjunction with the captial variables!
 	 * @param xx the lower x bound of the component's canvas
 	 * @param yy the lower y bound of the component's canvas
-	 * @param ww the width for the component to draw
-	 * @param hh the height for the component to draw
+	 * @param ww the width for the component to draw. A width prefixed with ? will be treated as the ending x coordinate instead of a width.
+	 * @param hh the height for the component to draw. A height prefixed with ? will be treated as the ending y coordinate instead of a height.
 	 * @param width the string expression for the component's width. Only used if the component isn't in a grid
 	 * @param height the string expression for the component's height. Only used if the component isn't in a grid
 	 * @return the rectangle for where the component should be rendered.
@@ -251,22 +237,51 @@ public abstract class MenuComponent {
 	protected Rectangle getRenderRect(int xx, int yy, int ww, int hh, String width, String height) {
 		int x, y, w, h;
 		if(getGridLocation()==null) {
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			// variant for input ending points instead of widths indicated by a starting question
+			//Set up the solver and the variables we save to
+			ExpressionSolver solve = new ExpressionSolver(ww, hh);
+			double wD, hD;
+			
+			boolean qMarkWidth = false;
+			boolean qMarkHeight = false;
+			
+			//try to solve width and height first
 			if (width.charAt(0) == '?') {
 				//solve for the ending point
-				int x2 = xx + solveString(width.substring(1), ww, hh);
-				//deduce the width
-				w = x2 - x;
+				wD = xx + (int)(solve.solveString(width.substring(1)));
+				//deduce the width later
+				qMarkWidth = true;
 			} else
-				w = solveString(width, ww, hh);
+				wD = (int)(solve.solveString(width));
 			
 			if (height.charAt(0) == '?') {
-				int y2 = yy + solveString(height.substring(1), ww, hh);
-				h = y2 - y;
+				hD = yy + (int)(solve.solveString(height.substring(1)));
+				qMarkHeight = true;
 			} else
-				h = solveString(height, ww, hh);
+				hD = (int)solve.solveString(height);
+			
+			//now we can solve x and y with any capital vars
+			String[] variables = {
+					"centerx", "centery", "width", "height", "pi", "e",
+					"CENTERX", "CENTERY", "WIDTH", "HEIGHT"
+			};
+			double[] values = {
+					ww/2, hh/2, ww, hh, 3.1415926536, 2.7182818285,
+					(ww - wD)/2, (hh - hD)/2, wD, hD
+			};
+			solve.setVariables(variables, values);
+			
+			x = xx + (int)(solve.solveString(this.x));
+			y = yy + (int)(solve.solveString(this.y));
+			
+			//Now we must return to process any ?
+			if(qMarkWidth)
+				wD -= x;
+			if(qMarkHeight)
+				hD -= y;
+			
+			//Finally, round to get x,y,w,h
+			w = (int)Math.round(wD);
+			h = (int)Math.round(hD);
 		}else {
 			x = xx;
 			y = yy;

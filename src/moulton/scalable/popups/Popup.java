@@ -135,9 +135,9 @@ public class Popup {
 		ExpressionSolver solver = new ExpressionSolver(width, height);
 		
 		int x = 0, y = 0, w = 0, h = 0;
-		if(this.width != null && !this.width.isEmpty() && !this.width.isBlank())
+		if(this.width != null && !this.width.isEmpty())
 			w = (int)solver.solveString(this.width);
-		if(this.height != null && !this.height.isEmpty() && !this.height.isBlank())
+		if(this.height != null && !this.height.isEmpty())
 			h = (int)solver.solveString(this.height);
 		
 		//if x or y is null, then the popup will be centered

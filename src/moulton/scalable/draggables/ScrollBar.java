@@ -2,6 +2,7 @@ package moulton.scalable.draggables;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import moulton.scalable.clickables.Clickable;
 import moulton.scalable.clickables.RadioButton;
@@ -98,30 +99,12 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
-		int x, y, w, h;
-		if(getGridLocation()==null) {
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			// variant for input ending points instead of widths indicated by a starting question
-			if (this.width.charAt(0) == '?') {
-				//solve for the ending point
-				int x2 = xx + solveString(this.width.substring(1), ww, hh);
-				//deduce the width
-				w = x2 - x;
-			} else
-				w = solveString(this.width, ww, hh);
-			
-			if (this.height.charAt(0) == '?') {
-				int y2 = yy + solveString(this.height.substring(1), ww, hh);
-				h = y2 - y;
-			} else
-				h = solveString(this.height, ww, hh);
-		}else {
-			x = xx;
-			y = yy;
-			w = ww;
-			h = hh;
-		}
+		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
+		int x = rect.x;
+		int y = rect.y;
+		int w = rect.width;
+		int h = rect.height;
+		
 		if(vertical) {
 			lastLength = h;
 		}else {
