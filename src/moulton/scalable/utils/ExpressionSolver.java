@@ -149,11 +149,15 @@ public class ExpressionSolver {
 		//while there is an instance of the operation, but with two exceptions:
 		while(i != -1) {
 			//1. a leading -, which would just indicate a negation
-			if(operation.equals("-") && i==0)
-				break;
+			if(operation.equals("-") && i==0) {
+				i = expression.indexOf(operation, i+1);
+				continue;
+			}
 			//2. a - preceded by an E, for 10^(negative exponent)
-			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E')
-				break;
+			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E') {
+				i = expression.indexOf(operation, i+1);
+				continue;
+			}
 			//if we have the operation at index i, then we need to divide up the expression at that point,
 			//remove the operation, and perform the action between the two component parts
 			//try to find the number on the second end of the operation

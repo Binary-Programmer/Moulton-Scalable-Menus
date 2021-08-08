@@ -147,6 +147,15 @@ public class Manager7 extends MenuManager{
 			case "cancel":
 				setPopup(null);
 				break;
+			case "pathUp":
+				((PathFinderPopup)popup).goUpDirectory();
+				break;
+			case "directoryButton":
+				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
+				break;
+			case "fileName":
+				((PathFinderPopup)popup).emptySelection(false);
+				break;
 			}
 		}
 	}

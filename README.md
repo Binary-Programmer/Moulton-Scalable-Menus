@@ -74,3 +74,6 @@ Example 6 shows off animated buttons and partitions. The partition is used to ma
 
 ### Example 7
 Example 7 shows off pop ups and the TextEditBox, a subclass of TextBox that has extra functionality such as vertical arrow key support, shift selection, and control text navigation.
+
+### Example 8
+Example 8 shows off touch actions (using `moulton.scalable.clickables.EventAction`), scrollable nested virtual panels, and the new CENTERX and CENTERY variables for rectangular components.
