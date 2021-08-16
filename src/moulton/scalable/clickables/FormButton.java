@@ -63,9 +63,20 @@ public class FormButton extends Button implements TextInputComponent {
 	public void appendMessage(String string) {
 		//we want to be able to handle the enter character
 		if(string.equals("\n")) {
+			//If there is a click action, do that first
+			if(manager != null)
+				manager.mouseReleased(-1, -1); //release focus of any others
+			
+			boolean consumed = false;
+			if(clickAction != null)
+				consumed = clickAction.onEvent();
+			
 			//send a phantom click to the menu manager.
-			manager.clickableAction(this);
-			manager.mouseReleased(-1, -1); //release focus
+			if(!consumed && manager != null)
+				manager.clickableAction(this);
+			
+			if(this.getGroup() != null)
+				getGroup().select(this);
 		}
 	}
 

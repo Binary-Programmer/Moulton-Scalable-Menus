@@ -154,7 +154,7 @@ public abstract class MenuManager {
 	 * @param x the x coordinate of the mouse when released
 	 * @param y the y coordinate of the mouse when released
 	 */
-	public void mouseReleased(int x, int y){
+	public void mouseReleased(int x, int y) {
 		mousePressed = false;
 		if(clicked != null) {
 			//if clicked is still being clicked by the mouse, perform click action

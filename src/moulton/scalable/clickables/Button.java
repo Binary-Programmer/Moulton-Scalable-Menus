@@ -33,6 +33,11 @@ public class Button extends RadioButton {
 	/**The alignment for the text on the button's face. Defaults to centered.
 	 * @see #setAlignment(Alignment)*/
 	protected Alignment alignment = Alignment.CENTER_ALIGNMENT;
+	/**The color of the text when the button is enabled. When the button is not enabled,
+	 * this color will be one shade lighter. If the color is not set (null), then either
+	 * black or white will be chosen at render time to maximize contrast with the fill
+	 * color as determined by {@link #getFillColor()}. Defaults to null.*/
+	protected Color textColor = null;
 	
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -90,9 +95,28 @@ public class Button extends RadioButton {
 		}
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
-		g.setColor(isEnabled()? Color.BLACK:Color.GRAY);
-		if (outline)
+		
+		if (outline) {
+			g.setColor(Color.BLACK);
 			g.drawRect(x, y, w - 1, h - 1);
+		}
+		
+		Color textColor = this.textColor;
+		if(textColor == null) {
+			//finds whether the background is lighter or darker.
+			if(fillColor != null) {
+				//The opposite will be used for the text color
+				//(299R + 587G + 114B) / 1000 gives a brightness in [0, 255]
+				int brightness = (299*fillColor.getRed() + 587*fillColor.getGreen() + 114*fillColor.getBlue()) / 1000;
+				if(brightness >= 255/2)
+					textColor = Color.BLACK;
+				else
+					textColor = Color.WHITE;
+			}else
+				textColor = Color.BLACK;
+		}if(!isEnabled())
+			textColor = textColor.brighter();
+		g.setColor(textColor);
 
 		// draw the text
 		if (text != null && !text.isEmpty()) {
@@ -136,41 +160,6 @@ public class Button extends RadioButton {
 	 */
 	public String getText() {
 		return text;
-	}
-	
-	/**
-	 * Sets whether this button is touched. If the touched color is unset, then an outline toggle will be used
-	 * to show touch. Therefore, setting the touch here may trigger the toggle.
-	 */
-	@Override
-	public void setTouched(boolean touched) {
-		//if the touch state has changed
-		if(touched != this.touched && colorTouched == null) { //if the outline effect should be used
-			setOutline(!getOutline());
-		}
-		this.touched = touched;
-	}
-	
-	/**
-	 * If touchedColor is null, then the toggle outline effect will be used instead
-	 * @param touchedColor the color to be set as {@link #colorTouched}
-	 */
-	public void setTouchedColor(Color touchedColor) {
-		if(colorTouched==null && touchedColor != null) {
-			/* if the button is touched presently and the new color is not null, that means that the component will
-			 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
-			 * to the original state.
-			 */
-			if(touched)
-				setOutline(!getOutline());
-			
-			//set the new darker color
-			colorDark = touchedColor.darker();
-		}else {
-			//resets to the old darker color
-			colorDark = color.darker();
-		}	
-		this.colorTouched = touchedColor;
 	}
 	
 	/**

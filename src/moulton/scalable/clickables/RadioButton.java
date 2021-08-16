@@ -25,9 +25,10 @@ public abstract class RadioButton extends Clickable {
 	protected Color color;
 	/**The color of the button when clicked*/
 	protected Color colorDark;
-	/**The color of the button when uneditable*/
+	/**The color of the button when not enabled*/
 	protected Color colorLight;
-	/**The color of the button when touched*/
+	/**The color of the button when touched
+	 * @see #setTouchedColor(Color)*/
 	protected Color colorTouched = null;
 	
 	/**
@@ -108,6 +109,41 @@ public abstract class RadioButton extends Clickable {
 			return colorTouched;
 		
 		return color;
+	}
+	
+	/**
+	 * If touchedColor is null, then the toggle outline effect will be used instead
+	 * @param touchedColor the color to be set as {@link #colorTouched}
+	 */
+	public void setTouchedColor(Color touchedColor) {
+		if(colorTouched==null && touchedColor != null) {
+			/* if the button is touched presently and the new color is not null, that means that the component will
+			 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
+			 * to the original state.
+			 */
+			if(touched)
+				setOutline(!getOutline());
+			
+			//set the new darker color
+			colorDark = touchedColor.darker();
+		}else {
+			//resets to the old darker color
+			colorDark = color.darker();
+		}	
+		this.colorTouched = touchedColor;
+	}
+	
+	/**
+	 * Sets whether this button is touched. If the touched color is unset, then an outline toggle will be used
+	 * to show touch. Therefore, setting the touch here may trigger the toggle.
+	 */
+	@Override
+	public void setTouched(boolean touched) {
+		//if the touch state has changed
+		if(touched != this.touched && colorTouched == null) { //if the outline effect should be used
+			setOutline(!getOutline());
+		}
+		this.touched = touched;
 	}
 
 }
