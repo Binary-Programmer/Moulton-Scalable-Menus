@@ -322,7 +322,7 @@ public class Panel extends MenuComponent {
 	public void removeTouchResponsiveness(MenuManager manager) {
 		for(MenuComponent comp: getAllHeldComponents()) {
 			if(comp instanceof TouchResponsiveComponent)
-				manager.removeTouchResponsiveComponent((TouchResponsiveComponent)comp);
+				manager.removeTouchComponent((TouchResponsiveComponent)comp);
 			if(comp instanceof Panel)
 				((Panel)comp).removeTouchResponsiveness(manager);
 		}

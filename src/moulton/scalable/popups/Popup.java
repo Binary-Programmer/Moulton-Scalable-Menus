@@ -104,6 +104,11 @@ public class Popup {
 		return touchCheckList;
 	}
 	
+	/**Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated
+	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
+		touchCheckList.add(comp);
+	}
 	/**
 	 * Adds the component to the list of components to check each time the mouse moves. If the component
 	 * is later removed from visibility (for example if the panel it is on is removed from the root-tree),
@@ -111,15 +116,20 @@ public class Popup {
 	 * @param comp the component to add on
 	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)
 	 */
-	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
+	public void addTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
+	}
+	/**Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated
+	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
+		touchCheckList.remove(comp);
 	}
 	/**
 	 * Removes the specified component from the touch component list.
 	 * @param comp the component to remove
 	 * @see #addTouchResponsiveComponent(TouchResponsiveComponent)
 	 */
-	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
+	public void removeTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.remove(comp);
 	}
 

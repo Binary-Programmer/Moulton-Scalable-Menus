@@ -90,8 +90,8 @@ public class ConfirmationPopup extends Popup {
 		int okWidth = fm.stringWidth(accept)*2;
 		int noWidth = fm.stringWidth(cancel)*2;
 		int spaceWidth = fm.stringWidth(" ");
-		addTouchResponsiveComponent(new Button(okId, accept, base, "centerx-"+(okWidth+spaceWidth), "height-1-"+doubleHeight, ""+okWidth, ""+doubleHeight, font, Color.LIGHT_GRAY));
-		addTouchResponsiveComponent(new Button(cancelId, cancel, base, "centerx+"+spaceWidth, "height-1-"+doubleHeight, ""+noWidth, ""+doubleHeight, font, Color.LIGHT_GRAY));
+		addTouchComponent(new Button(okId, accept, base, "centerx-"+(okWidth+spaceWidth), "height-1-"+doubleHeight, ""+okWidth, ""+doubleHeight, font, Color.LIGHT_GRAY));
+		addTouchComponent(new Button(cancelId, cancel, base, "centerx+"+spaceWidth, "height-1-"+doubleHeight, ""+noWidth, ""+doubleHeight, font, Color.LIGHT_GRAY));
 		
 		final int DEFAULT_WIDTH = doubleHeight * 3; //default width of popup we arbitrarily set
 		final int MAX_WIDTH = doubleHeight * 7; //the max width (as according to the height given).

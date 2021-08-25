@@ -73,10 +73,10 @@ public class NotificationPopup extends Popup {
 		}
 		
 		if(exitButton)
-			addTouchResponsiveComponent(new Button(okId, "X", base, "width-"+(fm.stringWidth("X")*2), "0", "?width", ""+doubleHeight, font, Color.RED));
+			addTouchComponent(new Button(okId, "X", base, "width-"+(fm.stringWidth("X")*2), "0", "?width", ""+doubleHeight, font, Color.RED));
 		
 		int okWidth = fm.stringWidth("Ok");
-		addTouchResponsiveComponent(new Button(okId, "Ok", base, "centerx-"+okWidth, "height-1-"+doubleHeight, ""+okWidth*2, ""+doubleHeight, font, Color.LIGHT_GRAY));
+		addTouchComponent(new Button(okId, "Ok", base, "centerx-"+okWidth, "height-1-"+doubleHeight, ""+okWidth*2, ""+doubleHeight, font, Color.LIGHT_GRAY));
 		
 		final int DEFAULT_WIDTH = doubleHeight * 3; //default width of popup we arbitrarily set
 		final int MAX_WIDTH = doubleHeight * 7; //the max width (as according to the height given).

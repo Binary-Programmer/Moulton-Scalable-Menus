@@ -50,7 +50,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	protected String width, height;
 	/**The font used to display {@link #message}*/
 	protected Font font;
-	/**The background color used if editable. Otherwise, white is used.*/
+	/**The background color used if editable. If not enabled, white is used.*/
 	protected Color color;
 	/**The formatting scheme for this text box. Determines what characters are valid in the {@link #message}.
 	 * @see #getTextFormat()
@@ -58,6 +58,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	protected TextFormat format = null;
 	/**The alignment of the text to be rendered. Defaults to left alignment.*/
 	protected Alignment alignment = Alignment.LEFT_ALIGNMENT;
+	/**The color of the text drawn in the box. Defaults to black.
+	 * @see #getTextColor()
+	 * @see #setTextColor(Color)*/
+	protected Color textColor = Color.BLACK;
 	/**The color of the box when touched.
 	 * @see #setTouchedColor(Color)*/
 	protected Color colorTouched = null;
@@ -453,7 +457,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 		}
 		if(parent != null)
 			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
-		g.setColor(enabled? Color.BLACK: Color.GRAY);
+		g.setColor(enabled? textColor: textColor.brighter());
 		if (outline)
 			g.drawRect(x, y, w - 1, h - 1);
 		
@@ -1230,6 +1234,21 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 */
 	protected FontMetrics getFontMetrics(){
 		return fontMetrics;
+	}
+	
+	/**
+	 * Returns the color used to draw the text in the text box.
+	 * @return {@link #textColor}
+	 */
+	public Color getTextColor() {
+		return textColor;
+	}
+	/**
+	 * Sets the color to be used in drawing text in the text box.
+	 * @param color to replace {@link #textColor}
+	 */
+	public void setTextColor(Color color) {
+		textColor = color;
 	}
 	
 	/**
