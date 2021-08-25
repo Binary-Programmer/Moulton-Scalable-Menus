@@ -11,17 +11,17 @@ import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Container;
 
 /**
- * A super class for all pop ups. The {@link MenuManager} will give precedence to the popup if there is one
+ * A super class for all pop ups. The {@link MenuManager} will give precedence to the pop up if there is one
  * set ({@link MenuManager#setPopup(Popup)}). The pop up holds a {@link Panel} that all its components can
- * be components of. That root panel can be retrived by {@link #getBase()}. <p>
+ * be components of. That root panel can be retrieved by {@link #getBase()}. <p>
  * If {@link #x} or {@link #y} are left unspecified, then the pop up will be centered on that axis within
- * the container. The popup can draw a background over the other components from the main menu, the color
- * of which is specified by {@link #blanketBackground}. Any components belonging to the popup that need
+ * the container. The pop up can draw a background over the other components from the main menu, the color
+ * of which is specified by {@link #blanketBackground}. Any components belonging to the pop up that need
  * touch sensitivity can be added to {@link #touchCheckList}.
  * @author Matthew Moulton
  */
 public class Popup {
-	/**The root panel of this popup.
+	/**The root panel of this pop up.
 	 * @see #getBase()*/
 	protected Panel base;
 	/**All of the components that need to be check if touched when the mouse moves
@@ -40,10 +40,10 @@ public class Popup {
 	protected String width, height;
 	
 	/**
-	 * Creates a popup and centers it on the space given by the {@link Container}
-	 * @param width the width of the popup. Sets {@link #width}
-	 * @param height the height of the popup. Sets {@link #height}
-	 * @param color the color of the popup.
+	 * Creates a pop up and centers it on the space given by the {@link Container}
+	 * @param width the width of the pop up. Sets {@link #width}
+	 * @param height the height of the pop up. Sets {@link #height}
+	 * @param color the color of the pop up.
 	 */
 	public Popup(String width, String height, Color color) {
 		x = null;
@@ -54,11 +54,11 @@ public class Popup {
 	}
 	
 	/**
-	 * @param x the x-position of the popup. If set to null, the popup will be horizontally centered.
-	 * @param y the y-position of the popup. If set to null, the popup will be vertically centered.
-	 * @param width the width of the popup.
-	 * @param height the height of the popup.
-	 * @param color the color of the popup.
+	 * @param x the x-position of the pop up. If set to null, the pop up will be horizontally centered.
+	 * @param y the y-position of the pop up. If set to null, the pop up will be vertically centered.
+	 * @param width the width of the pop up.
+	 * @param height the height of the pop up.
+	 * @param color the color of the pop up.
 	 */
 	public Popup(String x, String y, String width, String height, Color color) {
 		x = this.x;
@@ -69,8 +69,8 @@ public class Popup {
 	}
 	
 	/**
-	 * Returns the {@link Panel} that serves as the base level of this popup. This popup is backed up by that
-	 * Panel. Thus any changes to it may influence this.
+	 * Returns the {@link Panel} that serves as the base level of this pop up.
+	 * This pop up is backed by that Panel. Thus any changes to it may influence this.
 	 * @return {@link #base}
 	 */
 	public Panel getBase() {
@@ -78,7 +78,7 @@ public class Popup {
 	}
 	
 	/**
-	 * Returns the color used to draw over the other components outside of the popup.
+	 * Returns the color used to draw over the other components outside of the pop up.
 	 * @return {@link #blanketBackground}
 	 * @see #setBlanketBackground(Color)
 	 */
@@ -86,7 +86,7 @@ public class Popup {
 		return blanketBackground;
 	}
 	/**
-	 * Sets the color used to draw over the other components outside of the popup.
+	 * Sets the color used to draw over the other components outside of the pop up.
 	 * @param background to set {@link #blanketBackground}
 	 * @see #getBlanketBackground()
 	 */
@@ -134,9 +134,9 @@ public class Popup {
 	}
 
 	/**
-	 * Renders the popup by calculating the position of the popup on the screen as according to {@link #x},
+	 * Renders the pop up by calculating the position of the pop up on the screen as according to {@link #x},
 	 * {@link #y}. {@link #width}, and {@link #height}. If {@link #blanketBackground} is not null, that color
-	 * is painted over the previous menu components before drawing the popup.
+	 * is painted over the previous menu components before drawing the pop up.
 	 * @param g the graphics object to draw on
 	 * @param width the width in pixels of the menu
 	 * @param height the height in pixels of the menu
@@ -171,5 +171,9 @@ public class Popup {
 		//now render the base panel
 		if(base != null)
 			base.render(g, x, y, w, h);
+		
+		//render any nested pop up
+		if(nested != null)
+			nested.render(g, width, height);
 	}
 }

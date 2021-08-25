@@ -27,13 +27,16 @@ import moulton.scalable.texts.TextInputComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * The menu manager will handle the rendering of its menu on a graphics object through {@link #render(Graphics)}. When the 
- * {@link Container} knows that it is time to render, have it call {@link #render(Graphics)}. Subclass this Menu Manager to create
- * menu set-ups for yourself. Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make sure to
- * save the panel you create to {@link #menu}. <p>
- * Will handle events for mouse moving ({@link #mouseMoved(int, int)}), mouse pressing ({@link #mousePressed(int, int)} 
- * and {@link #mouseReleased(int, int)}), and key typing ({@link #keyTyped(char)} and {@link #keyPressed(int)}) as long
- * as these event methods are being called, likely by {@link Container}.
+ * The menu manager will handle the rendering of its menu on a graphics object through
+ * {@link #render(Graphics)}. When the {@link Container} knows that it is time to render, have it call
+ * {@link #render(Graphics)}. Subclass this Menu Manager to create menu set-ups for yourself.
+ * Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make sure
+ * to save the panel you create to {@link #menu}.
+ * <p>
+ * Will handle events for mouse moving ({@link #mouseMoved(int, int)}), mouse pressing
+ * ({@link #mousePressed(int, int)} and {@link #mouseReleased(int, int)}), and key typing
+ * ({@link #keyTyped(char)} and {@link #keyPressed(int)}) as long as these event methods are being 
+ * called, likely by {@link Container}.
  * @author Matthew Moulton
  */
 public abstract class MenuManager {
@@ -41,14 +44,16 @@ public abstract class MenuManager {
 	 * @see #hasMenu()
 	 * @see #getMenu()*/
 	protected Panel menu;
-	/**A popup that should be drawn on top of the {@link #menu}. If the popup is set (default is null), it will take precedence
-	 * over the menu and take the action events such as {@link #mousePressed} and {@link #mouseScrolled(int, int, int)}.
+	/**A pop up that should be drawn on top of the {@link #menu}. If the pop up is set (default is null),
+	 * it will take precedence over the menu and take the action events such as {@link #mousePressed}
+	 * and {@link #mouseScrolled(int, int, int)}.
 	 * @see #getPopup()
 	 * @see #setPopup(Popup)*/
 	protected Popup popup = null;
 	/**The container for the menus to manage.*/
 	protected Container cont;
-	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
+	/**The Clickable that was last clicked. Clickables are only considered activated once the user has
+	 * both clicked and released on the same object.
 	 * @see #getClicked()
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
@@ -144,8 +149,8 @@ public abstract class MenuManager {
 	
 	/**
 	 * The Moulton Scalable Menus handles the mouse release once this method has been called by another source. 
-	 * This method checks to see whether the component that the user first clicked on is the same that they released
-	 * on. Sets {@link #clicked} as necessary.
+	 * This method checks to see whether the component that the user first clicked on is the same that they
+	 * released on. Sets {@link #clicked} as necessary.
 	 * <p>
 	 * If the click was successful, it is determined whether the clickable has an associated click event by
 	 * calling {@link Clickable#getClickAction()}. If not, or if the action does not consume the event, the
