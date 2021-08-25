@@ -24,13 +24,15 @@ The container is usually the class that passes any necessary events (such as mou
 #### Input Events
 For the programmer's freedom, Moulton Scalable Menus will not automatically handle input events. The programmer may selectively filter out events as they choose, and they may choose an input approach. Therefore, if the menu system is to be responsive to the user's key input, the programmer must handle input events and redirect them to the menu manager.
 
-The events that the menu manager can handle are these:
+The events that the menu manager can receive are these:
 * mouse pressed (location x,y)
 * mouse released (location x,y)
 * mouse scrolled/wheel (location x,y, amount)
 * mouse moved (location x,y)
 * key typed (char)
 * key pressed (key code)
+
+As a result of these events, the menu manager will internally process clicking events, losing focus events, and touch (and untouch) events for its drawn components.
 
 ### Menu Manager
 The menu manager is in control of directly managing the menu system. The menu manager must create the components in the menu, handle events, and render the components onto a `java.awt.Graphics` object.
@@ -43,14 +45,22 @@ This is where the menu manager expects you to create the menu. The menu system i
 The create menu method will not be called automatically when the Menu Manager is created. Thus, it *must* be called by the library user for the menu components to be created.
 
 #### Clickable Action: `clickableAction(Clickable)`
-Some components are inherently clickable. Clickable components like buttons and text boxes are intended to react when they are clicked by the user. When the menu manager identifies that the user has mouse pressed and mouse released on the same menu component, then that component is clicked. If that component is a subclass of `moulton.scalable.clickables.Clickable`, then it will be passed to the menu manager via this method. The programmer can then identify which component was clicked and perform the appropriate action here. (Note: each clickable component has a string
-`id` field that can be very useful in determining the identity of the clickable.)
+Some components are inherently clickable. Clickable components like buttons and text boxes are intended to react when they are clicked by the user. When the menu manager identifies that the user has mouse pressed and mouse released on the same menu component, then that component is clicked. If that component is a subclass of `moulton.scalable.clickables.Clickable`, then it will be passed to the menu manager via this method. The programmer can then identify which component was clicked and perform the appropriate action here. (Note: each clickable component has a string `id` field that can be very useful in determining the identity of the clickable.)
+
+In more recent updates (v1.13+), click actions may also be provided directly as the `clickAction`.
 
 #### Lost Focus: `lostFocusAction(Clickable)`
-Focus is initiated when the user mouse presses on a component. Most components lose focus when the mouse is released. However, some components (like text boxes), keep the focus. This can be useful for the user to pass key information to the component after the box has been selected by the clicking. In rare cases, components must perform an action when they lose focus.
+Focus is initiated when the user mouse presses on a component. Most components lose focus when the mouse is released. However, some components (like text boxes), keep the focus. Keeping focus can be useful for the user to pass key information to the component after the box has been selected. In some cases, components ought to perform an action when they lose focus. For example, the content of a text box may need to be validated after the user has finished editing. Therefore, the lost focus action is provided as an opportunity to perform an action at that time.
+
+In more recent updates (v1.13+), lost focus actions may also be provided directly as the `lostFocusAction`.
+
+#### Touch Events
+Touch events are not used by many components, and are therefore not treated the same way as clicking and losing focus actions. If a clickable component is desired to be responsive to user mouse touching, add that component to the manager's touch list by `addTouchResponsiveComponent(comp)`. Once a component is on the list, it will be checked every time the user moves the mouse. If a component should not be checked, it can be removed from the list by `removeTouchResponsiveComponent(comp)`. Most subclasses of clickable will guess a proper behavior for being touched. If a specific behavior must be performed, it can be set as the component's `touchAction`.
+
+Moulton Scalable Menus allows for cursor visual response for components on the manager's touch responsive list. The desired cursor type, as specified by `java.awt.Cursor`, should be returned from `getTouchedCursorType()`.
 
 ## Examples
-Example dummy projects have been provided to show off certain features and demonstrate intended use. There are currently seven examples. These examples are in no particular order.
+Example dummy projects have been provided to show off certain features and demonstrate intended use. There are currently eight examples. These examples are in no particular order.
 
 ### Example 1
 Example 1 shows off the grid system of `moulton.scalable.containers.Panel` including column and row weights, frames, and margins. Example 1 also demonstrates the usage of pop ups.

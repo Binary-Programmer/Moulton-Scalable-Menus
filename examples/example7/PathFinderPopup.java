@@ -54,7 +54,7 @@ public class PathFinderPopup extends Popup {
 		addTouchResponsiveComponent(contentBar);
 		
 		ClassLoader loader = PathFinderPopup.class.getClassLoader();
-		File file = new File(loader.getResource("example7/PathFinderPopup.class").toString());
+		File file = new File(loader.getResource("example7" + File.separator + "PathFinderPopup.class").toString());
 		File folder = file.getParentFile().getParentFile(); //get the parent twice to get out of the package
 		String path = folder.getPath().substring(6); //to get past "file:\" that Java does
 		setPath(path);
@@ -100,7 +100,7 @@ public class PathFinderPopup extends Popup {
 	}
 	
 	public String getPath() {
-		return pathDisplay.getMessage()+File.pathSeparator+fileName.getMessage();
+		return pathDisplay.getMessage()+File.separator+fileName.getMessage();
 	}
 	
 	public void emptySelection(boolean empty) {
