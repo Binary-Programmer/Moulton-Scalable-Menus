@@ -40,19 +40,19 @@ public class Manager2 extends MenuManager{
 		box = new TextBox("box","",grid,0,0,font,Color.LIGHT_GRAY);
 		box.setMessage("Here is an unenabled text box. Click the button to make it enabled again.");
 		box.setEnabled(false);
-		addTouchResponsiveComponent(box);
+		addTouchComponent(box);
 		
 		Panel here = new Panel(grid,1,0,Color.GREEN);
-		addTouchResponsiveComponent(new Button("invisible",null,here, 1, 0, font, Color.GREEN));
-		addTouchResponsiveComponent(new Button("button","Click Me",here, 0, 1, font, Color.ORANGE));
-		addTouchResponsiveComponent(new PolygonalButton("circle",grid,0,1,ShapeResources.generateCircleXCoords("centerx", "width", 10),
+		addTouchComponent(new Button("invisible",null,here, 1, 0, font, Color.GREEN));
+		addTouchComponent(new Button("button","Click Me",here, 0, 1, font, Color.ORANGE));
+		addTouchComponent(new PolygonalButton("circle",grid,0,1,ShapeResources.generateCircleXCoords("centerx", "width", 10),
 				ShapeResources.generateCircleYCoords("centery", "height", 10), Color.YELLOW));
 		ScrollBar horiz = new ScrollBar(false,menu,"width/10","0","?width","height/10",Color.GRAY);
 		grid.setWidthScrollBar(horiz);
-		addTouchResponsiveComponent(horiz);
+		addTouchComponent(horiz);
 		ScrollBar vert = new ScrollBar(true,menu,"0","height/10","width/10","?height",Color.GRAY);
 		grid.setHeightScrollBar(vert);
-		addTouchResponsiveComponent(vert);
+		addTouchComponent(vert);
 		BufferedImage img = null;
 		try {
 		    img = ImageIO.read(new File("fire rose-small.png"));

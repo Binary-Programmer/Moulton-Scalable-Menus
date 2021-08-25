@@ -27,31 +27,31 @@ public class PathFinderPopup extends Popup {
 		Font font = new Font("Arial", Font.PLAIN, 15);
 		Button xButton = new Button("cancel","X",base,"width-20","0","20","20",font,Color.WHITE);
 		xButton.setTouchedColor(Color.RED);
-		addTouchResponsiveComponent(xButton);
+		addTouchComponent(xButton);
 		new Caption(load?"Load":"Save", base, "5", "18", font, Alignment.LEFT_ALIGNMENT).setYCentered(false);
 		
 		smallFont = new Font("Arial", Font.PLAIN, 12);
 		pathDisplay = new TextBox("path", "", base, "25", "30", "?width", "20", smallFont, Color.WHITE);
 		pathDisplay.setOutline(true);
-		addTouchResponsiveComponent(pathDisplay);
+		addTouchComponent(pathDisplay);
 		pathDisplay.setTouchedColor(Color.WHITE);
 		
-		addTouchResponsiveComponent(new Button("pathUp","^",base, "0","30","20","20",font,Color.LIGHT_GRAY));
+		addTouchComponent(new Button("pathUp","^",base, "0","30","20","20",font,Color.LIGHT_GRAY));
 		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",font,Color.WHITE);
 		fileName.setOutline(true);
 		fileName.setHint("file name");
-		addTouchResponsiveComponent(fileName);
+		addTouchComponent(fileName);
 		fileName.setTouchedColor(Color.WHITE);
 		okButton = new Button(load?"doLoad":"doSave","Ok",base,"width*.75+5","height-25","width*.25-10","20",font,Color.LIGHT_GRAY);
 		okButton.setEnabled(false);
-		addTouchResponsiveComponent(okButton);
+		addTouchComponent(okButton);
 		
 		contents = new ListPanel("20",base,"0","55","width-20","height-85","width-20",Color.WHITE);
 		contents.setOutline(true);
 		contentBar = new ScrollBar(true, base, "width-20","55","20","height-85",Color.LIGHT_GRAY);
 		contentBar.setScrollRate(2);
 		contents.setHeightScrollBar(contentBar);
-		addTouchResponsiveComponent(contentBar);
+		addTouchComponent(contentBar);
 		
 		ClassLoader loader = PathFinderPopup.class.getClassLoader();
 		File file = new File(loader.getResource("example7" + File.separator + "PathFinderPopup.class").toString());

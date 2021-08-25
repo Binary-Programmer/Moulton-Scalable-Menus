@@ -72,10 +72,10 @@ public class Manager6 extends MenuManager implements AnimationListener{
 		flower = new Animation(300,flowers);
 		flower.setAnimationListener(this);
 		flowerButton = new AnimatedButton("flower", flower, bottom, 0, 0, Color.WHITE);
-		addTouchResponsiveComponent(flowerButton);
-		addTouchResponsiveComponent(new Button("reappear","Redo",bottom, 1,0, font, Color.RED));
-		addTouchResponsiveComponent(new Button("clear","CE",bottom, 2,0, font, Color.GREEN));
-		addTouchResponsiveComponent(new Button("add","+",bottom, 3,0, font, Color.BLUE));
+		addTouchComponent(flowerButton);
+		addTouchComponent(new Button("reappear","Redo",bottom, 1,0, font, Color.RED));
+		addTouchComponent(new Button("clear","CE",bottom, 2,0, font, Color.GREEN));
+		addTouchComponent(new Button("add","+",bottom, 3,0, font, Color.BLUE));
 	}
 
 	@Override
