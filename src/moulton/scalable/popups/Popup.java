@@ -171,9 +171,5 @@ public class Popup {
 		//now render the base panel
 		if(base != null)
 			base.render(g, x, y, w, h);
-		
-		//render any nested pop up
-		if(nested != null)
-			nested.render(g, width, height);
 	}
 }
