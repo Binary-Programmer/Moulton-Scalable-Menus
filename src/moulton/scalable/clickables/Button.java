@@ -36,7 +36,9 @@ public class Button extends RadioButton {
 	/**The color of the text when the button is enabled. When the button is not enabled,
 	 * this color will be one shade lighter. If the color is not set (null), then either
 	 * black or white will be chosen at render time to maximize contrast with the fill
-	 * color as determined by {@link #getFillColor()}. Defaults to null.*/
+	 * color as determined by {@link #getFillColor()}. Defaults to null.
+	 * @see #getTextColor()
+	 * @see #setTextColor(Color)*/
 	protected Color textColor = null;
 	
 	/**
@@ -168,5 +170,20 @@ public class Button extends RadioButton {
 	 */
 	public void setAlignment(Alignment newAlignment) {
 		alignment = newAlignment;
+	}
+	
+	/**
+	 * Sets the color of the text on the button's face.
+	 * @param color to replace {@link #textColor}
+	 */
+	public void setTextColor(Color color) {
+		this.textColor = color;
+	}
+	/**
+	 * Returns the color of the text on the button's face.
+	 * @return {@link #textColor}
+	 */
+	public Color getTextColor() {
+		return this.textColor;
 	}
 }

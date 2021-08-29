@@ -511,7 +511,7 @@ public abstract class MenuManager {
 	 * ID codes are intended to be unique. Uses the recursive method {@link #findComponent(String, Panel, Panel)}.
 	 * @param idToFind the ID that should be matched in the found component
 	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
-	 * the menu root panel ({@link #menu} will be used as the starting point.
+	 * the menu root panel ({@link #menu}) will be used as the starting point.
 	 * @return the component found that has the matching ID, or if such component cannot be found, null.
 	 */
 	public Clickable findComponent(String idToFind, Panel startPoint) {

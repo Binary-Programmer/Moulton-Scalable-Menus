@@ -106,7 +106,7 @@ public abstract class MenuComponent {
 	
 	/**
 	 * Returns the parent panel of this component.
-	 * @return ({@link #parent}
+	 * @return {@link #parent}
 	 */
 	public Panel getParent(){
 		return parent;
