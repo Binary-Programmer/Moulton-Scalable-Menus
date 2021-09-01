@@ -36,7 +36,12 @@ public class PathFinderPopup extends Popup {
 		addTouchComponent(pathDisplay);
 		pathDisplay.setTouchedColor(Color.WHITE);
 		
-		addTouchComponent(new Button("pathUp","^",base, "0","30","20","20",font,Color.LIGHT_GRAY));
+		Button pathUp = new Button("pathUp","^",base, "0","30","20","20",font,Color.LIGHT_GRAY);
+		pathUp.setClickAction(() -> {
+			goUpDirectory();
+			return true;
+		});
+		addTouchResponsiveComponent(pathUp);
 		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",font,Color.WHITE);
 		fileName.setOutline(true);
 		fileName.setHint("file name");
@@ -92,10 +97,17 @@ public class PathFinderPopup extends Popup {
 			int lastSlash = pathName.lastIndexOf(File.separator);
 			if(lastSlash != -1)
 				pathName = pathName.substring(lastSlash+1);
+			Button dirButton;
 			if(file.isDirectory())
-				new Button("directoryButton", "  "+pathName, contents, 0, i, italic, Color.YELLOW).setAlignment(Alignment.LEFT_ALIGNMENT);
+				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i, italic, Color.YELLOW);
 			else
-				new Button("directoryButton", "  "+pathName, contents, 0, i, smallFont, Color.WHITE).setAlignment(Alignment.LEFT_ALIGNMENT);
+				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i, smallFont, Color.WHITE);
+			dirButton.setAlignment(Alignment.LEFT_ALIGNMENT);
+			
+			dirButton.setClickAction(() -> {
+				select(dirButton.getText().substring(2));
+				return true;
+			});
 		}
 	}
 	
