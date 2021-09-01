@@ -84,7 +84,7 @@ public class Manager2 extends MenuManager{
 		if(c.getId().equals("button")) {
 			box.setEnabled(!box.isEnabled());
 		}else if(c.getId().equals("invisible")) {
-			setPopup(new NotificationPopup("You pressed the invisible button!", "ok", null, new Font("Arial",Font.PLAIN,12), false));
+			setPopup(new NotificationPopup("You pressed the invisible button!", null, new Font("Arial",Font.PLAIN,12), "ok", this));
 		}else if(c.getId().equals("ok")) {
 			setPopup(null);
 		}else if(c.getId().equals("accept")) {

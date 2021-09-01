@@ -243,6 +243,7 @@ public abstract class MenuManager {
 			if(polygon.contains(mouseX, mouseY) && scrollable.getHeightScrollBar()!=null) {
 				return checkComp;
 			}
+			
 		}
 		return null; //nothing found here...
 	}

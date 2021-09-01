@@ -20,29 +20,29 @@ public class ConfirmationPopup extends CommonPopup {
 
 	/**
 	 * @param text the text that should be accepted or rejected.
-	 * @param okId the ID that should be used for the accept button.
-	 * @param cancelId the ID that should be used for the decline and exit buttons.
 	 * @param title the title of the pop up. Set to null for no title.
 	 * @param font the font of the text on the pop up.
+	 * @param okId the ID that should be used for the accept button.
+	 * @param cancelId the ID that should be used for the decline and exit buttons.
 	 * @param manager the menu manager that contains this pop up. This is used to exit out on clicking x.
 	 * @param option whether the option should be presented as Yes/No (for true) or Ok/Cancel (for false).
 	 */
-	public ConfirmationPopup(String text, String okId, String cancelId, String title, Font font, MenuManager manager, boolean option) {
+	public ConfirmationPopup(String text, String title, Font font, String okId, String cancelId, MenuManager manager, boolean option) {
 		super(text, title, font, cancelId, manager);
 		init(okId, cancelId, font, manager, option);
 	}
 	/**
 	 * @param text the text that should be accepted or rejected.
-	 * @param okId the ID that should be used for the accept button.
-	 * @param cancelId the ID that should be used for the decline and exit buttons.
 	 * @param title the title of the pop up. Set to null for no title.
 	 * @param font the font of the text on the pop up.
 	 * @param x the x location of the pop up
 	 * @param y the y location of the pop up
+	 * @param okId the ID that should be used for the accept button.
+	 * @param cancelId the ID that should be used for the decline and exit buttons.
 	 * @param manager the menu manager that contains this pop up. This is used to exit out on clicking x.
 	 * @param option whether the buttons should be presented as Yes/No (for true) or Ok/Cancel (for false).
 	 */
-	public ConfirmationPopup(String text, String okId, String cancelId, String title, Font font, String x, String y, MenuManager manager, boolean option) {
+	public ConfirmationPopup(String text, String title, Font font, String x, String y, String okId, String cancelId, MenuManager manager, boolean option) {
 		super(text, title, font, cancelId, manager);
 		init(okId, cancelId, font, manager, option);
 	}

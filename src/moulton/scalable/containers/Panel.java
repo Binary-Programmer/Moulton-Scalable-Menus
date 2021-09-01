@@ -326,6 +326,9 @@ public class Panel extends MenuComponent {
 			if(comp instanceof Panel)
 				((Panel)comp).removeTouchResponsiveness(manager);
 		}
+		//if subclasses are touch responsive, we want them to be removed too
+		if(this instanceof TouchResponsiveComponent)
+			manager.removeTouchComponent((TouchResponsiveComponent)this);
 	}
 	
 }

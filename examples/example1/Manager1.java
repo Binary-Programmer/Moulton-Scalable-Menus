@@ -55,21 +55,21 @@ public class Manager1 extends MenuManager{
 		if(id != null) {
 			switch(id) {
 			case "secret":
-				Popup pop = new NotificationPopup("Here is some really long text that must be split! I don't know how many lines it will take, but I am guessing that it will be a few.", "ok", "Secret", new Font("Arial", Font.PLAIN, 12), true);
+				Popup pop = new NotificationPopup("Here is some really long text that must be split! I don't know how many lines it will take, but I am guessing that it will be a few.", "Secret", new Font("Arial", Font.PLAIN, 12), "ok", this);
 				this.setPopup(pop);
 				break;
 			case "red":
 			case "orange":
 			case "yellow":
 			case "green":
-				pop = new NotificationPopup("You pressed a(n) "+id+" button!", "ok", null, new Font("Arial", Font.PLAIN, 15), false);
+				pop = new NotificationPopup("You pressed a(n) "+id+" button!", null, new Font("Arial", Font.PLAIN, 15), "ok", this);
 				this.setPopup(pop);
 				break;
 			case "ok":
 				setPopup(null);
 				break;
 			case "exit":
-				pop = new ConfirmationPopup("Are you sure you want to quit?", "quit", "ok", null, new Font("Times New Roman", Font.PLAIN, 13), true, true);
+				pop = new ConfirmationPopup("Are you sure you want to quit?", null, new Font("Times New Roman", Font.PLAIN, 13), "quit", "ok", this, true);
 				setPopup(pop);
 				break;
 			case "quit":
