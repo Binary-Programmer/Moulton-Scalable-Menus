@@ -22,7 +22,7 @@ public class Caption extends MenuComponent{
 	/**The color of the text to be drawn.
 	 * @see #getColor()
 	 * @see #setColor(Color)*/
-	protected Color color = Color.BLACK;
+	protected Color textColor = Color.BLACK;
 	/**The alignment of the text to be rendered*/
 	protected Alignment alignment;
 	/**The text will center and draw from x to x+width if specified and alignment is center*/
@@ -87,7 +87,7 @@ public class Caption extends MenuComponent{
 			g.setFont(new Font(font.getFontName(), font.getStyle(), getTextVertResize(font.getSize())));
 		else
 			g.setFont(font);
-		g.setColor(color);
+		g.setColor(textColor);
 		FontMetrics fm = g.getFontMetrics();
 		int fontWidth = 0;
 		int fontHeight = fm.getHeight();
@@ -159,17 +159,27 @@ public class Caption extends MenuComponent{
 	}
 	/**
 	 * Gets the color of the text drawn
-	 * @return {@link #color}
+	 * @return {@link #textColor}
 	 */
-	public Color getColor(){
-		return color;
+	public Color getTextColor() {
+		return textColor;
+	}
+	/**Use {@link #getTextColor()} instead. */
+	@Deprecated
+	public Color getColor() {
+		return getTextColor();
 	}
 	/**
 	 * Sets the color of the text drawn
-	 * @param color replaces {@link #color}.
+	 * @param color replaces {@link #textColor}.
 	 */
-	public void setColor(Color color){
-		this.color = color;
+	public void setTextColor(Color color) {
+		this.textColor = color;
+	}
+	/**Use {@link #setTextColor(Color)} instead. */
+	@Deprecated
+	public void setColor(Color color) {
+		setTextColor(color);
 	}
 	
 	/**

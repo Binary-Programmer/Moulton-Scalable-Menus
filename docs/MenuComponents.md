@@ -58,6 +58,14 @@ The following variables may be used in expressions:
 * `pi`: the value of pi in double precision (3.1415926536)
 * `e`: the value of e in double precision (2.7182818285)
 
+As of MSM v1.14, four more variables may be used in expressions for rectangular components.
+* `WIDTH`: the width of the component being drawn. May not be used in the expression for width or height.
+* `HEIGHT`: the height of the componpent being drawn. May not be used in the expression for width or height.
+* `CENTERX`: the value of x that would center the component horizontally in the parent panel. Specifically, CENTERX = "(width - WIDTH)/2".
+* `CENTERY`: the value of y that would center the component vertically in the parent panel. Specifically, CENTERY = "(height - HEIGHT)/2".
+
+These new variables are available for all built-in components that have a rectangular shape (except Pop Ups), such as Buttons, Panels, Text Boxes, Text Histories, and Views.
+
 #### Wild Character
 The wild character, `?`, may also be used in some specific instances, as implemented by the menu component.
 

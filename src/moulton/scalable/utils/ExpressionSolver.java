@@ -1,6 +1,6 @@
 package moulton.scalable.utils;
 
-/* 23 Dec 2020
+/* 2021 Aug 7
  * This is a modification of my ExpressionSolver class altered to better suit
  * Moulton Scalable Menus.
  */
@@ -17,11 +17,14 @@ package moulton.scalable.utils;
  * centerx centery width height pi e</pre> where the first three refer to the dimensions of the {@link MenuComponent}'s
  * container, and the last two are the mathematical constants.<p> For example, "centerx - (width/10) * lne",
  * when the width of the container is 100, will result to 40.0.
+ * <p>
+ * Call {@link #solveString(String)} to evaluate the expression. {@link #setVariables(String[], double[])}
+ * and {@link #setValues(double[])} are also available for configuration.
  * @author Matthew Moulton
  */
 public class ExpressionSolver {
-	private static final String[] VARIABLES = {"centerx", "centery", "width", "height", "pi", "e"};
-	private double[] values;
+	protected String[] variables = {"centerx", "centery", "width", "height", "pi", "e"};
+	protected double[] values;
 	
 	/**
 	 * Creates an solver obj with the values of contWidth and contHeight to use as values for "width" and "height" variables,
@@ -30,20 +33,52 @@ public class ExpressionSolver {
 	 * @param contHeight the height of the container
 	 */
 	public ExpressionSolver(double contWidth, double contHeight){
-		this.values = new double[]{contWidth/2, contHeight/2, contWidth, contHeight,
-				3.1415926536,2.7182818285};
+		this.values = new double[] {
+				contWidth/2, contHeight/2, contWidth, contHeight,
+				3.1415926536, 2.7182818285
+		};
+	}
+	
+	/**
+	 * Sets the variables and the values for use in equation solving. Neither variables nor values
+	 * may be null, and the lengths of both must match.
+	 * @param variables sets the variables for use
+	 * @param values sets the values for use
+	 * @see #setValues(double[])
+	 * @see #solveString(String)
+	 */
+	public void setVariables(String[] variables, double[] values) {
+		if(variables == null || values == null)
+			throw new IllegalArgumentException("Both variables and values must be non-null!");
+		if(variables.length != values.length)
+			throw new IllegalArgumentException("The lengths of the variables and values arrays must match!");
+		this.variables = variables;
+		this.values = values;
+	}
+	
+	/**
+	 * Sets the values for the previously set values. The specified values may not be null and the
+	 * array's length must match the number of variables currently set.
+	 * @param values the values to use in equation solving
+	 * @see #setVariables(String[], double[])
+	 */
+	public void setValues(double[] values) {
+		if(this.values.length < this.variables.length)
+		this.values = values;
 	}
 	
 	/**
 	 * Solves the given expression. Note that because of issues of circular dependencies in order of operations,
 	 * the functions must receive numerical arguments instead of expressions themselves. For example, avoid
-	 * evaulating expressions like <code>cossin0</code>, since sin0 is the argument for cosine. Instead, use
+	 * evaluating expressions like <code>cossin0</code>, since sin0 is the argument for cosine. Instead, use
 	 * parentheses like <code>cos(sin0)</code>, which will correctly result to 1. Additionally, <code>cospi</code>
 	 * is acceptable because all variables are replaced by their values before any evaluation. 
 	 * @param expression the expression to be solved
 	 * @return the double result of the solved expression
 	 */
-	public double solveString(String expression){
+	public double solveString(String expression) {
+		if(expression == null)
+			return 0;
 		//remove all whitespace characters
 		String equ = "";
 		for(int i=0; i<expression.length(); i++) {
@@ -52,13 +87,16 @@ public class ExpressionSolver {
 				equ += c;
 		}
 		expression = equ;
+		if(expression.isEmpty())
+			return 0;
+		
 		//replace the variables with their values
-		for(int i=0; i<VARIABLES.length; i++){
-			int index = expression.indexOf(VARIABLES[i]);
+		for(int i=0; i<variables.length; i++){
+			int index = expression.indexOf(variables[i]);
 			while(index!=-1){
 				expression = rebuildEquation(expression.substring(0, index), values[i],
-						expression.substring(index+VARIABLES[i].length()),true);
-				index = expression.indexOf(VARIABLES[i]);
+						expression.substring(index+variables[i].length()),true);
+				index = expression.indexOf(variables[i]);
 			}
 		}
 		//perform the actual solve, returning the result
@@ -76,7 +114,7 @@ public class ExpressionSolver {
 		while(expression.indexOf('(')!=-1){ //P
 			//the last ( and the first ) after go together
 			int start = expression.lastIndexOf('(');
-			int end = expression.lastIndexOf(')');
+			int end = expression.indexOf(')', start);
 			if(end == -1) //if it wasn't found, just use the end of the expression
 				end = expression.length();
 			
@@ -111,11 +149,15 @@ public class ExpressionSolver {
 		//while there is an instance of the operation, but with two exceptions:
 		while(i != -1) {
 			//1. a leading -, which would just indicate a negation
-			if(operation.equals("-") && i==0)
-				break;
+			if(operation.equals("-") && i==0) {
+				i = expression.indexOf(operation, i+1);
+				continue;
+			}
 			//2. a - preceded by an E, for 10^(negative exponent)
-			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E')
-				break;
+			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E') {
+				i = expression.indexOf(operation, i+1);
+				continue;
+			}
 			//if we have the operation at index i, then we need to divide up the expression at that point,
 			//remove the operation, and perform the action between the two component parts
 			//try to find the number on the second end of the operation

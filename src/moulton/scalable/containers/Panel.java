@@ -91,30 +91,11 @@ public class Panel extends MenuComponent {
 
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
-		int x, y, w, h;
-		if(parent != null && getGridLocation()==null) { //otherwise this should check for dimension modifications
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
-			// variant for input ending points instead of widths indicated by a starting question
-			if (this.width.charAt(0) == '?') {
-				//solve for the ending point
-				int x2 = xx + solveString(this.width.substring(1), ww, hh);
-				//deduce the width
-				w = x2 - x;
-			} else
-				w = solveString(this.width, ww, hh);
-
-			if (this.height.charAt(0) == '?') {
-				int y2 = yy + solveString(this.height.substring(1), ww, hh);
-				h = y2 - y;
-			} else
-				h = solveString(this.height, ww, hh);
-		}else {
-			x = xx;
-			y = yy;
-			w = ww;
-			h = hh;
-		}
+		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
+		int x = rect.x;
+		int y = rect.y;
+		int w = rect.width;
+		int h = rect.height;
 		lastHeight = h;
 		lastWidth = w;
 
@@ -341,10 +322,13 @@ public class Panel extends MenuComponent {
 	public void removeTouchResponsiveness(MenuManager manager) {
 		for(MenuComponent comp: getAllHeldComponents()) {
 			if(comp instanceof TouchResponsiveComponent)
-				manager.removeTouchResponsiveComponent((TouchResponsiveComponent)comp);
-			else if(comp instanceof Panel)
+				manager.removeTouchComponent((TouchResponsiveComponent)comp);
+			if(comp instanceof Panel)
 				((Panel)comp).removeTouchResponsiveness(manager);
 		}
+		//if subclasses are touch responsive, we want them to be removed too
+		if(this instanceof TouchResponsiveComponent)
+			manager.removeTouchComponent((TouchResponsiveComponent)this);
 	}
 	
 }

@@ -64,12 +64,12 @@ public class Manager7 extends MenuManager{
 		format.setMargin("10", "10");
 		format.setFrame("10", "10");
 		Font font = new Font("Arial", Font.PLAIN, 15);
-		addTouchResponsiveComponent(new Button("new", "New", controlPanel, 0, 0, font, Color.WHITE));
-		addTouchResponsiveComponent(new Button("load", "Load", controlPanel, 1, 0, font, Color.WHITE));
+		addTouchComponent(new Button("new", "New", controlPanel, 0, 0, font, Color.WHITE));
+		addTouchComponent(new Button("load", "Load", controlPanel, 1, 0, font, Color.WHITE));
 		saveButton = new Button("save", "Save", controlPanel, 2, 0, font, Color.WHITE);
 		saveButton.setEnabled(false);
-		addTouchResponsiveComponent(saveButton);
-		addTouchResponsiveComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
+		addTouchComponent(saveButton);
+		addTouchComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
 		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height", font, new Color(0xe5e5e5));
 		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",Color.LIGHT_GRAY));
 		fileContents.acceptEnter(true);
@@ -146,6 +146,12 @@ public class Manager7 extends MenuManager{
 				//then fall through to cancel\quit
 			case "cancel":
 				setPopup(null);
+				break;
+			case "directoryButton":
+				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
+				break;
+			case "fileName":
+				((PathFinderPopup)popup).emptySelection(false);
 				break;
 			}
 		}

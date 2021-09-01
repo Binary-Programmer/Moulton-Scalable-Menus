@@ -33,10 +33,10 @@ public class Manager4 extends MenuManager{
 		this.menu = Panel.createRoot(Color.WHITE);
 		menu.setTextResize(true);
 		Font font = new Font("Arial", Font.PLAIN, 12);
-		this.addTouchResponsiveComponent(new Button("toggle","ON",menu,"0","0","width/3","height/3",font,Color.CYAN));
+		this.addTouchComponent(new Button("toggle","ON",menu,"0","0","width/3","height/3",font,Color.CYAN));
 		Button xButton = new Button("X", "X", menu, "width-width/3", "0", "?width", "height/3", font, Color.WHITE);
 		xButton.setTouchedColor(Color.RED);
-		this.addTouchResponsiveComponent(xButton);
+		this.addTouchComponent(xButton);
 		
 		Button[] radios = new Button[4];
 		radios[0] = new Button("up","^",menu,"centerx-width/6","0","?2width/3","height/3",font,Color.YELLOW);
@@ -52,7 +52,7 @@ public class Manager4 extends MenuManager{
 		}catch(IOException e) {}
 		ImageButton open = new ImageButton("open",folder1,menu,"0","height-height/3","width/3","?height",Color.CYAN);
 		open.setTouchedImage(folder2);
-		this.addTouchResponsiveComponent(open);
+		this.addTouchComponent(open);
 		
 		BufferedImage spin[] = new BufferedImage[16];
 		try {

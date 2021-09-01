@@ -27,13 +27,16 @@ import moulton.scalable.texts.TextInputComponent;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * The menu manager will handle the rendering of its menu on a graphics object through {@link #render(Graphics)}. When the 
- * {@link Container} knows that it is time to render, have it call {@link #render(Graphics)}. Subclass this Menu Manager to create
- * menu set-ups for yourself. Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make sure to
- * save the panel you create to {@link #menu}. <p>
- * Will handle events for mouse moving ({@link #mouseMoved(int, int)}), mouse pressing ({@link #mousePressed(int, int)} 
- * and {@link #mouseReleased(int, int)}), and key typing ({@link #keyTyped(char)} and {@link #keyPressed(int)}) as long
- * as these event methods are being called, likely by {@link Container}.
+ * The menu manager will handle the rendering of its menu on a graphics object through
+ * {@link #render(Graphics)}. When the {@link Container} knows that it is time to render, have it call
+ * {@link #render(Graphics)}. Subclass this Menu Manager to create menu set-ups for yourself.
+ * Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make sure
+ * to save the panel you create to {@link #menu}.
+ * <p>
+ * Will handle events for mouse moving ({@link #mouseMoved(int, int)}), mouse pressing
+ * ({@link #mousePressed(int, int)} and {@link #mouseReleased(int, int)}), and key typing
+ * ({@link #keyTyped(char)} and {@link #keyPressed(int)}) as long as these event methods are being 
+ * called, likely by {@link Container}.
  * @author Matthew Moulton
  */
 public abstract class MenuManager {
@@ -41,14 +44,16 @@ public abstract class MenuManager {
 	 * @see #hasMenu()
 	 * @see #getMenu()*/
 	protected Panel menu;
-	/**A popup that should be drawn on top of the {@link #menu}. If the popup is set (default is null), it will take precedence
-	 * over the menu and take the action events such as {@link #mousePressed} and {@link #mouseScrolled(int, int, int)}.
+	/**A pop up that should be drawn on top of the {@link #menu}. If the pop up is set (default is null),
+	 * it will take precedence over the menu and take the action events such as {@link #mousePressed}
+	 * and {@link #mouseScrolled(int, int, int)}.
 	 * @see #getPopup()
 	 * @see #setPopup(Popup)*/
 	protected Popup popup = null;
 	/**The container for the menus to manage.*/
 	protected Container cont;
-	/**The Clickable that was last clicked. Clickables are only considered activated once the user has both clicked and released on the same object.
+	/**The Clickable that was last clicked. Clickables are only considered activated once the user has
+	 * both clicked and released on the same object.
 	 * @see #getClicked()
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
@@ -144,8 +149,8 @@ public abstract class MenuManager {
 	
 	/**
 	 * The Moulton Scalable Menus handles the mouse release once this method has been called by another source. 
-	 * This method checks to see whether the component that the user first clicked on is the same that they released
-	 * on. Sets {@link #clicked} as necessary.
+	 * This method checks to see whether the component that the user first clicked on is the same that they
+	 * released on. Sets {@link #clicked} as necessary.
 	 * <p>
 	 * If the click was successful, it is determined whether the clickable has an associated click event by
 	 * calling {@link Clickable#getClickAction()}. If not, or if the action does not consume the event, the
@@ -154,7 +159,7 @@ public abstract class MenuManager {
 	 * @param x the x coordinate of the mouse when released
 	 * @param y the y coordinate of the mouse when released
 	 */
-	public void mouseReleased(int x, int y){
+	public void mouseReleased(int x, int y) {
 		mousePressed = false;
 		if(clicked != null) {
 			//if clicked is still being clicked by the mouse, perform click action
@@ -238,6 +243,7 @@ public abstract class MenuManager {
 			if(polygon.contains(mouseX, mouseY) && scrollable.getHeightScrollBar()!=null) {
 				return checkComp;
 			}
+			
 		}
 		return null; //nothing found here...
 	}
@@ -472,6 +478,11 @@ public abstract class MenuManager {
 		return clicked;
 	}
 	
+	/**Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated
+	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
+		touchCheckList.add(comp);
+	}
 	/**
 	 * Adds the component to the list of components to check each time the mouse moves. If the component
 	 * is later removed from visibility (for example if the panel it is on is removed from the root-tree),
@@ -479,15 +490,20 @@ public abstract class MenuManager {
 	 * @param comp the component to add on
 	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)
 	 */
-	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
+	public void addTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
+	}
+	/**Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated
+	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
+		touchCheckList.remove(comp);
 	}
 	/**
 	 * Removes the specified component from the touch component list.
 	 * @param comp the component to remove
 	 * @see #addTouchResponsiveComponent(TouchResponsiveComponent)
 	 */
-	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
+	public void removeTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.remove(comp);
 	}
 	
@@ -496,7 +512,7 @@ public abstract class MenuManager {
 	 * ID codes are intended to be unique. Uses the recursive method {@link #findComponent(String, Panel, Panel)}.
 	 * @param idToFind the ID that should be matched in the found component
 	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
-	 * the menu root panel ({@link #menu} will be used as the starting point.
+	 * the menu root panel ({@link #menu}) will be used as the starting point.
 	 * @return the component found that has the matching ID, or if such component cannot be found, null.
 	 */
 	public Clickable findComponent(String idToFind, Panel startPoint) {
