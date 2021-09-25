@@ -127,4 +127,4 @@ Although pop ups do not generally fit the mold of scalable components, there is 
 
 All pop ups must be descendants of the class `moulton.scalable.popups.Popup`. Due to the sheer number of possibilities and varying implementation strategies, said pop up parent class provides minimal features. These features include dimensions, the aforementioned Panel base, touchCheckList (which is a list structure of components that need to be checked for mouse interactivity), and a background color.
 
-Two pop up subclasses have also been provided in the package to accomodate common usage. These are the aptly named `NotificationPopup` and `ConfirmationPopup`.
+However, to accomodate typical usage, the `moulton.scalable.popups.CommonPopup` has been provided, with two subclass use cases, the `moulton.scalalable.popups.NotificationPopup` and the `moulton.scalalable.popups.ConfirmationPopup`. As their names would suggest, use the NotificationPopup for basic notification functionality, and the ConfirmationPopup when the user needs to either accept or reject some message.

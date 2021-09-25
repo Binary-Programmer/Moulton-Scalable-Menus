@@ -10,10 +10,9 @@ import moulton.scalable.clickables.EventAction;
 import moulton.scalable.containers.MenuManager;
 
 /**
- * This is an example of what can be done with pop ups. Sometimes the user needs to be notified of some event
- * or information before they proceed to the next action, and this pop up fulfills this purpose. Admittedly
- * its design does not allow for much flexibility: the constructor calls an init method that creates the
- * contents of the pop up on its base panel.
+ * This is an example of what can be done with pop ups. Sometimes the user needs to be notified of some
+ * event or information before they proceed to the next action, and this pop up fulfills this purpose.
+ * The constructor calls an init method that creates the contents of the pop up on its base panel.
  * @author Matthew Moulton
  */
 public class NotificationPopup extends CommonPopup {

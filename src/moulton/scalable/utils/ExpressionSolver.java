@@ -23,7 +23,21 @@ package moulton.scalable.utils;
  * @author Matthew Moulton
  */
 public class ExpressionSolver {
+	/**
+	 * The variables that have meaning in the context of menu expressions. The variables provided
+	 * by default are
+	 * <ul>
+	 * <li>centerx
+	 * <li>centery
+	 * <li>width>
+	 * <li>height
+	 * <li>pi
+	 * <li>e
+	 * </ul>
+	 * The corresponding values are saved in {@link #values}
+	 */
 	protected String[] variables = {"centerx", "centery", "width", "height", "pi", "e"};
+	/**The values that correspond to the {@link #variables}.*/
 	protected double[] values;
 	
 	/**

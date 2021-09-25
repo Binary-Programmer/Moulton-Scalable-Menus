@@ -13,6 +13,15 @@ import moulton.scalable.texts.Alignment;
 import moulton.scalable.texts.Caption;
 import moulton.scalable.texts.LineBreak;
 
+/**
+ * A great deal of pop ups require the same basic functionality. Therefore, this abstract
+ * common pop up superclass is provided. CommonPopup allows for the basic structure of a 
+ * pop up with a title, exit button, and main text.
+ * <p>
+ * For more extensive functionality, it is recommended to use or subclass
+ * {@link NotificationPopup} or {@link ConfirmationPopup}.
+ * @author Matthew Moulton
+ */
 public abstract class CommonPopup extends Popup {
 
 	/**
@@ -148,7 +157,7 @@ public abstract class CommonPopup extends Popup {
 	}
 	
 	/**
-	 * This is used by {@link #init(String, String, String, String, Font, boolean, boolean)} to
+	 * This is used by {@link #init(String, String, Font, boolean, String, MenuManager)} to
 	 * find the default width of the pop up if the text is not too long.
 	 * @param fontHeight the height of the font given in the constructor
 	 * @return an integer number of pixels that should be used as the default pop up width
@@ -158,7 +167,7 @@ public abstract class CommonPopup extends Popup {
 	}
 	
 	/**
-	 * This is used by {@link #init(String, String, String, String, Font, boolean, boolean)} to
+	 * This is used by {@link #init(String, String, Font, boolean, String, MenuManager)} to
 	 * find the maximum width of the pop up. If the text is too long to fit in the
 	 * {@link #getPopupDefaultWidth(int)}, then the width of the pop up will be extended to
 	 * accommodate it. However, this is the limit to such extension.
@@ -170,7 +179,7 @@ public abstract class CommonPopup extends Popup {
 	}
 	
 	/**
-	 * This is used by {@link #init(String, String, String, String, Font, boolean, boolean)} to
+	 * This is used by {@link #init(String, String, Font, boolean, String, MenuManager)} to
 	 * find the height of the pop up. This is extra height after the title and text have been
 	 * accounted for.
 	 * @param fontHeight the height of the font given in the constructor

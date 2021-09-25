@@ -13,7 +13,7 @@ import moulton.scalable.containers.Panel;
 /**
  * This is an example of what can be done with pop ups. Sometimes the user needs to choose between two options
  * before they proceed to the next action, and this pop up fulfills this purpose. For greater flexibility,
- * subclass this and override {@link #init(String, String, String, Font, boolean)}.
+ * subclass this and override {@link #init(String, String, Font, MenuManager, boolean)}.
  * @author Matthew Moulton
  */
 public class ConfirmationPopup extends CommonPopup {
