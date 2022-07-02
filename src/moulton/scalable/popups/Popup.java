@@ -33,11 +33,14 @@ public class Popup {
 	 * translucent.*/
 	protected Color blanketBackground = null;
 	
-	/**The coordinate of the component specified by an algebraic expression. If null (which is default), the
-	 * popup will be centered on the menu.*/
+	/**The coordinate of the component specified by an algebraic expression.
+	 * If null (which is default), the pop up will be centered on the menu.*/
 	protected String x,y;
 	/**The dimension of the component specified by an algebraic expression.*/
 	protected String width, height;
+	
+	/** The pop up for this pop up. Pop ups can be saved recursively. */
+	protected Popup popup = null;
 	
 	/**
 	 * Creates a pop up and centers it on the space given by the {@link Container}
@@ -69,11 +72,16 @@ public class Popup {
 	}
 	
 	/**
-	 * Returns the {@link Panel} that serves as the base level of this pop up.
+	 * Returns {@link #popup}, which serves as the base level of this pop up.
 	 * This pop up is backed by that Panel. Thus any changes to it may influence this.
-	 * @return {@link #base}
+	 * <p>
+	 * If this pop up has another pop up saved in {@link #popup}, the base of the
+	 * saved pop up will be returned instead.
+	 * @return the pop up base.
 	 */
 	public Panel getBase() {
+		if(popup != null)
+			return popup.base;
 		return base;
 	}
 	
@@ -171,5 +179,17 @@ public class Popup {
 		//now render the base panel
 		if(base != null)
 			base.render(g, x, y, w, h);
+		
+		//continue the recursion, if any
+		if(popup != null)
+			popup.render(g, width, height);
+	}
+	
+	/**
+	 * Returns the pop up that this pop up has saved.
+	 * @return {@link #popup}
+	 */
+	public Popup getPopup() {
+		return popup;
 	}
 }

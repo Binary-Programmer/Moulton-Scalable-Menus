@@ -1,5 +1,9 @@
 package moulton.scalable.texts;
 
+import java.awt.FontMetrics;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The Line Break class serves as a utility for text based classes, such as the {@link TextHistory}
  * and the {@link TextBox}. A LineBreak instance can be generated through
@@ -124,6 +128,36 @@ public class LineBreak {
 			return new LineBreak(line, rawLine, rem);
 		else
 			return new LineBreak(line, rem);
+	}
+	
+	/**
+	 * Splits the given text into lines that are at most the width of <code>maxWidth</code>,
+	 * by using {@link #check(boolean, String, String)} and widths determined by
+	 * {@link FontMetrics#stringWidth(String)}.
+	 * @param text the text to be split. All salient characters will end up in the return.
+	 * @param maxWidth the max width that each line may be.
+	 * @param metrics the font metrics used to determine the width of each line in processing.
+	 * @param wordSplit whether words may be split at ends of lines
+	 * @return an array of strings that contains all the salient characters from the original
+	 * text, split such that each line is no longer than the given width.
+	 */
+	public static String[] lines(String text, int maxWidth, FontMetrics metrics, boolean wordSplit) {
+		List<String> lines = new ArrayList<>();
+		
+		String rem = text; //could strip trailing here
+		while(metrics.stringWidth(rem) > maxWidth) {
+			String line = ""; //add characters to line until it exceeds the width
+			while(metrics.stringWidth(line) <= maxWidth) {
+				line += rem.charAt(0);
+				rem = rem.substring(1);
+			}
+			LineBreak lb = check(wordSplit, line, rem);
+			lines.add(lb.LINE);
+			rem = lb.REMAINDER;
+		}
+		lines.add(rem);
+		
+		return lines.toArray(new String[lines.size()]);
 	}
 
 }

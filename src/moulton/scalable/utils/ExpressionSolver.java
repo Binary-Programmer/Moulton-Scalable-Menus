@@ -1,6 +1,6 @@
 package moulton.scalable.utils;
 
-/* 2021 Aug 7
+/* 2021 Jan 4
  * This is a modification of my ExpressionSolver class altered to better suit
  * Moulton Scalable Menus.
  */
@@ -90,9 +90,7 @@ public class ExpressionSolver {
 	 * @param expression the expression to be solved
 	 * @return the double result of the solved expression
 	 */
-	public double solveString(String expression) {
-		if(expression == null)
-			return 0;
+	public double solveString(String expression){
 		//remove all whitespace characters
 		String equ = "";
 		for(int i=0; i<expression.length(); i++) {
@@ -101,24 +99,16 @@ public class ExpressionSolver {
 				equ += c;
 		}
 		expression = equ;
-		if(expression.isEmpty())
-			return 0;
-		
 		//replace the variables with their values
 		for(int i=0; i<variables.length; i++){
 			int index = expression.indexOf(variables[i]);
 			while(index!=-1){
-				expression = rebuildEquation(expression.substring(0, index), values[i],
-						expression.substring(index+variables[i].length()),true);
+				expression = rebuildEquation(expression.substring(0, index), values[i], expression.substring(index+variables[i].length()),true);
 				index = expression.indexOf(variables[i]);
 			}
 		}
 		//perform the actual solve, returning the result
-		try {
-			return solve(expression);
-		}catch(NumberFormatException nfe) {
-			throw new RuntimeException("There was an error solving the expression: "+expression);
-		}
+		return solve(expression);
 	}
 	
 	private double solve(String expression){
@@ -167,8 +157,8 @@ public class ExpressionSolver {
 				i = expression.indexOf(operation, i+1);
 				continue;
 			}
-			//2. a - preceded by an E, for 10^(negative exponent)
-			if(operation.equals("-") && i>0 && expression.charAt(i-1)=='E') {
+			//2. a - preceded by an E, for scientific notation (num E - exp)
+			if(operation.equals("-") && (i>0 && expression.charAt(i-1)=='E')) {
 				i = expression.indexOf(operation, i+1);
 				continue;
 			}
@@ -176,13 +166,17 @@ public class ExpressionSolver {
 			//remove the operation, and perform the action between the two component parts
 			//try to find the number on the second end of the operation
 			int b = i + operation.length(); //start the index after the operation
-			//the - sign will count as part of the number, only the first time
+			boolean negPossible = true; //negation only possible if first character or after E
 			for(; b<expression.length(); b++) {
 				char c = expression.charAt(b);
-				if(c == '-' && b==i+operation.length()) //negation assumed only if it is the first character
+				if(c == '-' && negPossible) {
+					//pass- the negative is allowed
+				}else if(c == 'E') { //for a scientific notation
+					negPossible = true; //the power for the notation can be negative
 					continue;
-				else if(!isNumber(c)) //if the character is not a digit or a ., then we have found the end
+				}else if(!isNumber(c)) //if the character is not a digit or a ., then we have found the end
 					break;
+				negPossible = false;
 			}
 			double second = Double.parseDouble(expression.substring(i+operation.length(), b));
 			//try to find the first half if needed
@@ -192,9 +186,15 @@ public class ExpressionSolver {
 			if(!afterOnly) {
 				for(a=i-1; a>-1; a--) {
 					char c = expression.charAt(a);
-					if(c == '-') //negation of the first number
+					if(c == '-') {
+						// This could be indicating the power of scientific notation, or just negation
+						if(a > 0 && expression.charAt(a - 1) == 'E') {
+							a--; //skip back past the E
+							continue;
+						}
+						//negation of the first number
 						break;
-					else if(!isNumber(c)) { //if the character is not a digit or a ., then we have found the end
+					}else if(!isNumber(c)) { //if the character is not a digit or a ., then we have found the end
 						a++; //the first number component begins with the next character
 						break;
 					}
@@ -274,30 +274,7 @@ public class ExpressionSolver {
 	 * @return the expression once pieced together correctly (will look something like <code>bgn</code>...<code>number</code>...<code>end</code>)
 	 */
 	private String rebuildEquation(String bgn, double number, String end, boolean multiplied){
-		if(!multiplied){
-			//work as before with adding
-			int i= bgn.length()-1;
-			if(i>-1) {
-				//look for a plus or minus
-				char c = bgn.charAt(i);
-				if(c=='-') {
-					if(isNegative(number)) //two negatives make a positive
-						return bgn.substring(0,i) + '+' + (-number) + end;
-					else
-						return bgn + number + end;
-				}if(c=='+') {
-					if(isNegative(number)) //remove the + since it is replaced by a -
-						return bgn.substring(0, i) + number + end;
-					else
-						return bgn + number + end;
-				}//otherwise
-				if(number<0)
-					return bgn + number + end;
-				else
-					return bgn + '+' + number + end;
-			}//the bgn string must be empty
-			return number + end;
-		}else{ //the value of number should be multiplied to any adjacent elements
+		if(multiplied) { //the value of number should be multiplied to any adjacent elements
 			//if the element immediately preceding this is a number value, add on a "*", so it will calculate correctly
 			if(bgn.length()>0) {
 				char c = bgn.charAt(bgn.length()-1);
@@ -309,8 +286,34 @@ public class ExpressionSolver {
 				if(isNumber(c))
 					end = '*' + end;
 			}
-			return bgn + number + end;
 		}
+		//If the last character of begin is '+' or '-', we may be able to condense the edge.
+		// If the first character of number is '+', then we can get rid of one symbol.
+		// If '-', then we will either delete the '+', or two negatives make a positive.
+		int i= bgn.length()-1;
+		if(i>-1) {
+			//look for a plus or minus
+			char c = bgn.charAt(i);
+			if(c=='-') {
+				if(isNegative(number)) //two negatives make a positive
+					return bgn.substring(0,i) + '+' + (-number) + end;
+				else
+					return bgn + number + end;
+			}if(c=='+') {
+				if(isNegative(number)) //remove the + since it is replaced by a -
+					return bgn.substring(0, i) + number + end;
+				else
+					return bgn + number + end;
+			}
+			//No condensing was possible unfortunately. Return the values.
+			//If this will not be signed (bc positive), we may need to add the plus in
+			// for neighboring numbers.
+			if(number >= 0 && !multiplied && !bgn.isEmpty() && isNumber(bgn.charAt(i)))
+				return bgn + '+' + number + end;
+			else //otherwise we can just return normally
+				return bgn + number + end;
+		}//the bgn string must be empty
+		return number + end;
 	}
 	
 	/**
@@ -327,7 +330,7 @@ public class ExpressionSolver {
 	
 	/**
 	 * It may seem silly to make a method to test if a double is negative, but -0.0 is possible and is not
-	 * less than 0.0. Therefore, this method will determine if there is a leading negation sign.
+	 * < 0.0. Therefore, this method will determine if there is a leading negation sign.
 	 * @param d the double to test
 	 * @return whether the double to test is negative.
 	 */
