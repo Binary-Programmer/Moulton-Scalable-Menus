@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A button that displays an {@link Animation} on its button face.
@@ -26,8 +27,8 @@ public class AnimatedButton extends RadioButton {
 	 * unless that is not specified, in which case the normal image will be used.
 	 * @see #setClickedAnimation(Animation)*/
 	protected Animation clickedAnimation;
-	/**The algebraic equation to determine the bound of this button. */
-	protected String width, height;
+	/**The equations to determine the dimensions of this button. */
+	protected Expression width, height;
 
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -42,8 +43,8 @@ public class AnimatedButton extends RadioButton {
 	public AnimatedButton(String id, Animation animation, Panel parent, String x, String y, String width, 
 			String height, Color background) {
 		super(id, parent, x, y, background);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		this.mainAnimation = animation;
 	}
 	/**

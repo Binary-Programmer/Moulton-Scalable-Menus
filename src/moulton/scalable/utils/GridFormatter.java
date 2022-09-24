@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.HashMap;
 
-import expression.ExpressionSolver.Expression;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * GridFormatter will hold MenuComponents in a grid that can have variable margins, frames, and weights, then
@@ -44,7 +44,7 @@ public class GridFormatter {
 	protected HashMap<Integer, Double> colWeights = new HashMap<Integer, Double>();
 	
 	/**Holds the used expression solver used to calculate the coordinates and weights*/
-	protected MenuSolver solve = new MenuSolver(0, 0);
+	protected MenuSolver solve = new MenuSolver();
 	/**The width of the x margin. This margin will separate all elements in the x-plane. Defaults to null.
 	 * @see #setMargin(String, String)
 	 * @see #yMargin*/
@@ -90,8 +90,8 @@ public class GridFormatter {
 	 * @param xMargin the width of the margin on the x-axis
 	 * @param yMargin the height of the margin on the y-axis*/
 	public void setMargin(String xMargin, String yMargin) {
-		this.xMargin = (xMargin == null)? null : solve.parseString(xMargin);
-		this.yMargin = (yMargin == null)? null : solve.parseString(yMargin);
+		this.xMargin = (xMargin == null)? null : solve.parse(xMargin, false, false);
+		this.yMargin = (yMargin == null)? null : solve.parse(yMargin, false, false);
 	}
 	
 	/**Sets the {@link #xFrame} and {@link #yFrame} for this panel. Unlike margins, the frame
@@ -100,8 +100,8 @@ public class GridFormatter {
 	 * @param xFrame the algebraic expression for the width of the frame
 	 * @param yFrame the algebraic expression for the height of the frame.*/
 	public void setFrame(String xFrame, String yFrame){
-		this.xFrame = (xFrame == null)? null : solve.parseString(xFrame);
-		this.yFrame = (yFrame == null)? null : solve.parseString(yFrame);
+		this.xFrame = (xFrame == null)? null : solve.parse(xFrame, false, false);
+		this.yFrame = (yFrame == null)? null : solve.parse(yFrame, false, false);
 	}
 	
 	/**Deletes the component found at the location (x,y) in {@link #gridComponents}.
@@ -158,10 +158,10 @@ public class GridFormatter {
 			//found @ gridPoint
 			
 			//find children components from self
-			solve.setMenuValues(self.width, self.height);
+			solve.updateValues(self.width, self.height);
 			//frame
 			if(xFrame!=null) {
-				int frame = (int)solve.eval(xFrame);
+				int frame = (int)solve.evalExtended(xFrame, self.width, self.height);
 				self.width -= frame*2;
 				if(self.width<0)
 					self.width = 0;
@@ -169,7 +169,7 @@ public class GridFormatter {
 					self.x += frame;
 			}
 			if(yFrame!=null) {
-				int frame = (int)solve.eval(yFrame);
+				int frame = (int)solve.evalExtended(yFrame, self.width, self.height);
 				self.height -= frame*2;
 				if(self.height<0)
 					self.height = 0;
@@ -179,7 +179,7 @@ public class GridFormatter {
 			//margins
 			int marginSize = 0;
 			if(xMargin!=null) {
-				marginSize = (int)solve.eval(xMargin);
+				marginSize = (int)solve.evalExtended(xMargin, self.width, self.height);
 				if(marginSize<0 || self.width<1)
 					marginSize = 0;
 			}
@@ -195,7 +195,7 @@ public class GridFormatter {
 			
 			marginSize = 0;
 			if(yMargin!=null) {
-				marginSize = (int)solve.eval(yMargin);
+				marginSize = (int)solve.evalExtended(yMargin, self.width, self.height);
 				if(marginSize<0 || self.height<1)
 					marginSize = 0;
 			}

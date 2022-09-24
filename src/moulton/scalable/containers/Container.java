@@ -23,7 +23,7 @@ public interface Container {
 	/**
 	 * This method is responsible for setting the cursor of the menu to the specified
 	 * type. If the container is implemented by a JFrame or a JPanel, this method can
-	 * be achieved by calling: <br>
+	 * be achieved by calling:
 	 * <code>yourComp.setCursor(Cursor.getPredefinedCursor(cursorType));</code> <p>
 	 * Due to the minimalistic policy of Moulton Scalable Menus, only touch responsive
 	 * components added to {@link MenuManager#touchCheckList} will be queried for

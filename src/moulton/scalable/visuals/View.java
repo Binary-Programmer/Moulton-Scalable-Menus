@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A menu component designed to display a {@link BufferedImage}. The component can either keep the ratio of width
@@ -19,7 +20,7 @@ public class View extends MenuComponent {
 	 * @see #getImage()*/
 	protected BufferedImage image = null;
 	/**String expressions to represent the dimensions of this view*/
-	protected String width, height;
+	protected Expression width, height;
 	/**Whether the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
 	 * @see #isMaintainAspectRatio()
 	 * @see #setMaintainAspectRatio(boolean)*/
@@ -40,8 +41,8 @@ public class View extends MenuComponent {
 	public View(BufferedImage img, Panel parent, String x, String y, String w, String h) {
 		super(parent, x, y);
 		this.image = img;
-		this.width = w;
-		this.height = h;
+		this.width = solve.parse(w, true, false);
+		this.height = solve.parse(h, true, false);
 	}
 	/**
 	 * @param img The image that will be drawn onto the coordinates provided

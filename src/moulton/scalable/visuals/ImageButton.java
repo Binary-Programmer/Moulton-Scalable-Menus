@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A button that displays an image instead of text on its button face.
@@ -25,10 +26,10 @@ public class ImageButton extends RadioButton {
 	 * @see #setClickedImage(BufferedImage)*/
 	protected BufferedImage clickedImage;
 	/**The algebraic equations to determine the bounds of this button. */
-	protected String width, height;
+	protected Expression width, height;
 	/**The algebraic expression to determine the padding between the button boundaries and the image.
 	 * @see #setPadding(String, String)*/
-	protected String vertPadding, horizPadding;
+	protected Expression vertPadding, horizPadding;
 
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -42,8 +43,8 @@ public class ImageButton extends RadioButton {
 	 */
 	public ImageButton(String id, BufferedImage img, Panel parent, String x, String y, String width, String height, Color background) {
 		super(id, parent, x, y, background);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		this.image = img;
 	}
 	/**
@@ -115,11 +116,11 @@ public class ImageButton extends RadioButton {
 			int availableW = w, availableH = h;
 			int horizPad = 0, vertPad = 0;
 			if(horizPadding != null) {
-				horizPad = solveString(horizPadding, ww, hh);
+				horizPad = (int)solve.eval(horizPadding);
 				availableW -= horizPad;
 			}
 			if(vertPadding != null) {
-				vertPad = solveString(vertPadding, ww, hh);
+				vertPad = (int)solve.eval(vertPadding);
 				availableH -= vertPad;
 			}
 			
@@ -204,7 +205,7 @@ public class ImageButton extends RadioButton {
 	 * @param horizPadding A string expression to represent the amount of horizontal padding desired. Sets {@link #horizPadding}.
 	 */
 	public void setPadding(String vertPadding, String horizPadding) {
-		this.vertPadding = vertPadding;
-		this.horizPadding = horizPadding;
+		this.vertPadding = (vertPadding == null)? null : solve.parse(vertPadding, false, false);
+		this.horizPadding = (horizPadding == null)? null : solve.parse(horizPadding, false, false);
 	}
 }

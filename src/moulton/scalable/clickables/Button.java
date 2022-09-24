@@ -10,6 +10,7 @@ import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.texts.Alignment;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A menu component that is a simple rectangular button with optional frontal text saved as {@link #text}.
@@ -27,7 +28,7 @@ public class Button extends RadioButton {
 	 * @see #getText()*/
 	protected String text;
 	/**The string expressions to define the dimensions of the button on the parent panel.*/
-	protected String width, height;
+	protected Expression width, height;
 	/**The font of the text rendered on the button. */
 	protected Font font;
 	/**The alignment for the text on the button's face. Defaults to centered.
@@ -54,8 +55,8 @@ public class Button extends RadioButton {
 	 */
 	public Button(String id, String text, Panel parent, String x, String y, String width, String height, Font font, Color color) {
 		super(id, parent, x, y, color);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(width, true, false);
 		this.text = text;
 		this.font = font;
 	}

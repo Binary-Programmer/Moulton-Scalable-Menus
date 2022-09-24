@@ -41,7 +41,7 @@ public class PathFinderPopup extends Popup {
 			goUpDirectory();
 			return true;
 		});
-		addTouchResponsiveComponent(pathUp);
+		addTouchComponent(pathUp);
 		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",font,Color.WHITE);
 		fileName.setOutline(true);
 		fileName.setHint("file name");

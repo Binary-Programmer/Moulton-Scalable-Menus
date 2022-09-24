@@ -7,6 +7,7 @@ import java.security.InvalidParameterException;
 import java.util.Collection;
 
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A subclass of {@link VirtualPanel}. Built to hold a variable number of elements in the list. These elements
@@ -19,7 +20,7 @@ import moulton.scalable.utils.MenuComponent;
  */
 public class ListPanel extends VirtualPanel {
 	/**The height of each row specified by an algebraic expression.*/
-	protected String rowHeight;
+	protected Expression rowHeight;
 
 	/**
 	 * @param rowHeight the height of each row, specified as an algebraic expression of a menu component
@@ -34,7 +35,7 @@ public class ListPanel extends VirtualPanel {
 	public ListPanel(String rowHeight, Panel parent, String x, String y, String shownWidth, String shownHeight,
 			String fullWidth, Color color) {
 		super(parent, x, y, shownWidth, shownHeight, fullWidth, "0", color);
-		this.rowHeight = rowHeight;
+		this.rowHeight = solve.parse(rowHeight, false, false);
 	}
 	/**
 	 * @param rowHeight the height of each row, specified as an algebraic expression of a menu component
@@ -47,7 +48,7 @@ public class ListPanel extends VirtualPanel {
 	 */
 	public ListPanel(String rowHeight, Panel parent, int x, int y, String fullWidth, Color color) {
 		super(parent, x, y, fullWidth, "0", color);
-		this.rowHeight = rowHeight;
+		this.rowHeight = solve.parse(rowHeight, false, false);
 	}
 
 	/**

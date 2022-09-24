@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import moulton.scalable.clickables.Clickable;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
+import moulton.scalable.utils.MenuSolver.Expression;
 import moulton.scalable.containers.MenuManager;
 
 /**
@@ -15,8 +16,8 @@ import moulton.scalable.containers.MenuManager;
  * @author Matthew Moulton
  */
 public class ScrollBar extends Clickable implements DraggableComponent {
-	/**The string expressions to define the dimensions of the scroll bar on the parent panel.*/
-	protected String width, height;
+	/**The expressions to define the dimensions of the scroll bar on the parent panel.*/
+	protected Expression width, height;
 	/**Most recent render values. Depend on whether the scroll bar is vertical as to whether these values are for y or x. */
 	private int lastLength;
 
@@ -89,8 +90,8 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 */
 	public ScrollBar(boolean vertical, Panel parent, String x, String y, String w, String h,  Color colorButton) {
 		super("",parent, x, y);
-		width = w;
-		height = h;
+		width = solve.parse(w, true, false);
+		height = solve.parse(h, true, false);
 		this.vertical = vertical;
 		this.colorButton = colorButton;
 		color = colorButton.brighter();

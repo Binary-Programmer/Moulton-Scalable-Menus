@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A menu component designed to display an {@link Animation}. The component can either keep the ratio of width
@@ -19,7 +20,7 @@ public class AnimatedView extends MenuComponent {
 	 * @see #getAnimation()*/
 	protected Animation animation = null;
 	/**The expression dimensions of the component*/
-	protected String width, height;
+	protected Expression width, height;
 	/**Whether or not the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
 	 * @see #setMaintainAspectRatio(boolean)
 	 * @see #isMaintainAspectRatio()*/
@@ -40,8 +41,8 @@ public class AnimatedView extends MenuComponent {
 	public AnimatedView(Animation animation, Panel parent, String x, String y, String w, String h) {
 		super(parent, x, y);
 		this.animation = animation;
-		this.width = w;
-		this.height = h;
+		this.width = solve.parse(w, true, false);
+		this.height = solve.parse(h, true, false);
 	}
 	/**
 	 * @param animation The animation that will be drawn onto the coordinates provided
