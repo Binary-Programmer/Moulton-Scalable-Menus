@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.containers.Panel;
-import moulton.scalable.utils.ExpressionSolver;
+import moulton.scalable.utils.MenuSolver;
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Container;
 
@@ -150,7 +150,7 @@ public class Popup {
 	 * @param height the height in pixels of the menu
 	 */
 	public void render(Graphics g, int width, int height) {
-		ExpressionSolver solver = new ExpressionSolver(width, height);
+		MenuSolver solver = new MenuSolver(width, height);
 		
 		int x = 0, y = 0, w = 0, h = 0;
 		if(this.width != null && !this.width.isEmpty())

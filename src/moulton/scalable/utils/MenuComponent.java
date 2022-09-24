@@ -33,6 +33,8 @@ public abstract class MenuComponent {
 	/**The coordinates of this component on {@link #parent}'s grid. Null when this component is not using the panel
 	 * grid functionality, but rather uses the free-form where the coordinates are derived from {@link #x} and {@link #y}.  */
 	protected Point gridPoint = null;
+	/**The expression solver used to evaluate coordinates and sizes of components.*/
+	protected MenuSolver solve = new MenuSolver();
 	
 	/**
 	 * Sets the parent panel for this component. Since the component has no String x and y coordinates, it must be reliant upon the panel for determining that information
@@ -76,17 +78,17 @@ public abstract class MenuComponent {
 	 */
 	public abstract void render(Graphics g, int xx, int yy, int ww, int hh);
 	
-	/**
-	 * Determines the integer value of a coordinate based off the string code by utilizing {@link ExpressionSolver}.
-	 * @param code the String to get the format from
-	 * @param contWidth the width of the container screen: used in calculations
-	 * @param contHeight the height of the container screen: used in calculations
-	 * @return the integer value associated with the code
-	 */
-	protected int solveString(String code, int contWidth, int contHeight) {
-		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
-		return (int)solver.solveString(code);
-	}
+//	/**
+//	 * Determines the integer value of a coordinate based off the string code by utilizing {@link ExpressionSolver}.
+//	 * @param code the String to get the format from
+//	 * @param contWidth the width of the container screen: used in calculations
+//	 * @param contHeight the height of the container screen: used in calculations
+//	 * @return the integer value associated with the code
+//	 */
+//	protected int solveString(String code, int contWidth, int contHeight) {
+//		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
+//		return (int)solver.String(code);
+//	}
 	
 	/**
 	 * Returns the grid location of this component if gridded.
@@ -209,7 +211,7 @@ public abstract class MenuComponent {
 	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
 	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.
 	 * <p>
-	 * In addition to the standard variables provided by {@link ExpressionSolver}, rectangular components allow
+	 * In addition to the standard variables provided by {@link MenuSolver}, rectangular components allow
 	 * for more customization. First of all, there are four new variables to use:
 	 * <pre>CENTERX CENTERY WIDTH HEIGHT</pre>
 	 * Instead of referring to the available canvas space, these capital variants refer to the component being
@@ -238,7 +240,7 @@ public abstract class MenuComponent {
 		int x, y, w, h;
 		if(getGridLocation()==null) {
 			//Set up the solver and the variables we save to
-			ExpressionSolver solve = new ExpressionSolver(ww, hh);
+			solve.setMenuValues(ww, hh);
 			double wD, hD;
 			
 			boolean qMarkWidth = false;
