@@ -10,8 +10,9 @@ import moulton.scalable.utils.MenuComponent;
 import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * A menu component designed to display an {@link Animation}. The component can either keep the ratio of width
- * to height for the animation or stretch to fill the space. This is determined by {@link #maintainAspectRatio}.
+ * A menu component designed to display an {@link Animation}. The component can either keep the
+ * ratio of width to height for the animation or stretch to fill the space. This is determined by
+ * {@link #maintainAspectRatio}.
  * @author Matthew Moulton
  */
 public class AnimatedView extends MenuComponent {
@@ -21,7 +22,8 @@ public class AnimatedView extends MenuComponent {
 	protected Animation animation = null;
 	/**The expression dimensions of the component*/
 	protected Expression width, height;
-	/**Whether or not the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
+	/**Whether or not the view should draw the image in the same ratio as given or should stretch
+	 * it to fill the area of the view.
 	 * @see #setMaintainAspectRatio(boolean)
 	 * @see #isMaintainAspectRatio()*/
 	protected boolean maintainAspectRatio = true;
@@ -38,7 +40,8 @@ public class AnimatedView extends MenuComponent {
 	 * @param w the width of the component, given in menu component value format
 	 * @param h the height of the component, given in menu component value format
 	 */
-	public AnimatedView(Animation animation, Panel parent, String x, String y, String w, String h) {
+	public AnimatedView(Animation animation, Panel parent,
+			String x, String y, String w, String h) {
 		super(parent, x, y);
 		this.animation = animation;
 		this.width = solve.parse(w, true, false);
@@ -101,7 +104,8 @@ public class AnimatedView extends MenuComponent {
 	}
 	
 	/**
-	 * Sets whether this view should keep the aspect ratio of the {@link Animation} that it displays.
+	 * Sets whether this view should keep the aspect ratio of the {@link Animation} that it
+	 * displays.
 	 * @param mar sets the value of {@link #maintainAspectRatio}
 	 */
 	public void setMaintainAspectRatio(boolean mar){

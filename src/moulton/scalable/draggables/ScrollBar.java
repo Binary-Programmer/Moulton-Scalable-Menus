@@ -11,32 +11,36 @@ import moulton.scalable.utils.MenuSolver.Expression;
 import moulton.scalable.containers.MenuManager;
 
 /**
- * The scroll bar class is a Draggable component that handles mouse draggging and notifies a component to be
- * scrolled. That component should implement {@link ScrollableComponent}.
+ * The scroll bar class is a Draggable component that handles mouse draggging and notifies a
+ * component to be scrolled. That component should implement {@link ScrollableComponent}.
  * @author Matthew Moulton
  */
 public class ScrollBar extends Clickable implements DraggableComponent {
 	/**The expressions to define the dimensions of the scroll bar on the parent panel.*/
 	protected Expression width, height;
-	/**Most recent render values. Depend on whether the scroll bar is vertical as to whether these values are for y or x. */
+	/**Most recent render values. Depend on whether the scroll bar is vertical as to whether these
+	 * values are for y or x. */
 	private int lastLength;
 
 	/**Whether the scroll bar should render as a vertical:true or a horizontal:false. */
 	protected boolean vertical = true;
-	/**Determines the direction of +/- offset for the scroll bar. In a vertical plane, increasing offset will be
-	 * moving the bar down. In a horizontal plane, increasing offset will be moving the bar right. If <b>inverseRender</b>
-	 * is set to true, increasing offset vertically will be up and increasing offset horizonatally will be left.
+	/**Determines the direction of +/- offset for the scroll bar. In a vertical plane, increasing
+	 * offset will be moving the bar down. In a horizontal plane, increasing offset will be moving
+	 * the bar right. If <b>inverseRender</b> is set to true, increasing offset vertically will be
+	 * up and increasing offset horizonatally will be left.
 	 * @see #renderInverse(boolean)*/
 	protected boolean inverseRender = false;
 
 	/**The buttons to click as opposed to dragging the scroll bar. This class does not handle them!
 	 * It only changes them to editable/uneditable when necessary. */
 	protected RadioButton scrollNeg, scrollPos;
-	/**Defines the number of offsets the bar will shift for each mouse scroll that occurs. Defaults to 1.
+	/**Defines the number of offsets the bar will shift for each mouse scroll that occurs. Defaults
+	 * to 1.
 	 * @see #getScrollRate()
 	 * @see #setScrollRate(int)*/
 	protected int scrollRate = 1;
-	/**The offset of the clickable portion of the bar. Possible values range from 0 to {@link #totalOffs}-{@link #barOffs}.
+	/**The offset of the clickable portion of the bar. Possible values range from 0 to {@link
+	 * #totalOffs}-{@link #barOffs}.
 	 * @see #getOffset()
 	 * @see #setOffset(int)*/
 	protected int offset = 0;
@@ -62,11 +66,12 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 
 	/**
 	 * Creates a scroll bar that will reside on the grid in the parent panel.
-	 * @param vertical The orientation for this scroll bar. True is vertical and false is horizontal
+	 * @param vertical The orientation for this scroll bar. True = vertical, false = horizontal
 	 * @param parent the parent panel for this component.
 	 * @param x the x coordinate of this clickable in its parent's grid
 	 * @param y the y coordinate of this clickable in its parent's grid
-	 * @param colorButton the color of the button this bar will have. By default, the background is one shade lighter,
+	 * @param colorButton the color of the button this bar will have. By default, the background is
+	 * one shade lighter,
 	 * and the button turns one shade darker when pressed.
 	 */
 	public ScrollBar(boolean vertical, Panel parent, int x, int y,  Color colorButton) {
@@ -81,14 +86,15 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * Creates a scroll bar that will reside on the panel in a free-floating manner.
 	 * @param vertical The orientation for this scroll bar. True is vertical and false is horizontal
 	 * @param parent the parent panel for this component.
-	 * @param x the string equation dictating where on the parent panel this component should be rendered.
-	 * @param y the string equation dictating where on the parent panel this component should be rendered.
+	 * @param x expression defining the component's horizontal location on its parent panel.
+	 * @param y expression defining the component's vertical location on its parent panel.
 	 * @param w the string equation for the width of the bar on the parent panel.
 	 * @param h the string equation for the height of the bar on the parent panel.
-	 * @param colorButton the color of the button this bar will have. By default, the background is one shade lighter,
-	 * and the button turns one shade darker when pressed.
+	 * @param colorButton the color of the button this bar will have. By default, the background is
+	 * one shade lighter, and the button turns one shade darker when pressed.
 	 */
-	public ScrollBar(boolean vertical, Panel parent, String x, String y, String w, String h,  Color colorButton) {
+	public ScrollBar(boolean vertical, Panel parent, String x, String y, String w, String h,
+			Color colorButton) {
 		super("",parent, x, y);
 		width = solve.parse(w, true, false);
 		height = solve.parse(h, true, false);
@@ -166,10 +172,10 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 
 	/**
-	 * Sets the buttons to be linked to this scroll bar. The scroll bar will set these to editable or uneditable when necessary,
-	 * but will not provide any other function.
-	 * @param scrollNeg a button that when pressed, should make this bar scroll in the negative direction
-	 * @param scrollPos a button that when pressed, should make this bar scroll in the positive direction
+	 * Sets the buttons to be linked to this scroll bar. The scroll bar will set these to editable
+	 * or uneditable when necessary, but will not provide any other function.
+	 * @param scrollNeg a button which moves the attached scroll bar in the negative direction.
+	 * @param scrollPos a button which moves the attached scroll bar in the positive direction.
 	 */
 	public void setScrollButtons(RadioButton scrollNeg, RadioButton scrollPos) {
 		this.scrollNeg = scrollNeg;
@@ -178,9 +184,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	/**
-	 * Sets all of the offsets at once. Used for an initialization or change of state. Sets them in the order
-	 * that they are listed for the sake of logical cohesion, otherwise offset may temporarily be an at illegal
-	 * value if updated before total and bar offsets.
+	 * Sets all of the offsets at once. Used for an initialization or change of state. Sets them in
+	 * the order that they are listed for the sake of logical cohesion, otherwise offset may
+	 * temporarily be an at illegal value if updated before total and bar offsets.
 	 * @param totalOffs to replace {@link #totalOffs}
 	 * @param barOffs to replace {@link #barOffs}
 	 * @param offset to replace {@link #offset}
@@ -196,8 +202,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 
 	/**
-	 * Returns the offset of the scroll bar. The offset is the value that determines how far the bar is on the line. The minimum offset value is
-	 * 0 and the maximum is {@link #totalOffs}-{@link #barOffs}.
+	 * Returns the offset of the scroll bar. The offset is the value that determines how far the
+	 * bar is on the line. The minimum offset value is 0 and the maximum is
+	 * {@link #totalOffs} - {@link #barOffs}.
 	 * @return {@link #offset}
 	 */
 	public int getOffset() {
@@ -205,8 +212,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 
 	/**
-	 * Sets the offset of the scroll bar. If the offset provided is out of range, the closest value to provided will be used.
-	 * Additionally, this will update the editability of {@link #scrollNeg} and {@link #scrollPos} if they are not null.
+	 * Sets the offset of the scroll bar. If the offset provided is out of range, the closest value
+	 * to provided will be used. Additionally, this will update the editability of
+	 * {@link #scrollNeg} and {@link #scrollPos} if they are not null.
 	 * @param offset the new value for {@link #offset}
 	 */
 	public void setOffset(int offset) {
@@ -243,18 +251,22 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	
 	/**
 	 * Sets the total number of offsets for the scroll bar like {@link #setTotalOffs(int)}. <p>
-	 * The {@link #offset} may change based on the new value for {@link #totalOffs} to have it keep its place.
-	 * If <code>offset</code> is at 0 when this method is called, it stay at zero. However, if it is any higher
-	 * and <code>pullPositive</code> is true, offset will be shifted by the amount that {@link #totalOffs}
-	 * changes. <p>
-	 * Regardless, the editability of {@link #scrollNeg} and {@link #scrollPos} may change due to this method.
+	 * The {@link #offset} may change based on the new value for {@link #totalOffs} to have it keep
+	 * its place. If <code>offset</code> is at 0 when this method is called, it stay at zero.
+	 * However, if it is any higher and <code>pullPositive</code> is true, offset will be shifted
+	 * by the amount that {@link #totalOffs} changes.
+	 * <p>
+	 * Regardless, the editability of {@link #scrollNeg} and {@link #scrollPos} may change due to
+	 * this method.
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
-	 * @param pullPositive whether it is logical to shift based on a total offsets change. If data is being
-	 * added at the minimum value of offset side for this bar, then the bar should resultantly pull positively
-	 * to compensate. For example, if this scroll bar is keeping track of the user's index in a list, and a
-	 * new entry is added to the front of that list, then what was once at index 0 shifts to index 1, what was
-	 * once at index 1 goes to index 2, etc. The offset will thus increase to match that change.<br>
-	 * However, if data is being added to the maximum value side, then no offset change needs to occur.
+	 * @param pullPositive whether it is logical to shift based on a total offsets change. If data
+	 * is being added at the minimum value of offset side for this bar, then the bar should
+	 * resultantly pull positively to compensate. For example, if this scroll bar is keeping track
+	 * of the user's index in a list, and a new entry is added to the front of that list, then what
+	 * was once at index 0 shifts to index 1, what was once at index 1 goes to index 2, etc. The
+	 * offset will thus increase to match that change.<br>
+	 * However, if data is being added to the maximum value side, then no offset change needs to
+	 * occur.
 	 */
 	public void setTotalOffs(int total, boolean pullPositive) {
 		if(total > -1) {
@@ -295,9 +307,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	
 	/**
 	 * Verifies that this scroll bar is enabled then updates the attached scroll bars
-	 * ({@link #scrollNeg} and {@link #scrollPos}) as necessary. Called by {@link #setBarOffs(int)},
-	 * {@link #setTotalOffs(int)}, {@link #setTotalOffs(int, boolean)}, {@link #setOffset(int)}, and
-	 * {@link #setOffsets(int, int, int)}.
+	 * ({@link #scrollNeg} and {@link #scrollPos}) as necessary. Called by {@link
+	 * #setBarOffs(int)}, {@link #setTotalOffs(int)}, {@link #setTotalOffs(int, boolean)}, {@link
+	 * #setOffset(int)}, and {@link #setOffsets(int, int, int)}.
 	 */
 	protected void updateScrollButtons() {
 		boolean inUse = isEnabled() && barOffs<totalOffs;
@@ -314,15 +326,17 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			return change;
 		}
 		int bool = inverseRender?-1:1;
-		//perform the calculations, using lastLength as the reference (for calculating how many pixels cause a shift)
+		//perform the calculations, using lastLength as the reference (for calculating how many
+		// pixels cause a shift)
 		double dragged = (vertical)? deltaY:deltaX; //the shift in direction scroll bar measures
 		int dir = (dragged>0)? 1:-1;
 		dragged *= dir; //make it positive
 		
-		//an interval is lastLength/totalOffs. Therefore, the amount dragged/interval = how many possible shifts
+		//an interval is lastLength/totalOffs. Therefore, the amount dragged/interval = how many
+		// possible shifts
 		int shifts = (int)((dragged*totalOffs)/lastLength);
 		if(shifts!=0) {
-			//set the new offset, also check for improper value and reset connected button editability
+			//Set the new offset, also checks improper value and resets button editability
 			int tempOffs = offset;
 			setOffset(offset + shifts*bool*dir);
 			//the shifts that actually occurred here
@@ -334,13 +348,14 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	/**
-	 * Sets whether this button on the scroll bar is touched. If the touched color isn't set, then an outline
-	 * toggle will be used to show touch. Therefore, setting the touch here may trigger the toggle.
+	 * Sets whether this button on the scroll bar is touched. If the touched color isn't set, then
+	 * an outline toggle will be used to show touch. Therefore, setting the touch here may trigger
+	 * the toggle.
 	 */
 	@Override
 	public void setTouched(boolean touched) {
 		//if the touch state has changed
-		if(touched != this.touched && colorTouched == null) { //if the outline effect should be used
+		if(touched != this.touched && colorTouched == null) { //if outline effect should be used
 			setOutline(!getOutline());
 		}
 		this.touched = touched;
@@ -352,9 +367,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
-			/* if the button is touched presently and the new color is not null, that means that the component will
-			 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
-			 * to the original state.
+			/* if the button is touched presently and the new color is not null, that means that
+			 * the component will show touch through the new color instead of toggling outline.
+			 * Therefore, the outline should go back to the original state.
 			 */
 			if(touched)
 				setOutline(!getOutline());
@@ -369,9 +384,10 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	/**
-	 * Called in rendering. Gives the fill color of the scroll bar's button. If the scroll bar is not editable,
-	 * {@link #color} is used. If the button is clicked, {@link #colorDark} is used. If the button is touched and
-	 * has {@link #colorTouched} set, that is used. Otherwise, the normal {@link #colorButton} is returned.
+	 * Called in rendering. Gives the fill color of the scroll bar's button. If the scroll bar is
+	 * not editable, {@link #color} is used. If the button is clicked, {@link #colorDark} is used.
+	 * If the button is touched and has {@link #colorTouched} set, that is used. Otherwise, the
+	 * normal {@link #colorButton} is returned.
 	 * @return the applicable color for rendering the fill of the scroll bar's button
 	 */
 	public Color getFillColor() {
@@ -386,16 +402,17 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	}
 	
 	/**
-	 * Sets the number of offsets that this scroll bar should be shifted for each unit of mouse scrolling applied.
+	 * Sets the number of offsets that this scroll bar should be shifted for each unit of mouse
+	 * scrolling applied.
 	 * @param offsetRate sets the value of {@link #scrollRate}
 	 */
 	public void setScrollRate(int offsetRate) {
 		scrollRate = offsetRate;
 	}
 	/**
-	 * Returns the number of offsets that this scroll bar should be shifted for each unit of mouse scrolling. Called
-	 * by {@link MenuManager#mouseScrolled(int, int, int)} to determine how much the {@link #offset} of this bar
-	 * should be altered.
+	 * Returns the number of offsets that this scroll bar should be shifted for each unit of mouse
+	 * scrolling. Called by {@link MenuManager#mouseScrolled(int, int, int)} to determine how much
+	 * the {@link #offset} of this bar should be altered.
 	 * @return the value of {@link #scrollRate}
 	 */
 	public int getScrollRate() {

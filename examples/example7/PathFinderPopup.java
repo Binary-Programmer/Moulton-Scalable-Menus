@@ -7,12 +7,12 @@ import java.io.File;
 import moulton.scalable.clickables.Button;
 import moulton.scalable.containers.ListPanel;
 import moulton.scalable.draggables.ScrollBar;
-import moulton.scalable.popups.Popup;
+import moulton.scalable.popups.PopUp;
 import moulton.scalable.texts.Alignment;
 import moulton.scalable.texts.Caption;
 import moulton.scalable.texts.TextBox;
 
-public class PathFinderPopup extends Popup {
+public class PathFinderPopup extends PopUp {
 	private TextBox pathDisplay;
 	private TextBox fileName;
 	private Button okButton;

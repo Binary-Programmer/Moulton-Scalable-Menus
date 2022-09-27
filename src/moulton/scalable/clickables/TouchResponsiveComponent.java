@@ -4,9 +4,9 @@ import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Container;
 
 /**
- * Interface for components that should be responsive to being touched, meaning having the mouse cursor on part of
- * them that would in most cases be clickable. A notable class that implements this is {@link Clickable} and thus
- * all subclasses of buttons and text boxes.
+ * Interface for components that should be responsive to being touched, meaning having the mouse
+ * cursor on part of them that would in most cases be clickable. A notable class that implements
+ * this is {@link Clickable} and thus all subclasses of buttons and text boxes.
  * @author Matthew Moulton
  */
 public interface TouchResponsiveComponent {
@@ -20,10 +20,10 @@ public interface TouchResponsiveComponent {
 	public boolean isTouchedAt(int x, int y);
 	
 	/**
-	 * When the {@link MenuManager} is processing mouse movement, the results of {@link #isTouchedAt(int, int)} for
-	 * the coordinates of the mouse will be passed through this method to update whether this component is touched.
-	 * Therefore, this method is responsible for informing the component whether it is touched, whatever effect that
-	 * may have.
+	 * When the {@link MenuManager} is processing mouse movement, the results of {@link
+	 * #isTouchedAt(int, int)} for the coordinates of the mouse will be passed through this method
+	 * to update whether this component is touched. Therefore, this method is responsible for
+	 * informing the component whether it is touched, whatever effect that may have.
 	 * @param touched update as to whether the component is touched by the mouse
 	 */
 	public void setTouched(boolean touched);
@@ -35,9 +35,10 @@ public interface TouchResponsiveComponent {
 	public boolean isTouched();
 	
 	/**
-	 * Touch Responsive Components may optionally provide an EventAction that should be executed when the
-	 * component is first touched and when it stops being touched. At the time the EventAction is executed,
-	 * the component should know its new touch status through {@link #setTouched(boolean)}.
+	 * Touch Responsive Components may optionally provide an EventAction that should be executed
+	 * when the component is first touched and when it stops being touched. At the time the
+	 * EventAction is executed, the component should know its new touch status through {@link
+	 * #setTouched(boolean)}.
 	 * @return the event action to execute. null is acceptable.
 	 */
 	public EventAction getTouchAction();

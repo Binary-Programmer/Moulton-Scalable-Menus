@@ -18,7 +18,7 @@ import moulton.scalable.containers.VirtualPanel;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.geometrics.PolygonalButton;
 import moulton.scalable.geometrics.ShapeResources;
-import moulton.scalable.popups.NotificationPopup;
+import moulton.scalable.popups.NotificationPopUp;
 import moulton.scalable.texts.StaticTextBox;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.visuals.View;
@@ -84,9 +84,9 @@ public class Manager2 extends MenuManager{
 		if(c.getId().equals("button")) {
 			box.setEnabled(!box.isEnabled());
 		}else if(c.getId().equals("invisible")) {
-			setPopup(new NotificationPopup("You pressed the invisible button!", null, new Font("Arial",Font.PLAIN,12), "ok", this));
+			setPopUp(new NotificationPopUp("You pressed the invisible button!", null, new Font("Arial",Font.PLAIN,12), "ok", this));
 		}else if(c.getId().equals("ok")) {
-			setPopup(null);
+			setPopUp(null);
 		}else if(c.getId().equals("accept")) {
 			//the form was accepted
 			String name = nameField.getMessage();

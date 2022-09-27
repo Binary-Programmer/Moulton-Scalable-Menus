@@ -7,8 +7,8 @@ import java.util.LinkedList;
  * @author Matthew Moulton
  */
 public class RadioGroup {
-	/**The radio buttons in this group. Add buttons with {@link #addButton(RadioButton)} and if necessary, remove
-	 * them with {@link #removeButton(RadioButton)}.*/
+	/**The radio buttons in this group. Add buttons with {@link #addButton(RadioButton)} and if
+	 * necessary, remove them with {@link #removeButton(RadioButton)}.*/
 	protected LinkedList<RadioButton> group = new LinkedList<RadioButton>();
 	/**The radio button that is selected. Only one at a time.
 	 * @see #getSelected()}
@@ -33,7 +33,8 @@ public class RadioGroup {
 	}
 	
 	/**
-	 * Adds the button provided to the group if not already added. Updates the button's group to this.
+	 * Adds the button provided to the group if not already added. Updates the button's group to
+	 * this.
 	 * @param rb the button to add
 	 * @see #removeButton(RadioButton)
 	 */
@@ -74,7 +75,8 @@ public class RadioGroup {
 	}
 	
 	/**
-	 * The radio button in this group that is currently selected. Only one button is allowed to be selected at a time.
+	 * The radio button in this group that is currently selected. Only one button is allowed to be
+	 * selected at a time.
 	 * @return the presently selected button in the group
 	 */
 	public RadioButton getSelected(){

@@ -40,7 +40,7 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param alignment left, center, or right at the x-value
 	 */
-	public Caption(String text, Panel parent, String x, String y, Font font, Alignment alignment){
+	public Caption(String text, Panel parent, String x, String y, Font font, Alignment alignment) {
 		super(parent,x,y);
 		this.text = text;
 		this.font = font;
@@ -54,7 +54,7 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param width the text will center and draw from x to x+width
 	 */
-	public Caption(String text, Panel parent, String x, String y, Font font, String width){
+	public Caption(String text, Panel parent, String x, String y, Font font, String width) {
 		super(parent,x,y);
 		this.text = text;
 		this.font = font;
@@ -69,7 +69,7 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param alignment left, center, or right at the x-value
 	 */
-	public Caption(String text, Panel parent, int x, int y, Font font, Alignment alignment){
+	public Caption(String text, Panel parent, int x, int y, Font font, Alignment alignment) {
 		super(parent, x, y);
 		this.text = text;
 		this.font = font;
@@ -84,7 +84,8 @@ public class Caption extends MenuComponent{
 		
 		//draw the text here
 		if(textResize())
-			g.setFont(new Font(font.getFontName(), font.getStyle(), getTextVertResize(font.getSize())));
+			g.setFont(new Font(font.getFontName(), font.getStyle(),
+					getTextVertResize(font.getSize())));
 		else
 			g.setFont(font);
 		g.setColor(textColor);
@@ -119,7 +120,8 @@ public class Caption extends MenuComponent{
 						w = x2-x;
 					}else
 						w = solveString(this.centerWidth, ww, hh);
-				}else if (parent==null) //if panel is not null w was already defined in earlier panel check
+				}else if (parent==null) 
+					//if panel is not null w was already defined in earlier panel check
 					w = solveString(this.centerWidth,ww,hh);
 				//redefine center by using x and endBound as opposite edges to center by
 				x += w/2;
@@ -131,7 +133,7 @@ public class Caption extends MenuComponent{
 			}
 			break;
 		case RIGHT_ALIGNMENT:
-			//if there is a panel, w was already specified and the x pos needs to be moved over to accommodate
+			//if there is a panel, w was already specified and the x pos needs to be moved over
 			if(parent != null)
 				x += w;
 			

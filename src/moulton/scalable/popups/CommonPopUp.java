@@ -19,10 +19,10 @@ import moulton.scalable.texts.LineBreak;
  * pop up with a title, exit button, and main text.
  * <p>
  * For more extensive functionality, it is recommended to use or subclass
- * {@link NotificationPopup} or {@link ConfirmationPopup}.
+ * {@link NotificationPopUp} or {@link ConfirmationPopUp}.
  * @author Matthew Moulton
  */
-public abstract class CommonPopup extends Popup {
+public abstract class CommonPopUp extends PopUp {
 
 	/**
 	 * Creates a common pop up centered in the menu screen with an x in the top right corner.
@@ -30,9 +30,10 @@ public abstract class CommonPopup extends Popup {
 	 * @param title the title of the pop up. Set to null for no title
 	 * @param font the font of the text on the pop up
 	 * @param xId the ID that should be used for the exit button
-	 * @param manager the menu manager that contains this pop up. This is used to exit out on clicking x.
+	 * @param manager the menu manager that contains this pop up. This is used to exit out on
+	 * clicking x.
 	 */
-	public CommonPopup(String text, String title, Font font, String xId, MenuManager manager) {
+	public CommonPopUp(String text, String title, Font font, String xId, MenuManager manager) {
 		super(null, null, Color.WHITE);
 		init(text, title, font, true, xId, manager);
 	}
@@ -42,7 +43,7 @@ public abstract class CommonPopup extends Popup {
 	 * @param title the title of the pop up. Set to null for no title
 	 * @param font the font of the text on the pop up
 	 */
-	public CommonPopup(String text, String title, Font font) {
+	public CommonPopUp(String text, String title, Font font) {
 		super(null, null, Color.WHITE);
 		init(text, title, font, false, null, null);
 	}
@@ -54,9 +55,11 @@ public abstract class CommonPopup extends Popup {
 	 * @param x the x location of the pop up
 	 * @param y the y location of the pop up
 	 * @param xId the ID that should be used for the exit button
-	 * @param manager the menu manager that contains this pop up. This is used to exit out on clicking x.
+	 * @param manager the menu manager that contains this pop up. This is used to exit out on
+	 * clicking x.
 	 */
-	public CommonPopup(String text, String title, Font font, String x, String y, String xId, MenuManager manager) {
+	public CommonPopUp(String text, String title, Font font, String x, String y, String xId,
+			MenuManager manager) {
 		super(x, y, null, null, Color.WHITE);
 		init(text, title, font, true, xId, manager);
 	}
@@ -68,7 +71,7 @@ public abstract class CommonPopup extends Popup {
 	 * @param x the x location of the pop up
 	 * @param y the y location of the pop up
 	 */
-	public CommonPopup(String text, String title, Font font, String x, String y) {
+	public CommonPopUp(String text, String title, Font font, String x, String y) {
 		super(x, y, null, null, Color.WHITE);
 		init(text, title, font, true, null, null);
 	}
@@ -80,13 +83,16 @@ public abstract class CommonPopup extends Popup {
 	 * 
 	 * @param text the text displayed in the body of the pop up
 	 * @param xId the ID that should be used for the exit button
-	 * @param manager the menu manager that contains this pop up. This is used to exit out on clicking x.
+	 * @param manager the menu manager that contains this pop up. This is used to exit out on
+	 * clicking x.
 	 * @param title the title of the pop up. Set to null for no title
 	 * @param font the font of the text on the pop up
 	 * @param font the font of the text on the pop up
-	 * @param exitButton whether an x button in the top right corner should be included in the pop up
+	 * @param exitButton whether an x button in the top right corner should be included in the
+	 * pop up
 	 */
-	private void init(String text, String title, Font font, boolean exitButton, String xId, MenuManager manager) {
+	private void init(String text, String title, Font font, boolean exitButton, String xId,
+			MenuManager manager) {
 		base.setOutline(true);
 		blanketBackground = new Color(0x33DDDDDD, true);
 		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
@@ -103,10 +109,11 @@ public abstract class CommonPopup extends Popup {
 		if(exitButton) {
 			final MenuManager man = manager;
 			final String xxId = xId;
-			Button exit = new Button(xId, "X", base, "width-"+(fm.stringWidth("X")*2), "0", "?width", ""+doubleHeight, font, Color.RED);
+			Button exit = new Button(xId, "X", base, "width-"+(fm.stringWidth("X")*2), "0",
+					"?width", ""+doubleHeight, font, Color.RED);
 			exit.setClickAction(new EventAction() {
 				@Override public boolean onEvent() {
-					man.setPopup(null);
+					man.setPopUp(null);
 					return xxId != null;
 				}
 			});
@@ -152,8 +159,11 @@ public abstract class CommonPopup extends Popup {
 		}
 		new Caption(text, base, "0", ""+(doubleHeight*(1 + (title==null?0:1))), font, "width");
 		
-		this.width = ""+(textWidth+doubleHeight); //doubleHeight serves as padding
-		this.height = ""+(getPopupExtraHeight(fontHeight) + doubleHeight*(1 + (title==null?0:1)) + linesOfText*fontHeight);
+		//doubleHeight serves as padding
+		this.width = solve.parse(""+(textWidth+doubleHeight), false, false);
+		String heightExpr = ""+(getPopupExtraHeight(fontHeight) +
+				doubleHeight*(1 + (title==null?0:1)) + linesOfText*fontHeight);
+		this.height = solve.parse(heightExpr, false, false);
 	}
 	
 	/**

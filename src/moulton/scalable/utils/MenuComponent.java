@@ -64,8 +64,8 @@ public abstract class MenuComponent {
 		this.parent = parent;
 		if(parent != null)
 			parent.addFreeComponent(this);
-		this.x = solve.parse(x, false, true);
-		this.y = solve.parse(y, false, true);
+		this.x = x == null? null : solve.parse(x, false, true);
+		this.y = y == null? null : solve.parse(y, false, true);
 	}
 	
 	/**Draws on the graphics object to represent this component visually. When this method is called,
@@ -78,18 +78,6 @@ public abstract class MenuComponent {
 	 * @param hh the height on the graphics image this component is given
 	 */
 	public abstract void render(Graphics g, int xx, int yy, int ww, int hh);
-	
-//	/**
-//	 * Determines the integer value of a coordinate based off the string code by utilizing {@link ExpressionSolver}.
-//	 * @param code the String to get the format from
-//	 * @param contWidth the width of the container screen: used in calculations
-//	 * @param contHeight the height of the container screen: used in calculations
-//	 * @return the integer value associated with the code
-//	 */
-//	protected int solveString(String code, int contWidth, int contHeight) {
-//		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
-//		return (int)solver.String(code);
-//	}
 	
 	/**
 	 * Returns the grid location of this component if gridded.
@@ -233,21 +221,21 @@ public abstract class MenuComponent {
 			//try to solve width and height first
 			if (width.prefaced) {
 				//solve for the ending point
-				wD = xx + (int)(solve.eval(width));
+				wD = xx + solve.eval(width);
 				//deduce the width later
 				qMarkWidth = true;
 			}else
-				wD = (int)solve.eval(width);
+				wD = solve.eval(width);
 			
 			if (height.prefaced) {
-				hD = yy + (int)(solve.eval(height));
+				hD = yy + solve.eval(height);
 				qMarkHeight = true;				
 			} else
-				hD = (int)solve.eval(height);
+				hD = solve.eval(height);
 			
 			// x and y may use extended variables:
-			x = xx + (int)(solve.evalExtended(this.x, wD, hD));
-			y = yy + (int)(solve.evalExtended(this.y, wD, hD));
+			x = xx + solve.evalExtended(this.x, wD, hD);
+			y = yy + solve.evalExtended(this.y, wD, hD);
 			
 			//Now we must return to process any ?
 			if(qMarkWidth)

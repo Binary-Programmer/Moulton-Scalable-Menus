@@ -19,7 +19,7 @@ import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
-import moulton.scalable.popups.Popup;
+import moulton.scalable.popups.PopUp;
 import moulton.scalable.texts.HotKeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
@@ -50,8 +50,8 @@ public abstract class MenuManager {
 	 * #mousePressed}
 	 * and {@link #mouseScrolled(int, int, int)}.
 	 * @see #getPopup()
-	 * @see #setPopup(Popup)*/
-	protected Popup popup = null;
+	 * @see #setPopUp(PopUp)*/
+	protected PopUp popup = null;
 	/**The container for the menus to manage.*/
 	protected Container cont;
 	/**The Clickable that was last clicked. Clickables are only considered activated once the user
@@ -449,10 +449,10 @@ public abstract class MenuManager {
 	
 	/**
 	 * Gets the current {@link #popup} for this menu. Only one popup can be active at a time.
-	 * @see #setPopup(Popup)
+	 * @see #setPopUp(PopUp)
 	 * @return the current popup
 	 */
-	public Popup getPopup() {
+	public PopUp getPopup() {
 		return popup;
 	}
 	
@@ -461,7 +461,7 @@ public abstract class MenuManager {
 	 * @see #getPopup()
 	 * @param pop the popup to be set for this menu manager.
 	 */
-	public void setPopup(Popup pop) {
+	public void setPopUp(PopUp pop) {
 		this.popup = pop;
 	}
 	

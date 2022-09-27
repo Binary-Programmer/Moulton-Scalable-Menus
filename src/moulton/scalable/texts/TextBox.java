@@ -13,6 +13,7 @@ import moulton.scalable.containers.Panel;
 import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * This is a text box that users can enter data into, the available characters for which is defined by
@@ -47,7 +48,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * @see #getHint()*/
 	protected String hint = null;
 	/**Text boxes are rectangles, thus they will be drawn from (x,y) to (x+width,y+width)*/
-	protected String width, height;
+	protected Expression width, height;
 	/**The font used to display {@link #message}*/
 	protected Font font;
 	/**The background color used if editable. If not enabled, white is used.*/
@@ -168,8 +169,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 */
 	public TextBox(String id, String message, Panel parent, String x, String y, String width, String height, Font font, Color color) {
 		super(id, parent, x, y);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		init(message, color, font);
 	}
 	/**

@@ -99,8 +99,12 @@ public class MenuSolver {
 	 */
 	public Expression parse(String expr, boolean prefaceAllowable, boolean extended) {
 		boolean preface = prefaceAllowable && expr.charAt(0) == '?';
-		if (preface)
+		if (preface) {
 			expr = expr.substring(1);
+			// If expr has become empty, then insert a 0 for the solver (at relative location).
+			if (expr.isEmpty())
+				expr = "0";
+		}
 		if (extended)
 			solve.setVariables(extendVars());
 		Expression exp = new Expression(solve.parseString(expr), preface);
@@ -110,11 +114,11 @@ public class MenuSolver {
 		return exp;
 	}
 	
-	public double eval(Expression expr) {
-		return expr.getValue(solve);
+	public int eval(Expression expr) {
+		return (int)expr.getValue(solve);
 	}
 	
-	public double evalExtended(Expression expr, double compWidth, double compHeight) {
+	public int evalExtended(Expression expr, double compWidth, double compHeight) {
 		// Add in the extended variables for evaluation
 		String[] extendedVars = extendVars();
 		solve.setVariables(extendedVars);
@@ -130,7 +134,7 @@ public class MenuSolver {
 		
 		// Restore previous state
 		solve.setVariables(variables);
-		return ans;
+		return (int)ans;
 	}
 	
 }

@@ -5,11 +5,13 @@ import java.awt.Graphics;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * A aesthetic menu component in a polygonal shape determined by {@link #xs} and {@link #ys}. The fill color
- * of the shape is determined by {@link #fillColor} and the outline color is determined by {@link #outlineColor}.
- * If not desired, each can be set to null color.
+ * A aesthetic menu component in a polygonal shape determined by {@link #xs} and {@link #ys}. The
+ * fill color of the shape is determined by {@link #fillColor} and the outline color is determined
+ * by {@link #outlineColor}. If not desired, each can be set to null color.
  * @author Matthew Moulton
  * @see ShapeResources
  * @see Line
@@ -24,48 +26,60 @@ public class Polygon extends MenuComponent {
 	 * @see #getOutlineColor()*/
 	protected Color outlineColor = null;
 	
-	/**
-	 * Expressions that determine the shape of the component. Should be written in a way that can be
-	 * solved by {@link #solveString(String, int, int)} at runtime.
-	 */
-	protected String [] xs, ys;
-	/**
-	 * Internal variable for the number of points in the shape. Results to the minimum length of {@link #xs}
-	 * and {@link #ys}.
-	 */
+	/**Expressions that determine the shape of the component. Should be written in a way that can
+	 * be evaluated by {@link MenuSolver}. */
+	protected Expression [] xs, ys;
+	/**Internal variable for the number of points in the shape. Results to the minimum length of
+	 * {@link #xs} and {@link #ys}.*/
 	protected int numberOfPoints;
+	
+	/**
+	 * Common constructor setup, including parsing expressions and setting fill color
+	 * @param xs string expressions to define the x locations for each point in the alloted space
+	 * @param ys string expressions to define the y locations for each point in the alloted space
+	 * @param fillColor the color that the polygon is filled in with. The polygon can also have an
+	 * outline, dictated by {@link #outlineColor} and set by {@link #setOutline(Color)}.
+	 */
+	protected void init(String[] xs, String ys[], Color fillColor) {
+		this.fillColor = fillColor;
+		if (xs.length != ys.length)
+			throw new RuntimeException("The number of x expressions must be equivalent to the"
+					+ " number of y expressions!");
+			
+		numberOfPoints = xs.length;
+		this.xs = new Expression[numberOfPoints];
+		this.ys = new Expression[numberOfPoints];
+		for (int i = 0; i < numberOfPoints; i++) {
+			this.xs[0] = solve.parse(xs[i], false, false);
+			this.ys[0] = solve.parse(ys[i], false, false);
+		}
+	}
 
 	/**
 	 * Creates a polygon and sets in on the grid of the parent panel.
 	 * @param parent the panel to be drawn on to
 	 * @param x the x-coordinate on the parent grid
 	 * @param y the y-coordinate on the parent grid
-	 * @param xs string expressions to represent the x locations for each point in the alloted space
-	 * @param ys string expressions to represent the y locations for each point in the alloted space
-	 * @param fillColor the color that the polygon is filled in with. The polygon can also have an outline,
-	 * dictated by {@link #outlineColor} and set by {@link #setOutline(Color)}.
+	 * @param xs string expressions to define the x locations for each point in the alloted space
+	 * @param ys string expressions to define the y locations for each point in the alloted space
+	 * @param fillColor the color that the polygon is filled in with. The polygon can also have an
+	 * outline, dictated by {@link #outlineColor} and set by {@link #setOutline(Color)}.
 	 */
 	public Polygon(Panel parent, int x, int y, String[] xs, String ys[], Color fillColor) {
 		super(parent, x, y);
-		this.fillColor = fillColor;
-		this.xs = xs;
-		this.ys = ys;
-		numberOfPoints = Math.min(xs.length, ys.length);
+		init(xs, ys, fillColor);
 	}
 	/**
 	 * Creates a polygon to be drawn onto the parent panel
 	 * @param parent the panel to be drawn on
-	 * @param xs string expressions to represent the x locations for each point in the alloted space
-	 * @param ys string expressions to represent the y locations for each point in the alloted space
-	 * @param fillColor the color that the polygon is filled in with. The polygon can also have an outline,
-	 * dictated by {@link #outlineColor} and set by {@link #setOutline(Color)}.
+	 * @param xs string expressions to define the x locations for each point in the alloted space
+	 * @param ys string expressions to define the y locations for each point in the alloted space
+	 * @param fillColor the color that the polygon is filled in with. The polygon can also have an
+	 * outline, dictated by {@link #outlineColor} and set by {@link #setOutline(Color)}.
 	 */
 	public Polygon(Panel parent, String[] xs, String ys[], Color fillColor) {
 		super(parent, xs[0], ys[0]);
-		this.fillColor = fillColor;
-		this.xs = xs;
-		this.ys = ys;
-		numberOfPoints = Math.min(xs.length, ys.length);
+		init(xs, ys, fillColor);
 	}
 
 	@Override
@@ -73,8 +87,8 @@ public class Polygon extends MenuComponent {
 		int xpoints [] = new int[xs.length];
 		int ypoints [] = new int[ys.length];
 		for(int i=0; i<numberOfPoints; i++){
-			xpoints[i] = xx + solveString(xs[i], ww, hh);
-			ypoints[i] = yy + solveString(ys[i], ww, hh);
+			xpoints[i] = xx + solve.eval(xs[i]);
+			ypoints[i] = yy + solve.eval(ys[i]);
 		}
 		if(fillColor != null) {
 			g.setColor(fillColor);
@@ -87,8 +101,8 @@ public class Polygon extends MenuComponent {
 	}
 	
 	/**
-	 * Sets the outline color for this polygon. If no outline color is set, or if it is set to null, no outline
-	 * will be drawn.
+	 * Sets the outline color for this polygon. If no outline color is set, or if it is set to
+	 * null, no outline will be drawn.
 	 * @param outlineColor the color for the {@link #outlineColor}
 	 */
 	public void setOutline(Color outlineColor) {
