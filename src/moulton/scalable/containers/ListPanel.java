@@ -10,11 +10,12 @@ import moulton.scalable.utils.MenuComponent;
 import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * A subclass of {@link VirtualPanel}. Built to hold a variable number of elements in the list. These elements
- * must be of type {@link MenuComponent}, whether they be panels or individual components. Elements can be
- * added when components set their parent, which thereby calls {@link #addComponent(MenuComponent, int)}.
- * Elements can be removed from the list by {@link #removeComponent(int, boolean)}. All components can be
- * removed from the list by {@link #clearComponents()}. The length of the list may be ascertained by
+ * A subclass of {@link VirtualPanel}. Built to hold a variable number of elements in the list.
+ * These elements must be of type {@link MenuComponent}, whether they be panels or individual
+ * components. Elements can be added when components set their parent, which thereby calls
+ * {@link #addComponent(MenuComponent, int)}. Elements can be removed from the list by
+ * {@link #removeComponent(int, boolean)}. All components can be removed from the list by
+ * {@link #clearComponents()}. The length of the list may be ascertained by
  * {@link #getListLength()}.
  * @author Matthew Moulton
  */
@@ -23,27 +24,28 @@ public class ListPanel extends VirtualPanel {
 	protected Expression rowHeight;
 
 	/**
-	 * @param rowHeight the height of each row, specified as an algebraic expression of a menu component
+	 * @param rowHeight the height of each row, specified as an expression of a menu component.
 	 * @param parent the panel this panel will reside upon.
 	 * @param x the x coordinate on the screen, given in menu component value format
 	 * @param y the y coordinate on the screen, given in menu component value format
-	 * @param shownWidth the component width that will be displayed, given in menu component value format
-	 * @param shownHeight the component height that will be displayed, given in menu component value format
-	 * @param fullWidth the entire width of the panel. In general, intended to be greater than shownWidth
+	 * @param shownWidth the expression for the component's displayed width.
+	 * @param shownHeight the expression for the component's displayed height.
+	 * @param fullWidth the entire width of the panel. In general, this is intended to be greater
+	 * than shownWidth.
 	 * @param color the background color for the box when editable
 	 */
-	public ListPanel(String rowHeight, Panel parent, String x, String y, String shownWidth, String shownHeight,
-			String fullWidth, Color color) {
+	public ListPanel(String rowHeight, Panel parent, String x, String y,
+			String shownWidth, String shownHeight, String fullWidth, Color color) {
 		super(parent, x, y, shownWidth, shownHeight, fullWidth, "0", color);
 		this.rowHeight = solve.parse(rowHeight, false, false);
 	}
 	/**
-	 * @param rowHeight the height of each row, specified as an algebraic expression of a menu component
+	 * @param rowHeight the height of each row, specified as an expression of a menu component
 	 * @param parent the panel this panel will reside upon.
 	 * @param x the integer x coordinate this panel should appear on its parent panel
 	 * @param y the integer y coordinate this panel should appear on its parent panel
-	 * @param fullWidth the entire width of the panel. In general, intended to be greater than the shown width,
-	 * determined at run time by the space on the grid allotted to this panel.
+	 * @param fullWidth the entire width of the panel. In general, intended to be greater than the
+	 * shown width, determined at run time by the space on the grid allotted to this panel.
 	 * @param color the background color for the box when editable
 	 */
 	public ListPanel(String rowHeight, Panel parent, int x, int y, String fullWidth, Color color) {
@@ -52,7 +54,8 @@ public class ListPanel extends VirtualPanel {
 	}
 
 	/**
-	 * The ListPanel stores elements in a vertical list. This element will be added at the end.<p>
+	 * The ListPanel stores elements in a vertical list. This element will be added at the end.
+	 * <p>
 	 * This method calls {@link #addComponent(MenuComponent, int)} to store the component.
 	 */
 	@Override
@@ -61,9 +64,10 @@ public class ListPanel extends VirtualPanel {
 	}
 
 	/**
-	 * The ListPanel stores elements in a vertical list. The specified component will be inserted at its y
-	 * location in that list, displacing other elements if necessary. The x-value of the component will
-	 * be discarded.<p>
+	 * The ListPanel stores elements in a vertical list. The specified component will be inserted
+	 * at its y-location in that list, displacing other elements if necessary. The x-value of the
+	 * component will be discarded.
+	 * <p>
 	 * This method calls {@link #addComponent(MenuComponent, int)} to store the component.
 	 * @param x an unused value. Included so this method can override the super method.
 	 * @param y the location on the list that the component should be stored
@@ -74,8 +78,9 @@ public class ListPanel extends VirtualPanel {
 	}
 
 	/**
-	 * The ListPanel stores elements in a vertical list. If there is an element at the given y-value, it
-	 * will be removed. The x-value is unused.<p>
+	 * The ListPanel stores elements in a vertical list. If there is an element at the given
+	 * y-value, it will be removed. The x-value is unused.
+	 * <p>
 	 * This method calls {@link #removeComponent(int, boolean)} to perform the deletion.
 	 * @param x an unused value. Included so this method can override the super method.
 	 * @param y where on the list the component should be deleted from
@@ -87,7 +92,8 @@ public class ListPanel extends VirtualPanel {
 	}
 
 	/**
-	 * Inserts a component to the list at the specified index. Displaces other elements if necessary.
+	 * Inserts a component to the list at the specified index. Displaces other elements if
+	 * necessary.
 	 * 
 	 * @param comp the component to be added
 	 * @param listIndex the index of the vertical list to add the component at
@@ -139,8 +145,8 @@ public class ListPanel extends VirtualPanel {
 	}
 	
 	/**
-	 * The components in the list are saved in {@link Panel#grid}. Thus, calling this method returns
-	 * the height of that grid.
+	 * The components in the list are saved in {@link Panel#grid}. Thus, calling this method
+	 * returns the height of that grid.
 	 * @return the height of the grid, or the length of the list held by this panel
 	 */
 	public int getListLength() {
@@ -163,9 +169,10 @@ public class ListPanel extends VirtualPanel {
 	}
 	
 	/**
-	 * Draws on the graphics object to represent this ListPanel. The ListPanel changes its {@link VirtualPanel#fullHeight}
-	 * at render time to have each row drawn at the proper {@link #rowHeight}. Render can also create
-	 * dummy null values in the grid to space out the rows properly.
+	 * Draws on the graphics object to represent this ListPanel. The ListPanel changes its
+	 * {@link VirtualPanel#fullHeight} at render time to have each row drawn at the proper
+	 * {@link #rowHeight}. Render can also create dummy null values in the grid to space out the
+	 * rows properly.
 	 */
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
@@ -174,8 +181,9 @@ public class ListPanel extends VirtualPanel {
 		int fullH = rowH * grid.getGridHeight();
 		this.fullHeight = ""+fullH;
 		
-		//if full height is less than the shown height, we have to add a null element to the grid to correct
-		int shownH; //the shown height
+		//if full height is less than the shown height, we have to add a null element to the grid
+		// to correct the shown height
+		int shownH;
 		if(parent != null && getGridLocation()==null) {
 			if (this.height.charAt(0) == '?') {
 				int y = yy + solveString(this.y, ww, hh);

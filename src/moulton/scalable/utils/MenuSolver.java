@@ -50,12 +50,59 @@ public class MenuSolver {
 		solve.setValues(newValues);
 	}
 	
+	/**
+	 * Adds a new variable to the list kept track of in evaluating expressions.
+	 * <p>
+	 * Variables other than the ones set by the menu size must always have some value, even if
+	 * temporarily bogus, since the last value given is "remembered" when the other values are
+	 * updated.
+	 * @param name the name of the new variable to add. An exception will be thrown if a variable
+	 * with the same name already exists
+	 * @param val the initial value of the variable
+	 */
 	public void addVariable(String name, double val) {
+		for (int i = 0; i < variables.length; i++) {
+			if (variables[i].equals(name))
+				throw new RuntimeException("Cannot add variable \"" + name +
+						"\", which has previously been defined!");
+		}
+		int newLen = variables.length + 1;
+		String[] temp = new String[newLen];
+		for (int i = 0; i < newLen - 1; i++)
+			temp[i] = variables[i];
+		temp[newLen - 1] = name;
+		variables = temp;
 		
+		if (values == null) {
+			values = new double[newLen];
+		}else {
+			double[] valTemp = new double[newLen];
+			// copy over all values from 4 (inclusive), which is where the first non-menu-generated
+			// value is located.
+			for (int i = 4; i < newLen - 1; i++)
+				valTemp[i] = values[i];
+			values = valTemp;
+		}
+		values[newLen - 1] = val;
 	}
 	
-	public void setVariable(String name, double val) {
-		
+	/**
+	 * Updates an individual variable's value, a variable that was created earlier by {@link 
+	 * #addVariable(String, double)}.
+	 * @param name the name of the variable that is updated. An exception will be thrown if the
+	 * variable does not exist.
+	 * @param val the value to be assigned to the variable
+	 */
+	public void updateVariable(String name, double val) {
+		int i = 0;
+		for (; i < variables.length; i++) {
+			if (variables[i].equals(name))
+				break;
+		}
+		if (i == variables.length)
+			throw new RuntimeException("Cannot set variable \"" + name +
+					"\", which has not previously been defined!");
+		values[i] = val;
 	}
 	
 	public static class Expression implements ExpressionSolver.Expression {

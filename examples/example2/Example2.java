@@ -18,7 +18,8 @@ import javax.swing.JPanel;
 
 import moulton.scalable.containers.Container;
 
-public class Example2 extends JPanel implements Container, MouseListener, KeyListener, MouseMotionListener, MouseWheelListener{
+public class Example2 extends JPanel implements Container, MouseListener, KeyListener,
+		MouseMotionListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 	private Manager2 manager = null;
 	private JFrame frame;
@@ -37,7 +38,8 @@ public class Example2 extends JPanel implements Container, MouseListener, KeyLis
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		frame.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
+		frame.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+				Collections.emptySet());
 		
 		addMouseListener(this);
 		addKeyListener(this);

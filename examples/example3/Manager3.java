@@ -26,17 +26,20 @@ public class Manager3 extends MenuManager {
 		menu = Panel.createRoot(Color.CYAN);
 		Panel main = new Panel(menu,"0","0","width","height-50",Color.ORANGE);
 		Font font = new Font("Arial",Font.PLAIN,20);
-		hist = new TextHistory(main,"0","0","?width-width/10","height",font,false,50); //set back to false
-		ScrollBar bar = new ScrollBar(true, main, "width-width/10", "0", "?width", "height", Color.LIGHT_GRAY);
+		hist = new TextHistory(main,"0","0","?width-width/10","height",font,false,50);
+		ScrollBar bar = new ScrollBar(true, main, "width-width/10", "0",
+				"?width", "height", Color.LIGHT_GRAY);
 		hist.setScrollBar(bar);
 		hist.addToList("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
 		hist.addToList("Aenean sit amet libero interdum sem fringilla ornare quis vel diam.");
 		hist.addToList("Sed quis sem sed felis tristique tincidunt.");
 		hist.addToList("In semper diam nec quam sollicitudin tempor.");
 		hist.addToList("Vivamus molestie ipsum ac turpis tempus, eu hendrerit nulla porttitor.");
-		entry = new TextBox("entry","",menu,"0","height-50","?width-width/10","50", font,Color.LIGHT_GRAY);
+		entry = new TextBox("entry","",menu,"0","height-50","?width-width/10","50",
+				font,Color.LIGHT_GRAY);
 		entry.setHint("...");
-		ok = new Button("ok","Ok",menu,"width-width/10","height-50","?width","50",font,Color.GREEN);
+		ok = new Button("ok","Ok",menu,"width-width/10","height-50","?width","50",
+				font,Color.GREEN);
 		hist.setWordSplitting(false);
 		hist.setTextDemarkation(true);
 	}

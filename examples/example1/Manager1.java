@@ -13,7 +13,7 @@ import moulton.scalable.popups.NotificationPopUp;
 import moulton.scalable.popups.PopUp;
 import moulton.scalable.utils.GridFormatter;
 
-public class Manager1 extends MenuManager{
+public class Manager1 extends MenuManager {
 
 	public Manager1(Container cont) {
 		super(cont);
@@ -55,21 +55,26 @@ public class Manager1 extends MenuManager{
 		if(id != null) {
 			switch(id) {
 			case "secret":
-				PopUp pop = new NotificationPopUp("Here is some really long text that must be split! I don't know how many lines it will take, but I am guessing that it will be a few.", "Secret", new Font("Arial", Font.PLAIN, 12), "ok", this);
+				PopUp pop = new NotificationPopUp("Here is some really long text that must be"
+						+ "split! I don't know how many lines it will take, but I am guessing that"
+						+ "it will be a few.", "Secret", new Font("Arial", Font.PLAIN, 12), "ok",
+						this);
 				this.setPopUp(pop);
 				break;
 			case "red":
 			case "orange":
 			case "yellow":
 			case "green":
-				pop = new NotificationPopUp("You pressed a(n) "+id+" button!", null, new Font("Arial", Font.PLAIN, 15), "ok", this);
+				pop = new NotificationPopUp("You pressed a(n) "+id+" button!", null,
+						new Font("Arial", Font.PLAIN, 15), "ok", this);
 				this.setPopUp(pop);
 				break;
 			case "ok":
 				setPopUp(null);
 				break;
 			case "exit":
-				pop = new ConfirmationPopUp("Are you sure you want to quit?", null, new Font("Times New Roman", Font.PLAIN, 13), "quit", "ok", this, true);
+				pop = new ConfirmationPopUp("Are you sure you want to quit?", null,
+						new Font("Times New Roman", Font.PLAIN, 13), "quit", "ok", this, true);
 				setPopUp(pop);
 				break;
 			case "quit":

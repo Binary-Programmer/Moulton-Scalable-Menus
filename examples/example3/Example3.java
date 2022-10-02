@@ -16,13 +16,14 @@ import javax.swing.JPanel;
 
 import moulton.scalable.containers.Container;
 
-public class Example3 extends JPanel implements Container, MouseListener, KeyListener, MouseMotionListener, MouseWheelListener{
+public class Example3 extends JPanel implements Container, MouseListener, KeyListener,
+		MouseMotionListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 	private Manager3 manager = null;
 	private JFrame frame;
 	private boolean running = true;
 	
-	public static void main(String args[]){
+	public static void main(String args[]) {
 		new Example3();
 	}
 	

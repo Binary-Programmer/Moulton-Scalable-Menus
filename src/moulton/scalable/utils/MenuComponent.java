@@ -210,9 +210,9 @@ public abstract class MenuComponent {
 	 */
 	protected Rectangle getRenderRect(int xx, int yy, int ww, int hh, Expression width, Expression height) {
 		int x, y, w, h;
+		solve.updateValues(ww, hh);
 		if(getGridLocation()==null) {
 			//Set up the solver and the variables we save to
-			solve.updateValues(ww, hh);
 			double wD, hD;
 			
 			boolean qMarkWidth = false;
