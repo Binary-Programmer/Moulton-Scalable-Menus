@@ -55,9 +55,9 @@ public class Manager1 extends MenuManager {
 		if(id != null) {
 			switch(id) {
 			case "secret":
-				PopUp pop = new NotificationPopUp("Here is some really long text that must be"
+				PopUp pop = new NotificationPopUp("Here is some really long text that must be "
 						+ "split! I don't know how many lines it will take, but I am guessing that"
-						+ "it will be a few.", "Secret", new Font("Arial", Font.PLAIN, 12), "ok",
+						+ " it will be a few.", "Secret", new Font("Arial", Font.PLAIN, 12), "ok",
 						this);
 				this.setPopUp(pop);
 				break;

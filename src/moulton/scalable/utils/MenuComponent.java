@@ -140,6 +140,15 @@ public abstract class MenuComponent {
 	}
 	
 	/**
+	 * Returns the used menu solver. This may be necessary to add a new variable or to update
+	 * a previously defined custom variable.
+	 * @return
+	 */
+	public MenuSolver getSolver() {
+		return solve;
+	}
+	
+	/**
 	 * Sets the static text_original_size constant. Unnecessary for most components, but may be used to give 
 	 * more meaning or precision to text sizes for Moulton Scalable Menus.
 	 * @param factor an int ratio. higher size means more precise text sizes. When the alloted height for the
@@ -215,21 +224,20 @@ public abstract class MenuComponent {
 			//Set up the solver and the variables we save to
 			double wD, hD;
 			
-			boolean qMarkWidth = false;
-			boolean qMarkHeight = false;
+			boolean solveWidth = false;
+			boolean solveHeight = false;
 			
 			//try to solve width and height first
 			if (width.prefaced) {
-				//solve for the ending point
-				wD = xx + solve.eval(width);
-				//deduce the width later
-				qMarkWidth = true;
+				//solve from the ending point
+				wD = solve.eval(width) - xx;
+				solveWidth = true; // need to adjust to where x actually is
 			}else
 				wD = solve.eval(width);
 			
 			if (height.prefaced) {
-				hD = yy + solve.eval(height);
-				qMarkHeight = true;				
+				hD = solve.eval(height) - yy;
+				solveHeight = true;
 			} else
 				hD = solve.eval(height);
 			
@@ -237,11 +245,11 @@ public abstract class MenuComponent {
 			x = xx + solve.evalExtended(this.x, wD, hD);
 			y = yy + solve.evalExtended(this.y, wD, hD);
 			
-			//Now we must return to process any ?
-			if(qMarkWidth)
-				wD -= x;
-			if(qMarkHeight)
-				hD -= y;
+			//Now we must finish solving for the width and/or height
+			if(solveWidth)
+				wD += (x - xx);
+			if(solveHeight)
+				hD += (y - yy);
 			
 			//Finally, round to get x,y,w,h
 			w = (int)Math.round(wD);

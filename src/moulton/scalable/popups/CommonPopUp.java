@@ -34,7 +34,7 @@ public abstract class CommonPopUp extends PopUp {
 	 * clicking x.
 	 */
 	public CommonPopUp(String text, String title, Font font, String xId, MenuManager manager) {
-		super(null, null, Color.WHITE);
+		super("0", "0", Color.WHITE);
 		init(text, title, font, true, xId, manager);
 	}
 	/**
@@ -44,7 +44,7 @@ public abstract class CommonPopUp extends PopUp {
 	 * @param font the font of the text on the pop up
 	 */
 	public CommonPopUp(String text, String title, Font font) {
-		super(null, null, Color.WHITE);
+		super("0", "0", Color.WHITE);
 		init(text, title, font, false, null, null);
 	}
 	/**
@@ -60,7 +60,7 @@ public abstract class CommonPopUp extends PopUp {
 	 */
 	public CommonPopUp(String text, String title, Font font, String x, String y, String xId,
 			MenuManager manager) {
-		super(x, y, null, null, Color.WHITE);
+		super(x, y, "0", "0", Color.WHITE);
 		init(text, title, font, true, xId, manager);
 	}
 	/**
@@ -72,7 +72,7 @@ public abstract class CommonPopUp extends PopUp {
 	 * @param y the y location of the pop up
 	 */
 	public CommonPopUp(String text, String title, Font font, String x, String y) {
-		super(x, y, null, null, Color.WHITE);
+		super(x, y, "0", "0", Color.WHITE);
 		init(text, title, font, true, null, null);
 	}
 	

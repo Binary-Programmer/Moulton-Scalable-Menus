@@ -35,8 +35,8 @@ public class PolygonalButton extends RadioButton {
 		this.xs = new Expression[numberOfPoints];
 		this.ys = new Expression[numberOfPoints];
 		for (int i = 0; i < numberOfPoints; i++) {
-			this.xs[0] = solve.parse(xs[i], false, false);
-			this.ys[0] = solve.parse(ys[i], false, false);
+			this.xs[i] = solve.parse(xs[i], false, false);
+			this.ys[i] = solve.parse(ys[i], false, false);
 		}
 	}
 	
@@ -72,8 +72,8 @@ public class PolygonalButton extends RadioButton {
 
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
-		int xpoints [] = new int[xs.length];
-		int ypoints [] = new int[ys.length];
+		int xpoints [] = new int[numberOfPoints];
+		int ypoints [] = new int[numberOfPoints];
 		for(int i=0; i<numberOfPoints; i++){
 			xpoints[i] = xx + solve.eval(xs[i]);
 			ypoints[i] = yy + solve.eval(ys[i]);

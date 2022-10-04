@@ -37,6 +37,9 @@ public class ListPanel extends VirtualPanel {
 	public ListPanel(String rowHeight, Panel parent, String x, String y,
 			String shownWidth, String shownHeight, String fullWidth, Color color) {
 		super(parent, x, y, shownWidth, shownHeight, fullWidth, "0", color);
+		// We fill fullHeight in as a variable relative to the number of rows used for the list
+		solve.addVariable("fullHeight", 0);
+		this.fullHeight = solve.parse("fullHeight", false, false);
 		this.rowHeight = solve.parse(rowHeight, false, false);
 	}
 	/**
@@ -177,20 +180,21 @@ public class ListPanel extends VirtualPanel {
 	@Override
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		//full height is going to be the height of each row multiplied by the number of elements
-		int rowH = solveString(rowHeight, ww, hh);
+		this.solve.updateValues(ww, hh);
+		int rowH = solve.eval(rowHeight);
 		int fullH = rowH * grid.getGridHeight();
-		this.fullHeight = ""+fullH;
+		solve.updateVariable("fullHeight", fullH);
 		
 		//if full height is less than the shown height, we have to add a null element to the grid
 		// to correct the shown height
 		int shownH;
 		if(parent != null && getGridLocation()==null) {
-			if (this.height.charAt(0) == '?') {
-				int y = yy + solveString(this.y, ww, hh);
-				int y2 = yy + solveString(this.height.substring(1), ww, hh);
+			if (height.prefaced) {				
+				int y = yy + solve.eval(this.y);
+				int y2 = yy + solve.eval(this.height);
 				shownH = y2 - y;
 			} else
-				shownH = solveString(this.height, ww, hh);
+				shownH = solve.eval(this.height);
 		}else
 			shownH = hh;
 		

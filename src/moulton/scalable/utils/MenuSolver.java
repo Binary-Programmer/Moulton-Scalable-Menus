@@ -22,14 +22,18 @@ public class MenuSolver {
 	/** The list of accepted variable names */
 	protected String[] variables;
 	/** The list of values for the variables */
-	protected double[] values = null;
+	protected double[] values;
 	/** A set of extended variables only usable by some expressions. */
 	protected static final String[] extended = {"CENTERX", "CENTERY", "WIDTH", "HEIGHT"};
 	
 	public MenuSolver() {
 		// These are the basic variables that all expressions can use
 		variables = new String[] {"centerx", "centery", "width", "height", "pi", "e"};
+		values = new double[] {0, 0, 0, 0, Math.PI, Math.E};
+		
 		solve = new ExpressionSolver(variables);
+		solve.setVariables(variables);
+		solve.setValues(values);
 	}
 
 	/**
@@ -39,15 +43,11 @@ public class MenuSolver {
 	 * @param contHeight the container height (in pixels)
 	 */
 	public void updateValues(double contWidth, double contHeight) {
-		// Set the menu values and keep any others unchanged
-		double[] newValues = new double[variables.length];
-		newValues[0] = contWidth / 2;
-		newValues[1] = contHeight / 2;
-		newValues[2] = contWidth;
-		newValues[3] = contHeight;
-		for (int i = 4; values != null && i < values.length; i++)
-			newValues[i] = values[i];
-		solve.setValues(newValues);
+		// Set the menu values and keep any others unchanged=
+		values[0] = contWidth / 2;
+		values[1] = contHeight / 2;
+		values[2] = contWidth;
+		values[3] = contHeight;
 	}
 	
 	/**
@@ -72,6 +72,7 @@ public class MenuSolver {
 			temp[i] = variables[i];
 		temp[newLen - 1] = name;
 		variables = temp;
+		solve.setVariables(variables);
 		
 		if (values == null) {
 			values = new double[newLen];
@@ -84,6 +85,7 @@ public class MenuSolver {
 			values = valTemp;
 		}
 		values[newLen - 1] = val;
+		solve.setValues(values);
 	}
 	
 	/**
@@ -118,11 +120,14 @@ public class MenuSolver {
 		public double getValue(ExpressionSolver s) {
 			return s.eval(expr);
 		}
+		
+		@Override
+		public String toString() {
+			return (prefaced? "?" : "") + expr.toString();
+		}
 	}
 	
 	public String[] extendVars() {
-		if (values == null)
-			throw new RuntimeException("Undefined values! Update first via updateValues(...)");
 		String[] vars = new String[variables.length + extended.length];
 		// Copy from the originals into the new
 		for (int i = 0; i < variables.length; i++)
@@ -170,17 +175,19 @@ public class MenuSolver {
 		String[] extendedVars = extendVars();
 		solve.setVariables(extendedVars);
 		double[] vals = new double[extendedVars.length];
-		for (int i = 0; i < values.length; i++)
+		for (int i = 4; i < values.length; i++)
 			vals[i] = values[i];
 		vals[values.length + 0] = (vals[2] - compWidth)/2;  // CENTERX = (width - compWidth)/2
 		vals[values.length + 1] = (vals[3] - compHeight)/2; // CENTERY = (height - compHeight)/2
 		vals[values.length + 2] = compHeight;               // WIDTH
 		vals[values.length + 3] = compWidth;                // HEIGHT
+		solve.setValues(vals);
 		
 		double ans = expr.getValue(solve);
 		
 		// Restore previous state
 		solve.setVariables(variables);
+		solve.setValues(values);
 		return (int)ans;
 	}
 	
