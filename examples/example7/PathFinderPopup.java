@@ -28,10 +28,12 @@ public class PathFinderPopup extends PopUp {
 		Button xButton = new Button("cancel","X",base,"width-20","0","20","20",font,Color.WHITE);
 		xButton.setTouchedColor(Color.RED);
 		addTouchComponent(xButton);
-		new Caption(load?"Load":"Save", base, "5", "18", font, Alignment.LEFT_ALIGNMENT).setYCentered(false);
+		new Caption(load?"Load":"Save", base, "5", "18", font,
+				Alignment.LEFT_ALIGNMENT).setYCentered(false);
 		
 		smallFont = new Font("Arial", Font.PLAIN, 12);
-		pathDisplay = new TextBox("path", "", base, "25", "30", "?width", "20", smallFont, Color.WHITE);
+		pathDisplay = new TextBox("path", "", base, "25", "30", "?width", "20", smallFont,
+				Color.WHITE);
 		pathDisplay.setOutline(true);
 		addTouchComponent(pathDisplay);
 		pathDisplay.setTouchedColor(Color.WHITE);
@@ -42,12 +44,14 @@ public class PathFinderPopup extends PopUp {
 			return true;
 		});
 		addTouchComponent(pathUp);
-		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",font,Color.WHITE);
+		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",
+				font,Color.WHITE);
 		fileName.setOutline(true);
 		fileName.setHint("file name");
 		addTouchComponent(fileName);
 		fileName.setTouchedColor(Color.WHITE);
-		okButton = new Button(load?"doLoad":"doSave","Ok",base,"width*.75+5","height-25","width*.25-10","20",font,Color.LIGHT_GRAY);
+		okButton = new Button(load?"doLoad":"doSave","Ok",base,"width*.75+5","height-25",
+				"width*.25-10","20",font,Color.LIGHT_GRAY);
 		okButton.setEnabled(false);
 		addTouchComponent(okButton);
 		
@@ -59,8 +63,10 @@ public class PathFinderPopup extends PopUp {
 		addTouchComponent(contentBar);
 		
 		ClassLoader loader = PathFinderPopup.class.getClassLoader();
-		File file = new File(loader.getResource("example7" + File.separator + "PathFinderPopup.class").toString());
-		File folder = file.getParentFile().getParentFile(); //get the parent twice to get out of the package
+		File file = new File(loader.getResource("example7" + File.separator +
+				"PathFinderPopup.class").toString());
+		//get the parent twice to get out of the package
+		File folder = file.getParentFile().getParentFile(); 
 		String path = folder.getPath().substring(6); //to get past "file:\" that Java does
 		setPath(path);
 		
@@ -70,7 +76,8 @@ public class PathFinderPopup extends PopUp {
 		String path = pathDisplay.getMessage();
 		if(contentBar != null)
 			contentBar.setOffset(0);
-		if(path.lastIndexOf(File.separator) != path.indexOf(File.separator)) //if there are at least two \s
+		//if there are at least two \s
+		if(path.lastIndexOf(File.separator) != path.indexOf(File.separator)) 
 			setPath(path.substring(0, path.lastIndexOf(File.separator)));
 		else {
 			//if there is one, do not delete it
@@ -99,9 +106,11 @@ public class PathFinderPopup extends PopUp {
 				pathName = pathName.substring(lastSlash+1);
 			Button dirButton;
 			if(file.isDirectory())
-				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i, italic, Color.YELLOW);
+				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i,
+						italic, Color.YELLOW);
 			else
-				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i, smallFont, Color.WHITE);
+				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i,
+						smallFont, Color.WHITE);
 			dirButton.setAlignment(Alignment.LEFT_ALIGNMENT);
 			
 			dirButton.setClickAction(() -> {
@@ -122,7 +131,8 @@ public class PathFinderPopup extends PopUp {
 	public void select(String name) {
 		//if this leads to a directory, move to it. If a file, select it
 		String fullPath = pathDisplay.getMessage();
-		if(fullPath.charAt(fullPath.length()-1) != File.separator.charAt(0)) //bottom dirs already have the \\ preface
+		//bottom dirs already have the \\ preface
+		if(fullPath.charAt(fullPath.length()-1) != File.separator.charAt(0)) 
 			fullPath += File.separator;
 		fullPath += name;
 		File file = new File(fullPath);

@@ -21,7 +21,7 @@ import moulton.scalable.visuals.AnimatedButton;
 import moulton.scalable.visuals.Animation;
 import moulton.scalable.visuals.AnimationListener;
 
-public class Manager6 extends MenuManager implements AnimationListener{
+public class Manager6 extends MenuManager implements AnimationListener {
 	private Button [] scrollButtons = new Button[2];
 	private ScrollBar bar;
 	private PartitionPanel part;
@@ -54,10 +54,13 @@ public class Manager6 extends MenuManager implements AnimationListener{
 		part.setLeft(box);
 		Panel rightPanel = new Panel(part,0,0,Color.RED);
 		part.setRight(rightPanel);
-		bar = new ScrollBar(true, rightPanel, "0", "height/8","width","3height/4",Color.GRAY);
+		bar = new ScrollBar(true, rightPanel, "0", "height/8","width","3height/4",
+				Color.GRAY);
 		box.setTextScroller(bar);
-		scrollButtons[0] = new Button("up","^",rightPanel,"0","0","width","height/8",font,Color.GRAY);
-		scrollButtons[1] = new Button("down","v",rightPanel,"0","height-height/8","width","?height",font,Color.GRAY);
+		scrollButtons[0] = new Button("up","^",rightPanel,"0","0","width","height/8",
+				font,Color.GRAY);
+		scrollButtons[1] = new Button("down","v",rightPanel,"0","height-height/8",
+				"width","?height",font,Color.GRAY);
 		bar.setScrollButtons(scrollButtons[0],scrollButtons[1]);
 		
 		Panel bottom = new Panel(menu, "0", "height/1.2","width","?height", Color.MAGENTA);
@@ -91,8 +94,8 @@ public class Manager6 extends MenuManager implements AnimationListener{
 			box.setMessage("");
 		}else if(c.getId().equals("add")) {
 			//add some sample text to show off the partition
-			box.setMessage("Alphabet: Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu"
-					+ " Vv Ww Xx Yy Zz.\nRoman: I II III IV V VI VII VIII IX X");
+			box.setMessage("Alphabet: Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt"
+					+ "Uu Vv Ww Xx Yy Zz.\nRoman: I II III IV V VI VII VIII IX X");
 		}
 		//to get the connected scroll bar buttons to work properly
 		else if(c.getId().equals("up")) {

@@ -22,14 +22,19 @@ public class Manager5 extends MenuManager{
 	public void createMenu() {
 		this.menu = Panel.createRoot(Color.WHITE);
 		Font font = new Font("Arial", Font.PLAIN, 30);
-		main = new TextBox("top","",menu,"0","0","?7width/8","?3height/4+1",font,Color.LIGHT_GRAY);
+		main = new TextBox("top","",menu,"0","0","?7width/8","?3height/4+1",
+				font,Color.LIGHT_GRAY);
 		main.setOutline(true);
 		main.acceptEnter(true);
-		bottom = new TextBox("bottom","",menu,"0","3height/4","?7width/8","?height-height/8",font,Color.LIGHT_GRAY);
+		bottom = new TextBox("bottom","",menu,"0","3height/4","?7width/8","?height-height/8",
+				font,Color.LIGHT_GRAY);
 		bottom.setOutline(true);
-		main.setTextScroller(new ScrollBar(true,menu,"7width/8","0","?width","?3height/4",Color.GRAY));
-		bottom.setTextScroller(new ScrollBar(false,menu,"0","7height/8","?7width/8","?height",Color.GRAY));
-		new Button("virtuality","!",menu,"7width/8","3height/4","?width","?height",font,Color.RED);
+		main.setTextScroller(new ScrollBar(true,menu,"7width/8","0","?width","?3height/4",
+				Color.GRAY));
+		bottom.setTextScroller(new ScrollBar(false,menu,"0","7height/8","?7width/8","?height",
+				Color.GRAY));
+		new Button("virtuality","!",menu,"7width/8","3height/4","?width","?height",
+				font,Color.RED);
 	}
 
 	@Override

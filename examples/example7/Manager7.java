@@ -70,8 +70,10 @@ public class Manager7 extends MenuManager{
 		saveButton.setEnabled(false);
 		addTouchComponent(saveButton);
 		addTouchComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
-		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height", font, new Color(0xe5e5e5));
-		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",Color.LIGHT_GRAY));
+		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height",
+				font, new Color(0xe5e5e5));
+		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",
+				Color.LIGHT_GRAY));
 		fileContents.acceptEnter(true);
 		setUndo(fileContents.getMessage());
 	}

@@ -16,7 +16,8 @@ import javax.swing.JPanel;
 
 import moulton.scalable.containers.Container;
 
-public class Example8 extends JPanel implements Container, MouseListener, KeyListener, MouseMotionListener, MouseWheelListener{
+public class Example8 extends JPanel implements Container, MouseListener, KeyListener,
+		MouseMotionListener, MouseWheelListener{
 	private static final long serialVersionUID = 1L;
 	private Manager8 manager = null;
 	private JFrame frame;
