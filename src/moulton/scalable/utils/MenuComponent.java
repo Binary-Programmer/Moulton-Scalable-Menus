@@ -230,13 +230,13 @@ public abstract class MenuComponent {
 			//try to solve width and height first
 			if (width.prefaced) {
 				//solve from the ending point
-				wD = solve.eval(width) - xx;
+				wD = solve.eval(width);
 				solveWidth = true; // need to adjust to where x actually is
 			}else
 				wD = solve.eval(width);
 			
 			if (height.prefaced) {
-				hD = solve.eval(height) - yy;
+				hD = solve.eval(height);
 				solveHeight = true;
 			} else
 				hD = solve.eval(height);
@@ -247,9 +247,9 @@ public abstract class MenuComponent {
 			
 			//Now we must finish solving for the width and/or height
 			if(solveWidth)
-				wD += (x - xx);
+				wD -= (x - xx);
 			if(solveHeight)
-				hD += (y - yy);
+				hD -= (y - yy);
 			
 			//Finally, round to get x,y,w,h
 			w = (int)Math.round(wD);

@@ -101,7 +101,7 @@ public class Manager2 extends MenuManager{
 			nameField.clearMessage();
 			ageField.clearMessage();
 			interestsField.clearMessage();
-			System.out.println("Hello, "+name+"! You seem like a nice person with some"
+			System.out.println("Hello, "+name+"! You seem like a nice person with some "
 					+ "cool interests.");
 		}
 	}

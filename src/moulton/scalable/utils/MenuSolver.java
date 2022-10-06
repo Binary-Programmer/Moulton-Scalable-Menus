@@ -175,7 +175,7 @@ public class MenuSolver {
 		String[] extendedVars = extendVars();
 		solve.setVariables(extendedVars);
 		double[] vals = new double[extendedVars.length];
-		for (int i = 4; i < values.length; i++)
+		for (int i = 0; i < values.length; i++)
 			vals[i] = values[i];
 		vals[values.length + 0] = (vals[2] - compWidth)/2;  // CENTERX = (width - compWidth)/2
 		vals[values.length + 1] = (vals[3] - compHeight)/2; // CENTERY = (height - compHeight)/2

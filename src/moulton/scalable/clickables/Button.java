@@ -58,7 +58,7 @@ public class Button extends RadioButton {
 			String width, String height, Font font, Color color) {
 		super(id, parent, x, y, color);
 		this.width = solve.parse(width, true, false);
-		this.height = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		this.text = text;
 		this.font = font;
 	}
