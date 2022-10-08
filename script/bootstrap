@@ -3,5 +3,5 @@
 # script/bootstrap: Resolve all dependencies that the application requires
 #                   to run.
 
-git submodule update --remote --recursive
+git submodule update --init --recursive
 
