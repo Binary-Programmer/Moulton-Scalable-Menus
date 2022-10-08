@@ -8,13 +8,15 @@ import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
 
 /**
- * Ancestor class for components that are clickable. These include buttons and text boxes. All subclasses should define {@link #clickBoundary}
- * when convenient to (usually during rendering) or else it won't be clickable. This can be done with {@link #defineClickBoundary(int[][])}.
- * <p>Components default to being deselected upon mouse release. However, this can be overridden by setting {@link #isDeselectedOnRelease()}
- * to false.
+ * Ancestor class for components that are clickable. These include buttons and text boxes. All
+ * subclasses should define {@link #clickBoundary} when convenient to (usually during rendering) or
+ * else it won't be clickable. This can be done with {@link #defineClickBoundary(int[][])}.
+ * <p>
+ * Components default to being deselected upon mouse release. However, this can be overridden by
+ * setting {@link #isDeselectedOnRelease()} to false.
  * @author Matthew Moulton
  */
-public abstract class Clickable extends MenuComponent implements TouchResponsiveComponent{
+public abstract class Clickable extends MenuComponent implements TouchResponsiveComponent {
 	/**A unique string designed to identify this component when an event occurs.
 	 * @see #getId()*/
 	protected String id;
@@ -38,9 +40,9 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	protected boolean outline = false;
 	
 	/**The clickable specified here is the next clickable to be selected in the context of a form.
-	 * A complete chain can be formed when multiple clickables are linked together in this way. When
-	 * the user has a component in the chain selected and presses tab, selection goes to the next
-	 * component.
+	 * A complete chain can be formed when multiple clickables are linked together in this way.
+	 * When the user has a component in the chain selected and presses tab, selection goes to the
+	 * next component.
 	 * @see #getFormChain()
 	 * @see #setFormChain(Clickable)*/
 	protected Clickable formChain = null;
@@ -63,19 +65,22 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	protected EventAction lostFocusAction = null;
 	
 	/**
-	 * A two-dimensional array holding the pixel x and y points for the polygon that represents this component's clickable area.
-	 * clickBoundary[0] should hold x points and clickBoundary[1] should hold y points. The number of x and y points should be equal.
-	 * Used to determine whether this component is clickable in {@link #clickableAt(int, int)}.
+	 * A two-dimensional array holding the pixel x and y points for the polygon that represents
+	 * this component's clickable area. clickBoundary[0] should hold x points and clickBoundary[1]
+	 * should hold y points. The number of x and y points should be equal. Used to determine
+	 * whether this component is clickable in {@link #clickableAt(int, int)}.
 	 * @see #defineClickBoundary(int[][])
 	 */
 	protected int[][] clickBoundary = null;
 
 	/**
-	 * This is for use of creating a clickable that will reside on the panel in a free-floating manner.
+	 * This is for use of creating a clickable that will reside on the panel in a free-floating
+	 * manner.
 	 * @param id a unique string designed to identify this component when an event occurs
-	 * @param parent the parent panel for this component. Components on a menu at base-level have a parent panel of {@link MenuManager#menu}.
-	 * @param x the string equation dictating where on the parent panel this component should go. Often formatted as "centerx - width/#".
-	 * @param y the string equation dictating where on the parent panel this component should go. Often formatted as "centery - height/#".
+	 * @param parent the parent panel for this component. Components on a menu at base-level have a
+	 * parent panel of {@link MenuManager#menu}.
+	 * @param x the string equation dictating where on the parent panel this component should go.
+	 * @param y the string equation dictating where on the parent panel this component should go.
 	 * @see MenuComponent#solveString(String, int, int)
 	 */
 	public Clickable(String id, Panel parent, String x, String y) {
@@ -85,7 +90,8 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * This is for use of creating a clickable that will reside on the panel in a grid
 	 * @param id a unique string designed to identify this component when an event occurs.
-	 * @param parent the parent panel for this component. Components on a menu at base-level have a parent panel of {@link MenuManager#menu}.
+	 * @param parent the parent panel for this component. Components on a menu at base-level have a
+	 * parent panel of {@link MenuManager#menu}.
 	 * @param x the x coordinate of this clickable in its parent's grid
 	 * @param y the y coordinate of this clickable in its parent's grid
 	 */
@@ -105,7 +111,8 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Determines whether the component would be clicked by using the x and y values of the click and the boundary values as defined in
+	 * Determines whether the component would be clicked by using the x and y values of the click
+	 * and the boundary values as defined in
 	 * {@link #clickBoundary}. This will always return false if the component is not editable.
 	 * @param x the x value of the mouse when clicked
 	 * @param y the y value of the mouse when clicked
@@ -121,9 +128,10 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Defines the {@link #clickBoundary} from the given. Defining the click boundary can easily be done during rendering
-	 * since the component needs to be rendered before it can be clicked.
-	 * @param clickBoundary the boundary of this component where each index is a vertex array containing x and y
+	 * Defines the {@link #clickBoundary} from the given. Defining the click boundary can easily be
+	 * done during rendering since the component needs to be rendered before it can be clicked.
+	 * @param clickBoundary the boundary of this component where each index is a vertex array
+	 * containing x and y
 	 */
 	public void defineClickBoundary(int[][] clickBoundary) {
 		this.clickBoundary = clickBoundary;
@@ -137,11 +145,12 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	}
 	
 	/**
-	 * Sets whether or not the component is currently selected by the press of a mouse. Different clickables handle this differently. 
-	 * Clickables like buttons are only clicked while the mouse button is held down. On the other hand, clickables like text boxes stay
-	 * clicked even when the mouse button is released, instead changing to unclicked when the user deselects the text box. Sometimes
-	 * clickable components need the exact mouse coordinates when this change occurs, thus they are provided even though they are not
-	 * used in this method.
+	 * Sets whether or not the component is currently selected by the press of a mouse. Different
+	 * clickables handle this differently. Clickables like buttons are only clicked while the mouse
+	 * button is held down. On the other hand, clickables like text boxes stay clicked even when
+	 * the mouse button is released, instead changing to unclicked when the user deselects the text
+	 * box. Sometimes clickable components need the exact mouse coordinates when this change
+	 * occurs, thus they are provided even though they are not used in this method.
 	 * @see #isDeselectedOnRelease()
 	 * @param clicked {@link #clicked}
 	 * @param mouseX the x coordinate of the mouse when this change occurs
@@ -154,7 +163,8 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	//CORE BEHAVIOR
 	/**
-	 * Returns the id of this component. The id is a unique string designed to identify this component when an event occurs.
+	 * Returns the id of this component. The id is a unique string designed to identify this
+	 * component when an event occurs.
 	 * @return {@link #id}
 	 */
 	public String getId(){
@@ -204,8 +214,8 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	/**
 	 * Returns the cursor type to draw. Defaults to {@link Cursor#HAND_CURSOR}. <p>
-	 * If a clickable subclass needs to have a different cursor type (like TEXT_CURSOR for text boxes),
-	 * then this method should be overridden.
+	 * If a clickable subclass needs to have a different cursor type (like TEXT_CURSOR for text
+	 * boxes), then this method should be overridden.
 	 * If a subclass should not change which cursor type is used, {@link Cursor#DEFAULT_CURSOR}
 	 * should be returned here.
 	 */
@@ -324,5 +334,4 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	public void setLostFocusAction(EventAction action) {
 		this.lostFocusAction = action;
 	}
-	
 }

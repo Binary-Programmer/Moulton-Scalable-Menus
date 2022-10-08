@@ -7,10 +7,12 @@ import java.awt.image.BufferedImage;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * A menu component designed to display a {@link BufferedImage}. The component can either keep the ratio of width
- * to height for the image or stretch to fill the space. This is determined by {@link #maintainAspectRatio}.
+ * A menu component designed to display a {@link BufferedImage}. The component can either keep the
+ * ratio of width to height for the image or stretch to fill the space. This is determined by
+ * {@link #maintainAspectRatio}.
  * @author Matthew Moulton
  */
 public class View extends MenuComponent {
@@ -19,8 +21,9 @@ public class View extends MenuComponent {
 	 * @see #getImage()*/
 	protected BufferedImage image = null;
 	/**String expressions to represent the dimensions of this view*/
-	protected String width, height;
-	/**Whether the view should draw the image in the same ratio as given or should stretch it to fill the area of the view.
+	protected Expression width, height;
+	/**Whether the view should draw the image in the same ratio as given or should stretch it to
+	 * fill the area of the view.
 	 * @see #isMaintainAspectRatio()
 	 * @see #setMaintainAspectRatio(boolean)*/
 	protected boolean maintainAspectRatio = true;
@@ -40,8 +43,8 @@ public class View extends MenuComponent {
 	public View(BufferedImage img, Panel parent, String x, String y, String w, String h) {
 		super(parent, x, y);
 		this.image = img;
-		this.width = w;
-		this.height = h;
+		this.width = solve.parse(w, true, false);
+		this.height = solve.parse(h, true, false);
 	}
 	/**
 	 * @param img The image that will be drawn onto the coordinates provided
@@ -92,8 +95,8 @@ public class View extends MenuComponent {
 		this.image = img;
 	}
 	/**
-	 * Gets the image that this view will draw when rendered. By default this method returns {@link #image} but it can
-	 * be overridden to display something else.
+	 * Gets the image that this view will draw when rendered. By default this method returns
+	 * {@link #image} but it can be overridden to display something else.
 	 * @return {@link #image}
 	 */
 	public BufferedImage getImage(){
@@ -101,7 +104,7 @@ public class View extends MenuComponent {
 	}
 	
 	/**
-	 * Sets whether this view should maintain the aspect ratio of width:height when rendering its image
+	 * Sets whether this view should maintain the aspect ratio of width:height when rendering.
 	 * @param mar to replace {@link #maintainAspectRatio}
 	 */
 	public void setMaintainAspectRatio(boolean mar){

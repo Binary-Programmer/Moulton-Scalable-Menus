@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import moulton.scalable.clickables.RadioButton;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A button that displays an {@link Animation} on its button face.
@@ -18,16 +19,17 @@ public class AnimatedButton extends RadioButton {
 	 * @see #getDrawAnimation()
 	 * @see #setAnimation(Animation)*/
 	protected Animation mainAnimation;
-	/**The animation to draw on the face of the button when touched. If none specified, the normal animation
-	 * will be used.
+	/**The animation to draw on the face of the button when touched. If none specified, the normal
+	 * animation will be used.
 	 * @see #setTouchedAnimation(Animation)*/
 	protected Animation touchedAnimation;
-	/**The image to draw on the face of the button when clicked. If none specified, the touched image will be used,
-	 * unless that is not specified, in which case the normal image will be used.
+	/**The image to draw on the face of the button when clicked. If none specified, the touched
+	 * image will be used, unless that is not specified, in which case the normal image will be
+	 * used.
 	 * @see #setClickedAnimation(Animation)*/
 	protected Animation clickedAnimation;
-	/**The algebraic equation to determine the bound of this button. */
-	protected String width, height;
+	/**The equations to determine the dimensions of this button. */
+	protected Expression width, height;
 
 	/**
 	 * @param id a unique string designed to identify this component when an event occurs.
@@ -37,13 +39,14 @@ public class AnimatedButton extends RadioButton {
 	 * @param y the y coordinate on the screen, given in menu component value format
 	 * @param width the width of the component, given in menu component value format
 	 * @param height the height of the component, given in menu component value format
-	 * @param background if the image does not fill up the entire button face, this fill color is used for the rest
+	 * @param background if the image does not fill up the entire button face, this fill color is
+	 * used for the rest.
 	 */
-	public AnimatedButton(String id, Animation animation, Panel parent, String x, String y, String width, 
-			String height, Color background) {
+	public AnimatedButton(String id, Animation animation, Panel parent, String x, String y,
+			String width, String height, Color background) {
 		super(id, parent, x, y, background);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		this.mainAnimation = animation;
 	}
 	/**
@@ -54,7 +57,8 @@ public class AnimatedButton extends RadioButton {
 	 * @param y the integer y coordinate this button should appear on its panel
 	 * @param background the background color for the box when editable
 	 */
-	public AnimatedButton(String id, Animation animation, Panel parent,  int x, int y, Color background) {
+	public AnimatedButton(String id, Animation animation, Panel parent,  int x, int y,
+			Color background) {
 		super(id, parent, x, y, background);
 		this.mainAnimation = animation;
 	}
@@ -87,11 +91,12 @@ public class AnimatedButton extends RadioButton {
 	}
 
 	/**
-	 * Draws on the graphics object to represent this animated button. The button will be bounded by either the 
-	 * {@link #x}, {@link #y}, {@link #width}, and {@link #height} algebraic expressions or by the grid of 
-	 * {@link MenuComponent#parent}. It will draw the image dictated by {@link #getDrawAnimation()} and 
-	 * {@link Animation#getPicture()} in those bounds in the original aspect ratio. Any space not covered by the 
-	 * drawing of the image will be filled with {@link RadioButton#color}.
+	 * Draws on the graphics object to represent this animated button. The button will be bounded
+	 * by either the {@link #x}, {@link #y}, {@link #width}, and {@link #height} algebraic
+	 * expressions or by the grid of {@link MenuComponent#parent}. It will draw the image dictated
+	 * by {@link #getDrawAnimation()} and {@link Animation#getPicture()} in those bounds in the
+	 * original aspect ratio. Any space not covered by the drawing of the image will be filled with
+	 * {@link RadioButton#color}.
 	 * @param g the graphics object to draw on
 	 * @param ww the width of this component's container or {@link #parent} that will be drawn on.
 	 * @param hh the height of this component's container or {@link #parent} that will be drawn on.
@@ -107,7 +112,8 @@ public class AnimatedButton extends RadioButton {
 		g.setColor(getFillColor());
 		g.fillRect(x, y, w, h);
 		if(parent != null)
-			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
+			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x},
+					new int[] {y, y, y+h, y+h}, this));
 		
 		// draw the picture
 		BufferedImage imageToDraw = getDrawAnimation().getPicture();
@@ -122,7 +128,8 @@ public class AnimatedButton extends RadioButton {
 				imgHeight= h;
 				imgWidth = (h*imageToDraw.getWidth())/imageToDraw.getHeight();
 			}
-			g.drawImage(imageToDraw, x+(w-imgWidth)/2, y+(h-imgHeight)/2, imgWidth, imgHeight, null);
+			g.drawImage(imageToDraw, x+(w-imgWidth)/2, y+(h-imgHeight)/2,
+					imgWidth, imgHeight, null);
 		}
 		
 		//draw outline if necessary
@@ -133,10 +140,10 @@ public class AnimatedButton extends RadioButton {
 	}
 	
 	/**
-	 * Returns the animation to draw. If the button is neither touched nor clicked, then the normal animation will be
-	 * used. If the button is clicked, the clicked animation will be used if there is one. If there is not, the 
-	 * touched animation will be used if there is one. If the button is touched, then the touch animation will be used
-	 * if there is one.
+	 * Returns the animation to draw. If the button is neither touched nor clicked, then the normal
+	 * animation will be used. If the button is clicked, the clicked animation will be used if
+	 * there is one. If there is not, the touched animation will be used if there is one. If the 
+	 * button is touched, then the touch animation will be used if there is one.
 	 * @return the appropriate animation to draw on the button's face
 	 */
 	protected Animation getDrawAnimation() {
@@ -144,7 +151,7 @@ public class AnimatedButton extends RadioButton {
 		if(!isClicked() && !isTouched())
 			return mainAnimation;
 		
-		//otherwise, it gets more complicated. If it is clicked, return the click image if there is one
+		//otherwise, it gets more complicated. If it is clicked, return the click image (if any)
 		if(isClicked() && clickedAnimation!=null)
 			return clickedAnimation;
 		//clicked buttons are touched, so if it is touched and there is a touch image, return that
@@ -165,15 +172,16 @@ public class AnimatedButton extends RadioButton {
 	}
 	
 	/**
-	 * If touchedColor is null and the touchedImage is null, the outline toggle will be used to show touch.
+	 * If touchedColor is null and the touchedImage is null, the outline toggle will be used to
+	 * show touch.
 	 * @param touchedColor the new touched color
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(touchedColor != null) {
 			if(touchedAnimation==null && colorTouched==null) {
-				/* if the button is touched presently and the toggle is used, that means that the component will
-				 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
-				 * to the original state.
+				/* if the button is touched presently and the toggle is used, that means that the
+				 * component will show touch through the new color instead of toggling outline.
+				 * Therefore, the outline should go back to the original state.
 				 */
 				if(touched)
 					setOutline(!getOutline());

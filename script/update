@@ -1,0 +1,8 @@
+#!/bin/sh
+# script/update: Update application to newest version.
+
+cd "$(dirname "$0")/.."
+
+git pull
+
+script/bootstrap

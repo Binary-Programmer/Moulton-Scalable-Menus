@@ -11,6 +11,7 @@ import moulton.scalable.containers.Panel;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A menu component that holds a history of text. A scroll bar can be added to see more than is able
@@ -33,7 +34,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**The list of the strings being held. */
 	protected LinkedList<String> history = new LinkedList<>();
 	/**The dimensions of the rectangle. */
-	protected String width, height;
+	protected Expression width, height;
 	/**The font that the history should be drawn in. */
 	protected Font font;
 	/**The scroll bar to change which strings are displayed.
@@ -102,8 +103,8 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 		this.font = font;
 		this.addToTop = addToTop;
 		this.maxMessages = maxMessages;
-		width = w;
-		height = h;
+		width = solve.parse(w, true, false);
+		height = solve.parse(h, true, false);
 	}
 
 	@Override

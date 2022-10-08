@@ -7,6 +7,7 @@ import java.awt.Graphics;
 
 import moulton.scalable.containers.Panel;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * A menu component to display text on a panel.
@@ -26,7 +27,7 @@ public class Caption extends MenuComponent{
 	/**The alignment of the text to be rendered*/
 	protected Alignment alignment;
 	/**The text will center and draw from x to x+width if specified and alignment is center*/
-	protected String centerWidth = null;
+	protected Expression centerWidth = null;
 	/**Whether or not to center the text on the y-axis while rendering.
 	 * @see #getYCentered()
 	 * @see #setYCentered(boolean)*/
@@ -40,7 +41,7 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param alignment left, center, or right at the x-value
 	 */
-	public Caption(String text, Panel parent, String x, String y, Font font, Alignment alignment){
+	public Caption(String text, Panel parent, String x, String y, Font font, Alignment alignment) {
 		super(parent,x,y);
 		this.text = text;
 		this.font = font;
@@ -54,11 +55,11 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param width the text will center and draw from x to x+width
 	 */
-	public Caption(String text, Panel parent, String x, String y, Font font, String width){
+	public Caption(String text, Panel parent, String x, String y, Font font, String width) {
 		super(parent,x,y);
 		this.text = text;
 		this.font = font;
-		this.centerWidth = width;
+		this.centerWidth = solve.parse(width, true, false);
 		this.alignment = Alignment.CENTER_ALIGNMENT;
 	}
 	/**
@@ -69,12 +70,13 @@ public class Caption extends MenuComponent{
 	 * @param font the font to be used in rendering
 	 * @param alignment left, center, or right at the x-value
 	 */
-	public Caption(String text, Panel parent, int x, int y, Font font, Alignment alignment){
+	public Caption(String text, Panel parent, int x, int y, Font font, Alignment alignment) {
 		super(parent, x, y);
 		this.text = text;
 		this.font = font;
 		this.alignment = alignment;
-		this.centerWidth = ""; //not null so rendering will handle with width
+		//not null so rendering will handle with width:
+		this.centerWidth = solve.parse("0", false, false); 
 	}
 
 	@Override
@@ -84,7 +86,8 @@ public class Caption extends MenuComponent{
 		
 		//draw the text here
 		if(textResize())
-			g.setFont(new Font(font.getFontName(), font.getStyle(), getTextVertResize(font.getSize())));
+			g.setFont(new Font(font.getFontName(), font.getStyle(),
+					getTextVertResize(font.getSize())));
 		else
 			g.setFont(font);
 		g.setColor(textColor);
@@ -92,10 +95,11 @@ public class Caption extends MenuComponent{
 		int fontWidth = 0;
 		int fontHeight = fm.getHeight();
 		
+		solve.updateValues(ww, hh);
 		int x, y, w = 0;
 		if(getGridLocation()==null){
-			x = xx + solveString(this.x, ww, hh);
-			y = yy + solveString(this.y, ww, hh);
+			x = xx + solve.eval(this.x);
+			y = yy + solve.eval(this.y);
 		}else{
 			x = xx;
 			y = yy + hh/2;
@@ -111,16 +115,13 @@ public class Caption extends MenuComponent{
 				g.drawString(texts[i], x, y+(i*fontHeight));
 			break;
 		case CENTER_ALIGNMENT:
-			if(this.centerWidth!=null){
+			if(this.centerWidth != null) {
 				//check for x2 variant
-				if(this.centerWidth.length()>0){
-					if(this.centerWidth.charAt(0)=='?'){
-						int x2 = solveString(this.centerWidth.substring(1), ww, hh);
-						w = x2-x;
-					}else
-						w = solveString(this.centerWidth, ww, hh);
-				}else if (parent==null) //if panel is not null w was already defined in earlier panel check
-					w = solveString(this.centerWidth,ww,hh);
+				if (centerWidth.prefaced) {
+					int x2 = solve.eval(centerWidth);
+					w = x2 - x;
+				}else
+					w = solve.eval(centerWidth);
 				//redefine center by using x and endBound as opposite edges to center by
 				x += w/2;
 				//continue on to draw the string based on redefined values
@@ -131,7 +132,7 @@ public class Caption extends MenuComponent{
 			}
 			break;
 		case RIGHT_ALIGNMENT:
-			//if there is a panel, w was already specified and the x pos needs to be moved over to accommodate
+			//if there is a panel, w was already specified and the x pos needs to be moved over
 			if(parent != null)
 				x += w;
 			

@@ -15,7 +15,8 @@ public class TouchPanel extends Panel implements TouchResponsiveComponent {
 	protected boolean touched = false;
 	protected EventAction touchAction = null;
 
-	public TouchPanel(Panel parent, String x, String y, String shownWidth, String shownHeight, Color color) {
+	public TouchPanel(Panel parent, String x, String y, String shownWidth, String shownHeight,
+			Color color) {
 		super(parent, x, y, shownWidth, shownHeight, color);
 	}
 

@@ -20,17 +20,24 @@ public class Manager8 extends MenuManager {
 	@Override
 	public void createMenu() {
 		menu = Panel.createRoot(Color.WHITE);
-		VirtualPanel vp = new VirtualPanel(menu, "width/20", "height/20", "?width", "?height", "800", "800", Color.RED);
-		ScrollBar horizBar = new ScrollBar(false, menu, "width/20", "0", "?width", "?height/20", Color.LIGHT_GRAY);
-		ScrollBar vertBar = new ScrollBar(true, menu, "0", "height/20", "?width/20", "?height", Color.LIGHT_GRAY);
+		VirtualPanel vp = new VirtualPanel(menu, "width/20", "height/20", "?width", "?height",
+				"800", "800", Color.RED);
+		ScrollBar horizBar = new ScrollBar(false, menu, "width/20", "0", "?width", "?height/20",
+				Color.LIGHT_GRAY);
+		ScrollBar vertBar = new ScrollBar(true, menu, "0", "height/20", "?width/20", "?height",
+				Color.LIGHT_GRAY);
 		vp.setWidthScrollBar(horizBar);
 		vp.setHeightScrollBar(vertBar);
 		Font font = new Font("Arial", Font.PLAIN, 12);
-		Button b = new Button("", "HELLO", vp, "width/2", "height/2", "?width", "?height", font, Color.ORANGE);
+		Button b = new Button("", "HELLO", vp, "width/2", "height/2", "?width", "?height",
+				font, Color.ORANGE);
 		addTouchComponent(b);
-		VirtualPanel vp2 = new VirtualPanel(vp, "0", "0", "width/2", "height/2", "500", "500", Color.CYAN);
-		horizBar = new ScrollBar(false, vp, "0", "height/2", "width/2", "?height/2+height/30", Color.LIGHT_GRAY);
-		vertBar = new ScrollBar(true, vp, "width/2", "0", "?width/2+width/30", "height/2", Color.LIGHT_GRAY);
+		VirtualPanel vp2 = new VirtualPanel(vp, "0", "0", "width/2", "height/2", "500", "500",
+				Color.CYAN);
+		horizBar = new ScrollBar(false, vp, "0", "height/2", "width/2", "?height/2+height/30",
+				Color.LIGHT_GRAY);
+		vertBar = new ScrollBar(true, vp, "width/2", "0", "?width/2+width/30", "height/2",
+				Color.LIGHT_GRAY);
 		vp2.setWidthScrollBar(horizBar);
 		vp2.setHeightScrollBar(vertBar);
 		addTouchComponent(new Button("", "A", vp2, 0, 0, font, Color.CYAN));
@@ -48,7 +55,8 @@ public class Manager8 extends MenuManager {
 		*/
 		
 		//add a centered button in b
-		addTouchComponent(new Button("centered", "Centered!", B, "CENTERX", "CENTERY", "width/3", "height/3", font, Color.YELLOW));
+		addTouchComponent(new Button("centered", "Centered!", B, "CENTERX", "CENTERY",
+				"width/3", "height/3", font, Color.YELLOW));
 	}
 
 	@Override

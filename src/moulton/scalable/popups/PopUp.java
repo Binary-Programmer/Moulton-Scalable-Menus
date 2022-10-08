@@ -6,13 +6,14 @@ import java.util.LinkedList;
 
 import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.containers.Panel;
-import moulton.scalable.utils.ExpressionSolver;
+import moulton.scalable.utils.MenuSolver;
+import moulton.scalable.utils.MenuSolver.Expression;
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Container;
 
 /**
  * A super class for all pop ups. The {@link MenuManager} will give precedence to the pop up if there is one
- * set ({@link MenuManager#setPopup(Popup)}). The pop up holds a {@link Panel} that all its components can
+ * set ({@link MenuManager#setPopUp(PopUp)}). The pop up holds a {@link Panel} that all its components can
  * be components of. That root panel can be retrieved by {@link #getBase()}. <p>
  * If {@link #x} or {@link #y} are left unspecified, then the pop up will be centered on that axis within
  * the container. The pop up can draw a background over the other components from the main menu, the color
@@ -20,7 +21,7 @@ import moulton.scalable.containers.Container;
  * touch sensitivity can be added to {@link #touchCheckList}.
  * @author Matthew Moulton
  */
-public class Popup {
+public class PopUp {
 	/**The root panel of this pop up.
 	 * @see #getBase()*/
 	protected Panel base;
@@ -35,12 +36,14 @@ public class Popup {
 	
 	/**The coordinate of the component specified by an algebraic expression.
 	 * If null (which is default), the pop up will be centered on the menu.*/
-	protected String x,y;
+	protected Expression x,y;
 	/**The dimension of the component specified by an algebraic expression.*/
-	protected String width, height;
+	protected Expression width, height;
 	
 	/** The pop up for this pop up. Pop ups can be saved recursively. */
-	protected Popup popup = null;
+	protected PopUp popup = null;
+	/** The solver for this menu item */
+	protected MenuSolver solve = new MenuSolver();
 	
 	/**
 	 * Creates a pop up and centers it on the space given by the {@link Container}
@@ -48,11 +51,11 @@ public class Popup {
 	 * @param height the height of the pop up. Sets {@link #height}
 	 * @param color the color of the pop up.
 	 */
-	public Popup(String width, String height, Color color) {
+	public PopUp(String width, String height, Color color) {
 		x = null;
 		y = null;
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, false, false);
+		this.height = solve.parse(height, false, false);
 		base = Panel.createRoot(color);
 	}
 	
@@ -63,11 +66,11 @@ public class Popup {
 	 * @param height the height of the pop up.
 	 * @param color the color of the pop up.
 	 */
-	public Popup(String x, String y, String width, String height, Color color) {
-		x = this.x;
-		y = this.y;
-		this.width = width;
-		this.height = height;
+	public PopUp(String x, String y, String width, String height, Color color) {
+		this.x = solve.parse(x, false, false);
+		this.y = solve.parse(y, false, false);
+		this.width = solve.parse(width, false, false);
+		this.height = solve.parse(height, false, false);
 		base = Panel.createRoot(color);
 	}
 	
@@ -109,6 +112,8 @@ public class Popup {
 	 * @return {@link #touchCheckList}
 	 */
 	public LinkedList<TouchResponsiveComponent> getTouchCheckList() {
+		if (popup != null)
+			return popup.touchCheckList;
 		return touchCheckList;
 	}
 	
@@ -150,23 +155,20 @@ public class Popup {
 	 * @param height the height in pixels of the menu
 	 */
 	public void render(Graphics g, int width, int height) {
-		ExpressionSolver solver = new ExpressionSolver(width, height);
+		MenuSolver solve = new MenuSolver();
+		solve.updateValues(width, height);
 		
 		int x = 0, y = 0, w = 0, h = 0;
-		if(this.width != null && !this.width.isEmpty())
-			w = (int)solver.solveString(this.width);
-		if(this.height != null && !this.height.isEmpty())
-			h = (int)solver.solveString(this.height);
+		w = solve.eval(this.width);
+		h = solve.eval(this.height);
 		
 		//if x or y is null, then the popup will be centered
 		if(this.x != null) {
-			if(!this.x.isEmpty())
-				x = (int)solver.solveString(this.x);
+			x = solve.eval(this.x);
 		}else //centers
 			x = (width-w)/2;
 		if(this.y != null) {
-			if(!this.y.isEmpty())
-				y = (int)solver.solveString(this.y);
+			y = solve.eval(this.y);
 		}else //centers
 			y = (height-h)/2;
 		
@@ -189,7 +191,15 @@ public class Popup {
 	 * Returns the pop up that this pop up has saved.
 	 * @return {@link #popup}
 	 */
-	public Popup getPopup() {
+	public PopUp getPopup() {
 		return popup;
+	}
+	
+	/**
+	 * Sets the pop up as given.
+	 * @param popup the pop up to be used
+	 */
+	public void setPopUp(PopUp popup) {
+		this.popup = popup;
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
  * The parent class for all components to fit inside of a parent panel. Each component is designed to be
@@ -19,7 +20,7 @@ public abstract class MenuComponent {
 	 * @see #getParent()*/
 	protected Panel parent;
 	/**The coordinate of the component specified by an algebraic expression.*/
-	protected String x, y;
+	protected Expression x, y;
 	/**The default value for {@link #text_resize_factor}. */
 	public static final int DEFAULT_ORIGINAL_TEXT_SIZE = 370;
 	/**A value that determines the size of text components when resized through {@link #getTextVertResize(int)}.
@@ -33,6 +34,8 @@ public abstract class MenuComponent {
 	/**The coordinates of this component on {@link #parent}'s grid. Null when this component is not using the panel
 	 * grid functionality, but rather uses the free-form where the coordinates are derived from {@link #x} and {@link #y}.  */
 	protected Point gridPoint = null;
+	/**The expression solver used to evaluate coordinates and sizes of components.*/
+	protected MenuSolver solve = new MenuSolver();
 	
 	/**
 	 * Sets the parent panel for this component. Since the component has no String x and y coordinates, it must be reliant upon the panel for determining that information
@@ -61,8 +64,8 @@ public abstract class MenuComponent {
 		this.parent = parent;
 		if(parent != null)
 			parent.addFreeComponent(this);
-		this.x = x;
-		this.y = y;
+		this.x = x == null? null : solve.parse(x, false, true);
+		this.y = y == null? null : solve.parse(y, false, true);
 	}
 	
 	/**Draws on the graphics object to represent this component visually. When this method is called,
@@ -75,18 +78,6 @@ public abstract class MenuComponent {
 	 * @param hh the height on the graphics image this component is given
 	 */
 	public abstract void render(Graphics g, int xx, int yy, int ww, int hh);
-	
-	/**
-	 * Determines the integer value of a coordinate based off the string code by utilizing {@link ExpressionSolver}.
-	 * @param code the String to get the format from
-	 * @param contWidth the width of the container screen: used in calculations
-	 * @param contHeight the height of the container screen: used in calculations
-	 * @return the integer value associated with the code
-	 */
-	protected int solveString(String code, int contWidth, int contHeight) {
-		ExpressionSolver solver = new ExpressionSolver(contWidth, contHeight);
-		return (int)solver.solveString(code);
-	}
 	
 	/**
 	 * Returns the grid location of this component if gridded.
@@ -149,6 +140,15 @@ public abstract class MenuComponent {
 	}
 	
 	/**
+	 * Returns the used menu solver. This may be necessary to add a new variable or to update
+	 * a previously defined custom variable.
+	 * @return
+	 */
+	public MenuSolver getSolver() {
+		return solve;
+	}
+	
+	/**
 	 * Sets the static text_original_size constant. Unnecessary for most components, but may be used to give 
 	 * more meaning or precision to text sizes for Moulton Scalable Menus.
 	 * @param factor an int ratio. higher size means more precise text sizes. When the alloted height for the
@@ -186,30 +186,13 @@ public abstract class MenuComponent {
 			return parent.textResize();
 	}
 	
-	/**This has been deprecated. Please use {@link #getRenderRect(int, int, int, int, String, String)}
-	 * instead, which takes precisely the same arguments but gives a different return.
-	 *
-	 * @param xx the lower x bound of the component's canvas
-	 * @param yy the lower y bound of the component's canvas
-	 * @param ww the width for the component to draw
-	 * @param hh the height for the component to draw
-	 * @param width the string expression for the component's width. Only used if the component isn't in a grid
-	 * @param height the string expression for the component's height. Only used if the component isn't in a grid
-	 * @return a pixel array for the component of its x, y, width, and height, in that order.
-	 */
-	@Deprecated
-	protected int[] getRectRenderCoords(int xx, int yy, int ww, int hh, String width, String height) {
-		Rectangle result = getRenderRect(xx, yy, ww, hh, width, height);
-		return new int[] {result.x, result.y, result.width, result.height};
-	}
-	
 	/**
 	 * Many components are inherently rectangularly shaped, thus this method is provided to facilitate coordinate
 	 * calculations of x, y, width, and height for the component. If the component is in a grid (found by checking
 	 * {@link #getGridLocation()}!=null, then xx, yy, ww, and hh are already useful, but if the component is in free
 	 * form, then the result of solving the x and y expressions needs to be added to xx and yy.
 	 * <p>
-	 * In addition to the standard variables provided by {@link ExpressionSolver}, rectangular components allow
+	 * In addition to the standard variables provided by {@link MenuSolver}, rectangular components allow
 	 * for more customization. First of all, there are four new variables to use:
 	 * <pre>CENTERX CENTERY WIDTH HEIGHT</pre>
 	 * Instead of referring to the available canvas space, these capital variants refer to the component being
@@ -234,50 +217,39 @@ public abstract class MenuComponent {
 	 * @param height the string expression for the component's height. Only used if the component isn't in a grid
 	 * @return the rectangle for where the component should be rendered.
 	 */
-	protected Rectangle getRenderRect(int xx, int yy, int ww, int hh, String width, String height) {
+	protected Rectangle getRenderRect(int xx, int yy, int ww, int hh, Expression width, Expression height) {
 		int x, y, w, h;
+		solve.updateValues(ww, hh);
 		if(getGridLocation()==null) {
 			//Set up the solver and the variables we save to
-			ExpressionSolver solve = new ExpressionSolver(ww, hh);
 			double wD, hD;
 			
-			boolean qMarkWidth = false;
-			boolean qMarkHeight = false;
+			boolean solveWidth = false;
+			boolean solveHeight = false;
 			
 			//try to solve width and height first
-			if (width.charAt(0) == '?') {
-				//solve for the ending point
-				wD = xx + (int)(solve.solveString(width.substring(1)));
-				//deduce the width later
-				qMarkWidth = true;
+			if (width.prefaced) {
+				//solve from the ending point
+				wD = solve.eval(width);
+				solveWidth = true; // need to adjust to where x actually is
+			}else
+				wD = solve.eval(width);
+			
+			if (height.prefaced) {
+				hD = solve.eval(height);
+				solveHeight = true;
 			} else
-				wD = (int)(solve.solveString(width));
+				hD = solve.eval(height);
 			
-			if (height.charAt(0) == '?') {
-				hD = yy + (int)(solve.solveString(height.substring(1)));
-				qMarkHeight = true;
-			} else
-				hD = (int)solve.solveString(height);
+			// x and y may use extended variables:
+			x = xx + solve.evalExtended(this.x, wD, hD);
+			y = yy + solve.evalExtended(this.y, wD, hD);
 			
-			//now we can solve x and y with any capital vars
-			String[] variables = {
-					"centerx", "centery", "width", "height", "pi", "e",
-					"CENTERX", "CENTERY", "WIDTH", "HEIGHT"
-			};
-			double[] values = {
-					ww/2, hh/2, ww, hh, 3.1415926536, 2.7182818285,
-					(ww - wD)/2, (hh - hD)/2, wD, hD
-			};
-			solve.setVariables(variables, values);
-			
-			x = xx + (int)(solve.solveString(this.x));
-			y = yy + (int)(solve.solveString(this.y));
-			
-			//Now we must return to process any ?
-			if(qMarkWidth)
-				wD -= x;
-			if(qMarkHeight)
-				hD -= y;
+			//Now we must finish solving for the width and/or height
+			if(solveWidth)
+				wD -= (x - xx);
+			if(solveHeight)
+				hD -= (y - yy);
 			
 			//Finally, round to get x,y,w,h
 			w = (int)Math.round(wD);

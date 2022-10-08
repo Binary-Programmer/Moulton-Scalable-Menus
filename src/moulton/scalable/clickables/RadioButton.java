@@ -6,18 +6,20 @@ import moulton.scalable.containers.Panel;
 import moulton.scalable.containers.MenuManager;
 
 /**
- * A button where only one in the group can be clicked at a time. Used in conjunction with {@link RadioGroup}. If
- * this button has no group, then its behavior is that of a normal button: being freely clickable while editable.
+ * A button where only one in the group can be clicked at a time. Used in conjunction with {@link
+ * RadioGroup}. If this button has no group, then its behavior is that of a normal button: being
+ * freely clickable while editable.
  * <p>
- * As a subclass of {@link Clickable} which implements {@link TouchResponsiveComponent}, this button and subclasses
- * can be responsive to mouse touching. However, simply creating the button and adding it to the Panel tree is 
- * insufficient for this functionality. The button must also be added to the {@link MenuManager}'s touch list by
- * {@link MenuManager#addTouchResponsiveComponent(TouchResponsiveComponent)}.
+ * As a subclass of {@link Clickable} which implements {@link TouchResponsiveComponent}, this
+ * button and subclasses can be responsive to mouse touching. However, simply creating the button
+ * and adding it to the Panel tree is insufficient for this functionality. The button must also be
+ * added to the {@link MenuManager}'s touch list by {@link MenuManager#addTouchResponsiveComponent(
+ * TouchResponsiveComponent)}.
  * @author Matthew Moulton
  */
 public abstract class RadioButton extends Clickable {
-	/**The group of this button. At most one component in a group can be selected at a time. Setting this to not null will make the subclass
-	 * act like a radio button.
+	/**The group of this button. At most one component in a group can be selected at a time.
+	 * Setting this to not null will make the subclass act like a radio button.
 	 * @see #setGroup(RadioGroup)
 	 * @see #getGroup()}*/
 	protected RadioGroup group = null;
@@ -83,8 +85,8 @@ public abstract class RadioButton extends Clickable {
 	}
 	
 	/**
-	 * Returns true if this button knows it is clicked (through {@link Clickable#clicked}) or if the group says
-	 * that the selected button is this.
+	 * Returns true if this button knows it is clicked (through {@link Clickable#clicked}) or if
+	 * the group says that the selected button is this.
 	 */
 	@Override
 	public boolean isClicked() {
@@ -92,9 +94,10 @@ public abstract class RadioButton extends Clickable {
 	}
 	
 	/**
-	 * Called in rendering. Gives the fill color of the button. If the button is not editable, {@link #colorLight} is used.
-	 * If the button is clicked, {@link #colorDark} is used. If the button is touched and has a touch color ({@link #colorTouched}),
-	 * that is used. Otherwise, the normal {@link #color} is returned.
+	 * Called in rendering. Gives the fill color of the button. If the button is not editable,
+	 * {@link #colorLight} is used. If the button is clicked, {@link #colorDark} is used. If the
+	 * button is touched and has a touch color ({@link #colorTouched}), that is used. Otherwise,
+	 * the normal {@link #color} is returned.
 	 * @return the applicable color for rendering the fill of the button
 	 * @see #isEnabled()
 	 * @see #isClicked()
@@ -117,9 +120,9 @@ public abstract class RadioButton extends Clickable {
 	 */
 	public void setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
-			/* if the button is touched presently and the new color is not null, that means that the component will
-			 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
-			 * to the original state.
+			/* if the button is touched presently and the new color is not null, that means that
+			 * the component will show touch through the new color instead of toggling outline.
+			 * Therefore, the outline should go back to the original state.
 			 */
 			if(touched)
 				setOutline(!getOutline());
@@ -134,16 +137,15 @@ public abstract class RadioButton extends Clickable {
 	}
 	
 	/**
-	 * Sets whether this button is touched. If the touched color is unset, then an outline toggle will be used
-	 * to show touch. Therefore, setting the touch here may trigger the toggle.
+	 * Sets whether this button is touched. If the touched color is unset, then an outline toggle
+	 * will be used to show touch. Therefore, setting the touch here may trigger the toggle.
 	 */
 	@Override
 	public void setTouched(boolean touched) {
 		//if the touch state has changed
-		if(touched != this.touched && colorTouched == null) { //if the outline effect should be used
+		if(touched != this.touched && colorTouched == null) //if the outline effect should be used
 			setOutline(!getOutline());
-		}
 		this.touched = touched;
 	}
-
+	
 }

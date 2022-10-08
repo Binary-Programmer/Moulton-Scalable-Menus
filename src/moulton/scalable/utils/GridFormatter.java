@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.HashMap;
 
+import moulton.scalable.utils.MenuSolver.Expression;
+
 /**
  * GridFormatter will hold MenuComponents in a grid that can have variable margins, frames, and weights, then
  * will give the coordinate specifications for each component through {@link #findCompCoordinates(MenuComponent, Rectangle)}.
@@ -16,6 +18,9 @@ import java.util.HashMap;
  * @see #specifyColumnWeight(int, double)
  */
 public class GridFormatter {
+	/**The maximum x and y values of the child components of the grid. This is kept track of as components
+	 * are added to the grid. At run-time, the grid is split evenly into that many pieces for the x and y axes.*/
+	protected Dimension gridDim = new Dimension(0,0);
 	/**The components that are held at the location they are in the grid. Technically, the maximum x and y are
 	 * already stored in the map, but for speed, {@link #gridDim} will keep track of that when components are
 	 * added or removed.
@@ -23,25 +28,6 @@ public class GridFormatter {
 	 * @see #removeComponent(int, int, boolean)
 	 * @see #getHeldComponents()*/
 	protected HashMap<Point, MenuComponent> gridComponents = new HashMap<Point, MenuComponent>();
-	/**The maximum x and y values of the child components of the grid. This is kept track of as components
-	 * are added to the grid. At run-time, the grid is split evenly into that many pieces for the x and y axes.*/
-	protected Dimension gridDim = new Dimension(0,0);
-	/**The width of the x margin. This margin will separate all elements in the x-plane. Defaults to null.
-	 * @see #setMargin(String, String)
-	 * @see #yMargin*/
-	protected String xMargin = null;
-	/**The height of the y margin. This margin will separate all elements in the y-plane. Defaults to null.
-	 * @see #setMargin(String, String)
-	 * @see #xMargin*/
-	protected String yMargin = null;
-	/**The width of the outside border. Defaults to null.
-	 * @see #setFrame(String, String)
-	 * @see #yFrame*/
-	protected String xFrame = null;
-	/**The height of the outside border. Defaults to null.
-	 * @see #setFrame(String, String)
-	 * @see #xFrame*/
-	protected String yFrame = null;
 	/**Holds the values of unique row weights. At default, this map will be empty, and all shown rows will
 	 * have an implied weight of 1. However, row weights can be specified otherwise with {@link #specifyRowWeight(int, double)}
 	 * and they will be saved here. A row with a weight double to another row's weight will have double the
@@ -56,6 +42,26 @@ public class GridFormatter {
 	 * @see #findXWeights(int)
 	 * @see #getColWeight(int)*/
 	protected HashMap<Integer, Double> colWeights = new HashMap<Integer, Double>();
+	
+	/**Holds the used expression solver used to calculate the coordinates and weights*/
+	protected MenuSolver solve = new MenuSolver();
+	/**The width of the x margin. This margin will separate all elements in the x-plane. Defaults to null.
+	 * @see #setMargin(String, String)
+	 * @see #yMargin*/
+	protected Expression xMargin = null;
+	/**The height of the y margin. This margin will separate all elements in the y-plane. Defaults to null.
+	 * @see #setMargin(String, String)
+	 * @see #xMargin*/
+	protected Expression yMargin = null;
+	/**The width of the outside border. Defaults to null.
+	 * @see #setFrame(String, String)
+	 * @see #yFrame*/
+	protected Expression xFrame = null;
+	/**The height of the outside border. Defaults to null.
+	 * @see #setFrame(String, String)
+	 * @see #xFrame*/
+	protected Expression yFrame = null;
+	
 	
 	/**Adds a component onto the grid at the specified location. If the location is already taken by another
 	 * component, comp will replace it. If the location is outside the grid size in {@link #gridDim}, the grid
@@ -84,8 +90,8 @@ public class GridFormatter {
 	 * @param xMargin the width of the margin on the x-axis
 	 * @param yMargin the height of the margin on the y-axis*/
 	public void setMargin(String xMargin, String yMargin) {
-		this.xMargin = xMargin;
-		this.yMargin = yMargin;
+		this.xMargin = (xMargin == null)? null : solve.parse(xMargin, false, false);
+		this.yMargin = (yMargin == null)? null : solve.parse(yMargin, false, false);
 	}
 	
 	/**Sets the {@link #xFrame} and {@link #yFrame} for this panel. Unlike margins, the frame
@@ -94,8 +100,8 @@ public class GridFormatter {
 	 * @param xFrame the algebraic expression for the width of the frame
 	 * @param yFrame the algebraic expression for the height of the frame.*/
 	public void setFrame(String xFrame, String yFrame){
-		this.xFrame = xFrame;
-		this.yFrame = yFrame;
+		this.xFrame = (xFrame == null)? null : solve.parse(xFrame, false, false);
+		this.yFrame = (yFrame == null)? null : solve.parse(yFrame, false, false);
 	}
 	
 	/**Deletes the component found at the location (x,y) in {@link #gridComponents}.
@@ -152,20 +158,18 @@ public class GridFormatter {
 			//found @ gridPoint
 			
 			//find children components from self
-			int wholeWidth = self.width;
-			int wholeHeight = self.height;
-			ExpressionSolver solver = new ExpressionSolver(wholeWidth, wholeHeight);
+			solve.updateValues(self.width, self.height);
 			//frame
-			if(xFrame!=null){
-				int frame = (int)solver.solveString(xFrame);
+			if(xFrame!=null) {
+				int frame = (int)solve.evalExtended(xFrame, self.width, self.height);
 				self.width -= frame*2;
 				if(self.width<0)
 					self.width = 0;
 				else
 					self.x += frame;
 			}
-			if(yFrame!=null){
-				int frame = (int)solver.solveString(yFrame);
+			if(yFrame!=null) {
+				int frame = (int)solve.evalExtended(yFrame, self.width, self.height);
 				self.height -= frame*2;
 				if(self.height<0)
 					self.height = 0;
@@ -175,7 +179,7 @@ public class GridFormatter {
 			//margins
 			int marginSize = 0;
 			if(xMargin!=null) {
-				marginSize = (int)solver.solveString(xMargin);
+				marginSize = (int)solve.evalExtended(xMargin, self.width, self.height);
 				if(marginSize<0 || self.width<1)
 					marginSize = 0;
 			}
@@ -191,7 +195,7 @@ public class GridFormatter {
 			
 			marginSize = 0;
 			if(yMargin!=null) {
-				marginSize = (int)solver.solveString(yMargin);
+				marginSize = (int)solve.evalExtended(yMargin, self.width, self.height);
 				if(marginSize<0 || self.height<1)
 					marginSize = 0;
 			}

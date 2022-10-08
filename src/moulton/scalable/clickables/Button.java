@@ -10,15 +10,17 @@ import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.texts.Alignment;
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * A menu component that is a simple rectangular button with optional frontal text saved as {@link #text}.
- * Button is a subclass of {@link RadioButton}, but only acts as a radio button when the {@link RadioButton#group}
- * is set to a not-null value.
+ * A menu component that is a simple rectangular button with optional frontal text saved as {@link
+ * #text}. Button is a subclass of {@link RadioButton}, but only acts as a radio button when the
+ * {@link RadioButton#group} is set to a not-null value.
  * <p>
- * If this button is registered on the {@link MenuManager}'s touch check list, then it will be responsive to mouse
- * touching. By default, upon mouse touch the outline will toggle, but if {@link RadioButton#colorTouched} is set from
- * non-null, then the fill color of the button will change instead.
+ * If this button is registered on the {@link MenuManager}'s touch check list, then it will be
+ * responsive to mouse touching. By default, upon mouse touch the outline will toggle, but if
+ * {@link RadioButton#colorTouched} is set from non-null, then the fill color of the button will
+ * change instead.
  * @author Matthew Moulton
  */
 public class Button extends RadioButton {
@@ -27,7 +29,7 @@ public class Button extends RadioButton {
 	 * @see #getText()*/
 	protected String text;
 	/**The string expressions to define the dimensions of the button on the parent panel.*/
-	protected String width, height;
+	protected Expression width, height;
 	/**The font of the text rendered on the button. */
 	protected Font font;
 	/**The alignment for the text on the button's face. Defaults to centered.
@@ -52,10 +54,11 @@ public class Button extends RadioButton {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
-	public Button(String id, String text, Panel parent, String x, String y, String width, String height, Font font, Color color) {
+	public Button(String id, String text, Panel parent, String x, String y,
+			String width, String height, Font font, Color color) {
 		super(id, parent, x, y, color);
-		this.width = width;
-		this.height = height;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
 		this.text = text;
 		this.font = font;
 	}
@@ -69,19 +72,22 @@ public class Button extends RadioButton {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
-	public Button(String id, String text, Panel parent, int x, int y, Font font, Color color){
+	public Button(String id, String text, Panel parent, int x, int y, Font font, Color color) {
 		super(id, parent, x, y, color);
 		this.text = text;
 		this.font = font;
 	}
 	
 	/**
-	 * Draws the button onto the graphics. If this button is in a grid, it will take all of the space alloted to it.
-	 * If it is in free-draw mode, then its dimensions will be decided by the string expressions for {@link MenuComponent#x},
-	 * {@link MenuComponent#y}, {@link #width}, and {@link #height}.<p>
-	 * The method {@link RadioButton#getFillColor()} will be called to determine what color the body of this button
-	 * will be. The outline will be in black if it should be drawn (specified by {@link Clickable#outline}), as will
-	 * the text on the face of the button, unless the button is not enabled.
+	 * Draws the button onto the graphics. If this button is in a grid, it will take all of the
+	 * space alloted to it. If it is in free-draw mode, then its dimensions will be decided by the
+	 * string expressions for {@link MenuComponent#x}, {@link MenuComponent#y}, {@link #width}, and
+	 * {@link #height}.
+	 * <p>
+	 * The method {@link RadioButton#getFillColor()} will be called to determine what color the
+	 * body of this button will be. The outline will be in black if it should be drawn (specified
+	 * by {@link Clickable#outline}), as will the text on the face of the button, unless the button
+	 * is not enabled.
 	 */
 	public void render(Graphics g, int xx, int yy, int ww, int hh) {
 		Rectangle rect = this.getRenderRect(xx, yy, ww, hh, width, height);
@@ -96,7 +102,8 @@ public class Button extends RadioButton {
 			g.fillRect(x, y, w, h);
 		}
 		if(parent != null)
-			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x}, new int[] {y, y, y+h, y+h}, this));
+			defineClickBoundary(parent.handleOffsets(new int[] {x, x+w, x+w, x},
+					new int[] {y, y, y+h, y+h}, this));
 		
 		if (outline) {
 			g.setColor(Color.BLACK);
@@ -109,7 +116,9 @@ public class Button extends RadioButton {
 			if(fillColor != null) {
 				//The opposite will be used for the text color
 				//(299R + 587G + 114B) / 1000 gives a brightness in [0, 255]
-				int brightness = (299*fillColor.getRed() + 587*fillColor.getGreen() + 114*fillColor.getBlue()) / 1000;
+				int brightness = (299*fillColor.getRed() +
+								587*fillColor.getGreen() +
+								114*fillColor.getBlue()) / 1000;
 				if(brightness >= 255/2)
 					textColor = Color.BLACK;
 				else
@@ -123,7 +132,8 @@ public class Button extends RadioButton {
 		// draw the text
 		if (text != null && !text.isEmpty()) {
 			if(textResize())
-				g.setFont(new Font(font.getFontName(), font.getStyle(), getTextVertResize(font.getSize())));
+				g.setFont(new Font(font.getFontName(), font.getStyle(),
+						getTextVertResize(font.getSize())));
 			else
 				g.setFont(font);
 			FontMetrics fm = g.getFontMetrics();

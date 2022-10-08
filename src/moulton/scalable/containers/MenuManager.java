@@ -19,7 +19,7 @@ import moulton.scalable.clickables.TouchResponsiveComponent;
 import moulton.scalable.draggables.DraggableComponent;
 import moulton.scalable.draggables.ScrollBar;
 import moulton.scalable.draggables.ScrollableComponent;
-import moulton.scalable.popups.Popup;
+import moulton.scalable.popups.PopUp;
 import moulton.scalable.texts.HotKeyTextComponent;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.texts.TextFormat;
@@ -28,10 +28,10 @@ import moulton.scalable.utils.MenuComponent;
 
 /**
  * The menu manager will handle the rendering of its menu on a graphics object through
- * {@link #render(Graphics)}. When the {@link Container} knows that it is time to render, have it call
- * {@link #render(Graphics)}. Subclass this Menu Manager to create menu set-ups for yourself.
- * Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make sure
- * to save the panel you create to {@link #menu}.
+ * {@link #render(Graphics)}. When the {@link Container} knows that it is time to render, have it
+ * call {@link #render(Graphics)}. Subclass this Menu Manager to create menu set-ups for yourself.
+ * Specifically, use {@link #createMenu()} to create a menu Panel and add components to it. Make
+ * sure to save the panel you create to {@link #menu}.
  * <p>
  * Will handle events for mouse moving ({@link #mouseMoved(int, int)}), mouse pressing
  * ({@link #mousePressed(int, int)} and {@link #mouseReleased(int, int)}), and key typing
@@ -40,28 +40,32 @@ import moulton.scalable.utils.MenuComponent;
  * @author Matthew Moulton
  */
 public abstract class MenuManager {
-	/**The panel that will serve as the menu. Exact usage is specified in the class documentation: {@link Panel}.
+	/**The panel that will serve as the menu. Exact usage is specified in the class documentation:
+	 * {@link Panel}.
 	 * @see #hasMenu()
 	 * @see #getMenu()*/
 	protected Panel menu;
-	/**A pop up that should be drawn on top of the {@link #menu}. If the pop up is set (default is null),
-	 * it will take precedence over the menu and take the action events such as {@link #mousePressed}
+	/**A pop up that should be drawn on top of the {@link #menu}. If the pop up is set (default is
+	 * null), it will take precedence over the menu and take the action events such as {@link
+	 * #mousePressed}
 	 * and {@link #mouseScrolled(int, int, int)}.
 	 * @see #getPopup()
-	 * @see #setPopup(Popup)*/
-	protected Popup popup = null;
+	 * @see #setPopUp(PopUp)*/
+	protected PopUp popup = null;
 	/**The container for the menus to manage.*/
 	protected Container cont;
-	/**The Clickable that was last clicked. Clickables are only considered activated once the user has
-	 * both clicked and released on the same object.
+	/**The Clickable that was last clicked. Clickables are only considered activated once the user
+	 * has both clicked and released on the same object.
 	 * @see #getClicked()
 	 * @see #setClicked(Clickable, int, int)*/
 	protected Clickable clicked = null;
-	/**mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed. Later updated by 
-	 * draggable components through {@link #mouseMoved(int, int)} and {@link DraggableComponent#drag(double, double)}
-	 * to be the location of the mouse at the point of last update.*/
+	/**mouseX and mouseY are the coordinates of the mouse when a mouse button is first pressed.
+	 * Later updated by draggable components through {@link #mouseMoved(int, int)} and {@link
+	 * DraggableComponent#drag(double, double)} to be the location of the mouse at the point of
+	 * last update.*/
 	protected double mouseX, mouseY;
-	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link #mouseX}, {@link #mouseY}).
+	/**Whether the mouse is currently pressed. Where the mouse was pressed is defined as ({@link
+	 * #mouseX}, {@link #mouseY}).
 	 * @see #mousePressed(int, int)
 	 * @see #mouseReleased(int, int)*/
 	protected boolean mousePressed = false;
@@ -70,7 +74,8 @@ public abstract class MenuManager {
 	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)*/
 	protected LinkedList<TouchResponsiveComponent> touchCheckList = new LinkedList<>();
 	
-	/**A clickable that can be set to the next in a form chain if the next should just be a deselection.*/
+	/**A clickable that can be set to the next in a form chain if the next should just be a
+	 * deselection.*/
 	public static final Clickable FORM_END = new Clickable(null, null, 0, 0) {
 		public void render(Graphics g, int xx, int yy, int ww, int hh) {}
 		public void setFormChain(Clickable formChain) {
@@ -87,31 +92,34 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Implement to define the properties of the menu to manage. The created menu should be held in {@link #menu}, to be usable by 
-	 * other methods. Thus, all components on the menu should have {@link #menu} saved as their parent Panel.
+	 * Implement to define the properties of the menu to manage. The created menu should be held in
+	 * {@link #menu}, to be usable by other methods. Thus, all components on the menu should have
+	 * {@link #menu} saved as their parent Panel.
 	 */
 	public abstract void createMenu();
 	
 	/**
-	 * Implement to add functionality to any clickable components in the menu managed. A good way to check for
-	 * component identity is by using {@link Clickable#getId()}.
+	 * Implement to add functionality to any clickable components in the menu managed. A good way
+	 * to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
 	public abstract void clickableAction(Clickable c);
 	
 	/**
-	 * Implement to add functionality to any clickable components in the menu managed once they lose focus. Focus is defined
-	 * as going from clicked to not clicked. For buttons, this occurs once the mouse has been released. For text boxes, this occurs
-	 * when something else is clicked. A good way to check for component identity is by using {@link Clickable#getId()}.
+	 * Implement to add functionality to any clickable components in the menu managed once they
+	 * lose focus. Focus is defined as going from clicked to not clicked. For buttons, this occurs
+	 * once the mouse has been released. For text boxes, this occurs when something else is
+	 * clicked. A good way to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
 	public abstract void lostFocusAction(Clickable c);
 	
 	/**
-	 * The Moulton Scalable Menus handles the mouse press once this method has been called by a mouse listener external to Moulton Scalable
-	 * Menus. This method systematically processes every component in {@link #menu} to see if the (x,y) coordinate of the mouse click, as 
-	 * determined by the mouse event, was within the boundaries of the component. If so, the menu remembers that component as {@link #clicked}
-	 * for the occurrence of a mouse release.
+	 * The Moulton Scalable Menus handles the mouse press once this method has been called by a
+	 * mouse listener external to Moulton Scalable Menus. This method systematically processes
+	 * every component in {@link #menu} to see if the (x,y) coordinate of the mouse click, as
+	 * determined by the mouse event, was within the boundaries of the component. If so, the menu
+	 * remembers that component as {@link #clicked}for the occurrence of a mouse release.
 	 * @param x the x position of the mouse relative to the JFrame
 	 * @param y the y position of the mouse relative to the JFrame
 	 */
@@ -148,14 +156,14 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * The Moulton Scalable Menus handles the mouse release once this method has been called by another source. 
-	 * This method checks to see whether the component that the user first clicked on is the same that they
-	 * released on. Sets {@link #clicked} as necessary.
+	 * The Moulton Scalable Menus handles the mouse release once this method has been called by
+	 * another source. This method checks to see whether the component that the user first clicked
+	 * on is the same that they released on. Sets {@link #clicked} as necessary.
 	 * <p>
-	 * If the click was successful, it is determined whether the clickable has an associated click event by
-	 * calling {@link Clickable#getClickAction()}. If not, or if the action does not consume the event, the
-	 * manager then calls {@link #clickableAction(Clickable)}.
-	 * and the mouse (x,y) coordinate as determined by the mouse event is still on that component.
+	 * If the click was successful, it is determined whether the clickable has an associated click
+	 * event by calling {@link Clickable#getClickAction()}. If not, or if the action does not
+	 * consume the event, the manager then calls {@link #clickableAction(Clickable)} and the mouse
+	 * (x,y) coordinate as determined by the mouse event is still on that component.
 	 * @param x the x coordinate of the mouse when released
 	 * @param y the y coordinate of the mouse when released
 	 */
@@ -188,7 +196,8 @@ public abstract class MenuManager {
 	
 	/**
 	 * Call this when the mouse is scrolled. Positive values are down, and negative values are up.
-	 * The scroll will be passed to the scroll bar of the relevant touched {@link ScrollableComponent}.
+	 * The scroll will be passed to the scroll bar of the relevant touched {@link
+	 * ScrollableComponent}.
 	 * @param mouseX the x-position of the mouse when the scrolling occurred
 	 * @param mouseY the y-position of the mouse when the scrolling occurred
 	 * @param scrollAmount the amount that the mouse is scrolled.
@@ -220,11 +229,13 @@ public abstract class MenuManager {
 	 * @param checkComp the panel of components to search through
 	 * @return the MenuComponent most specific and that contains the x,y coordinate
 	 */
-	private MenuComponent findRelevantScrolledComponent(int mouseX, int mouseY, MenuComponent checkComp) {
+	private MenuComponent findRelevantScrolledComponent(int mouseX, int mouseY,
+			MenuComponent checkComp) {
 		if(checkComp instanceof Panel) { //check children
 			Panel compPanel = (Panel)checkComp;
 			for(MenuComponent childComp: compPanel.getAllHeldComponents()) {
-				MenuComponent relevantScrolled = findRelevantScrolledComponent(mouseX, mouseY, childComp);
+				MenuComponent relevantScrolled =
+						findRelevantScrolledComponent(mouseX, mouseY, childComp);
 				if(relevantScrolled!=null) {
 					//must also have a vertical scroll bar
 					if(((ScrollableComponent)relevantScrolled).getHeightScrollBar()!=null)
@@ -239,29 +250,30 @@ public abstract class MenuManager {
 			ScrollableComponent scrollable = (ScrollableComponent)checkComp;
 			int[][] activeCoords = scrollable.getActiveScrollCoordinates();
 			Polygon polygon = new Polygon(activeCoords[0], activeCoords[1], activeCoords[0].length);
-			//the component must contain the mouse coordinates and have a vertical scroll bar to be relevant
+			//the component must have mouse coordinates and vertical scroll bar to be relevant
 			if(polygon.contains(mouseX, mouseY) && scrollable.getHeightScrollBar()!=null) {
 				return checkComp;
 			}
-			
 		}
 		return null; //nothing found here...
 	}
 	
 	/**
-	 * Called when the component lost focus and may need to report changes. If the component has a registered
-	 * lost focus event {@link Clickable#getLostFocusAction()}, then that will be called. If not, or if the
-	 * event remains unconsumed, {@link #lostFocusAction(Clickable)} will be called.
+	 * Called when the component lost focus and may need to report changes. If the component has a
+	 * registered lost focus event {@link Clickable#getLostFocusAction()}, then that will be
+	 * called. If not, or if the event remains unconsumed, {@link #lostFocusAction(Clickable)} will
+	 * be called.
 	 * <p>
 	 * For components that lose focus on release ({@link Clickable#isDeselectedOnRelease()}),
-	 * losing focus is defined as going from a clicked state to a non-clicked state. The losing focus event
-	 * will occur regardless of whether the click was successful.
+	 * losing focus is defined as going from a clicked state to a non-clicked state. The losing
+	 * focus event will occur regardless of whether the click was successful.
 	 * <p>
-	 * For components that do not lose focus on release, the meaning is slightly different. The component
-	 * will keep focus only if the click is successful (if not, it will lose focus and trigger this event
-	 * just like <code>deselectOnRelease</code> was true), and if so, it will lose focus as soon as another
-	 * component is first clicked (regardless of whether that click is successful).
-	 * @param c the Clickable menu component that lost focus and needs to report changes to its menu
+	 * For components that do not lose focus on release, the meaning is slightly different. The
+	 * component will keep focus only if the click is successful (if not, it will lose focus and
+	 * trigger this event just like <code>deselectOnRelease</code> was true), and if so, it will
+	 * lose focus as soon as another component is first clicked (regardless of whether that click
+	 * is successful).
+	 * @param c the Clickable menu component that lost focus and needs to report changes to menu
 	 */
 	public void componentLostFocus(Clickable c){
 		//don't let text boxes report invalid strings
@@ -280,9 +292,9 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Handles any key typed transactions. If the clicked is a {@link TextInputComponent}, the event is
-	 * passed to it. This will not occur automatically when a key is typed, rather, it needs to be called
-	 * externally. 
+	 * Handles any key typed transactions. If the clicked is a {@link TextInputComponent}, the
+	 * event is passed to it. This will not occur automatically when a key is typed, rather, it
+	 * needs to be called externally. 
 	 * @param key the key that was pressed
 	 */
 	public void keyTyped(char key) {
@@ -301,7 +313,8 @@ public abstract class MenuManager {
 					return;
 				}else if(key == (char)22) { //paste
 					try {
-						Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this);
+						Transferable t =
+								Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this);
 						c.paste((String)t.getTransferData(DataFlavor.stringFlavor));
 					}catch(UnsupportedFlavorException ue) {
 						System.err.println("The clipboard contents were not of text type!");
@@ -340,10 +353,11 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Handles key pressed transactions for the menu.
-	 * If the clicked is a {@link TextBox}, this method will check to see if the key press was either 
-	 * the left or right arrow keys. Those keys shift the index for the text box.
-	 * @param keyInt the int code of the key pressed. This corresponds to {@link KeyEvent#getExtendedKeyCode()}.
+	 * Handles key pressed transactions for the menu. <p>
+	 * If the clicked is a {@link TextBox}, this method will check to see if the key press was
+	 * either the left or right arrow keys. Those keys shift the index for the text box.
+	 * @param keyInt the int code of the key pressed. This corresponds to {@link
+	 * KeyEvent#getExtendedKeyCode()}.
 	 */
 	public void keyPressed(int keyInt){
 		if(clicked instanceof TextBox){
@@ -362,9 +376,9 @@ public abstract class MenuManager {
 	 * was first clicked. When the draggable uses some of the change, it can update the mouse
 	 * coordinates by returning an array of how much was used. (Index 0 for x, index 1 for y.)
 	 * <p>
-	 * This method is also responsible for executing touch events and updating the cursor if necessary.
-	 * If multiple touched components alter the cursor type, the most recently added to the touch list
-	 * will take precedence.
+	 * This method is also responsible for executing touch events and updating the cursor if
+	 * necessary. If multiple touched components alter the cursor type, the most recently added to
+	 * the touch list will take precedence.
 	 * 
 	 * @param x the mouse x coordinate in pixels
 	 * @param y the mouse y coordinate in pixels
@@ -378,8 +392,8 @@ public abstract class MenuManager {
 				mouseX += changeXY[0];
 				mouseY += changeXY[1];
 			}catch(NullPointerException ne) {
-				throw new NullPointerException("The draggable component: "+clicked+" must return an "+
-						"array of two elements: [changeX, changeY]!");
+				throw new NullPointerException("The draggable component: " + clicked +
+						" must return an "+ "array of two elements: [changeX, changeY]!");
 			}
 		}
 		LinkedList<TouchResponsiveComponent> touchList = null;
@@ -396,8 +410,8 @@ public abstract class MenuManager {
 				touchComp.setTouched(true);
 				if(touchComp.getTouchAction() != null)
 					touchComp.getTouchAction().onEvent();
-				//In case that two components affect the cursor, draw the most recent one
-				//However, ignore if the component does not care about the cursor even though touched.
+				//In case that two components affect the cursor, draw the most recent one. However,
+				//ignore if the component does not care about the cursor even though touched.
 				if(touchComp.getTouchedCursorType() != Cursor.DEFAULT_CURSOR)
 					cursorType = touchComp.getTouchedCursorType();
 			}else if(touchComp.isTouched()) { //if it was touched
@@ -435,10 +449,10 @@ public abstract class MenuManager {
 	
 	/**
 	 * Gets the current {@link #popup} for this menu. Only one popup can be active at a time.
-	 * @see #setPopup(Popup)
+	 * @see #setPopUp(PopUp)
 	 * @return the current popup
 	 */
-	public Popup getPopup() {
+	public PopUp getPopup() {
 		return popup;
 	}
 	
@@ -447,26 +461,27 @@ public abstract class MenuManager {
 	 * @see #getPopup()
 	 * @param pop the popup to be set for this menu manager.
 	 */
-	public void setPopup(Popup pop) {
+	public void setPopUp(PopUp pop) {
 		this.popup = pop;
 	}
 	
 	/**
 	 * Sets {@link #clicked} to defined. If clicked was non-null before the change, the clickable
-	 * will be updated with its new non-clicked status, and any losing focus events will be triggered.
-	 * The new clicked will be notified of this event.
+	 * will be updated with its new non-clicked status, and any losing focus events will be
+	 * triggered. The new clicked will be notified of this event.
 	 * @param clicked the component that has been clicked. Saved as {@link #clicked}
 	 * @param x the x-location of the mouse when clicked. Measured in pixels.
 	 * @param y the y-location of the mouse when clicked. Measured in pixels.
 	 */
 	public void setClicked(Clickable clicked, int x, int y) {
-		if(this.clicked != null && clicked != this.clicked) { //tell the old clicked that it has been replaced
+		//tell the old clicked that it has been replaced
+		if (this.clicked != null && clicked != this.clicked) { 
 			this.clicked.setClicked(false, x, y);
 			//also any lost focus actions triggered
 			componentLostFocus(this.clicked);
 		}
 		this.clicked = clicked;
-		if(clicked!=null) //tell the clicked that it has been clicked
+		if (clicked!=null) //tell the clicked that it has been clicked
 			clicked.setClicked(true, (int)mouseX, (int)mouseY);
 	}
 	
@@ -484,9 +499,10 @@ public abstract class MenuManager {
 		touchCheckList.add(comp);
 	}
 	/**
-	 * Adds the component to the list of components to check each time the mouse moves. If the component
-	 * is later removed from visibility (for example if the panel it is on is removed from the root-tree),
-	 * then the programmer needs to call {@link #removeTouchResponsiveComponent(TouchResponsiveComponent)}.
+	 * Adds the component to the list of components to check each time the mouse moves. If the
+	 * component is later removed from visibility (for example if the panel it is on is removed
+	 * from the root-tree), then the programmer needs to call {@link
+	 * #removeTouchResponsiveComponent(TouchResponsiveComponent)}.
 	 * @param comp the component to add on
 	 * @see #removeTouchResponsiveComponent(TouchResponsiveComponent)
 	 */
@@ -508,12 +524,14 @@ public abstract class MenuManager {
 	}
 	
 	/**
-	 * Finds the clickable component with the specified ID. It is assumed that there will only be one since
-	 * ID codes are intended to be unique. Uses the recursive method {@link #findComponent(String, Panel, Panel)}.
+	 * Finds the clickable component with the specified ID. It is assumed that there will only be
+	 * one since ID codes are intended to be unique. Uses the recursive method {@link
+	 * #findComponent(String, Panel, Panel)}.
 	 * @param idToFind the ID that should be matched in the found component
-	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
-	 * the menu root panel ({@link #menu}) will be used as the starting point.
-	 * @return the component found that has the matching ID, or if such component cannot be found, null.
+	 * @param startPoint the panel where the searching should begin (for speed reasons). If no
+	 * panel is specified, the menu root panel ({@link #menu}) will be used as the starting point.
+	 * @return the component found that has the matching ID, or if such component cannot be found,
+	 * null.
 	 */
 	public Clickable findComponent(String idToFind, Panel startPoint) {
 		if(startPoint==null) { //if start point not defined, use the root menu panel
@@ -525,16 +543,19 @@ public abstract class MenuManager {
 		return findComponent(idToFind, startPoint, startPoint);
 	}
 	/**
-	 * The recursive method to find the component with the specified ID. Use {@link #findComponent(String, Panel)}
+	 * The recursive method to find the component with the specified ID. Use {@link
+	 * #findComponent(String, Panel)}
 	 * for full functionality. This is just meant to be the recursive version.
 	 * @param idToFind the ID that should be matched in the found component
-	 * @param startPoint the panel where the searching should begin (for speed reasons). If no panel is specified,
-	 * the menu root panel ({@link #menu} will be used as the starting point.
-	 * @param ignore this panel and its children components will not be searched. The reason for this is because
-	 * they have already been searched earlier, so they aren't searched again. If no panel is given, then this
-	 * method will not move up the panel tree, or in other words, the parent panels and their components will not
-	 * be searched, only the subdirectories of the specified start point panel.
-	 * @return the component found that has the matching ID, or if such component cannot be found, null.
+	 * @param startPoint the panel where the searching should begin (for speed reasons). If no
+	 * panel is specified, the menu root panel ({@link #menu} will be used as the starting point.
+	 * @param ignore this panel and its children components will not be searched. The reason for
+	 * this is because they have already been searched earlier, so they aren't searched again. If
+	 * no panel is given, then this method will not move up the panel tree, or in other words, the
+	 * parent panels and their components will not be searched, only the subdirectories of the
+	 * specified start point panel.
+	 * @return the component found that has the matching ID, or if such component cannot be found,
+	 * null.
 	 */
 	protected Clickable findComponent(String idToFind, Panel startPoint, Panel ignore) {
 		//search down

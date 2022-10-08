@@ -15,11 +15,13 @@ public class TextEditBox extends TextBox{
 	private int lastBlinkerY;
 	private int hheight;
 	
-	public TextEditBox(String id, String message, Panel parent, String x, String y, String width, String height, Font font, Color color) {
+	public TextEditBox(String id, String message, Panel parent, String x, String y,
+			String width, String height, Font font, Color color) {
 		super(id, message, parent, x, y, width, height, font, color);
 	}
 	
-	public TextEditBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
+	public TextEditBox(String id, String message, Panel parent, int x, int y,
+			Font font, Color color) {
 		super(id, message, parent, x, y, font, color);
 	}
 	
@@ -47,22 +49,26 @@ public class TextEditBox extends TextBox{
 	}
 	
 	public void moveToBreak(boolean left) {
-		if(left) { //we move back a character at the beginning so checking char in the loop will be the same
+		//we move back a character at the beginning so checking char in the loop will be the same
+		if(left) { 
 			index--;
 			if(index < 0) {
 				index = 0;
 				return;
 			}
-		}else if(index >= message.length()) //this can only happen moving right, so the end is reached
+		//this can only happen moving right, so the end is reached
+		}else if(index >= message.length())
 			return;
 		
 		boolean breakCharFound = false;
-		boolean run = true; //run until a punctuation character has been found, then a non-punct is found
+		//run until a punctuation character has been found, then a non-punct is found
+		boolean run = true;
 		while(run) {
 			//check where we are
 			char c = message.charAt(index);
 			if(!breakCharFound) {
-				if(!(Character.isLetter(c) || Character.isDigit(c))) //if the letter isn't a num or a char, then it is a break
+				//if the letter isn't a num or a char, then it is a break
+				if(!(Character.isLetter(c) || Character.isDigit(c))) 
 					breakCharFound = true;
 			}else {
 				if(Character.isLetter(c) || Character.isDigit(c)) {
@@ -145,9 +151,11 @@ public class TextEditBox extends TextBox{
 		char now = message.charAt(si);
 		switch(quickClicks) {
 		case 2:
-			boolean spaces = (now == ' ' || now == '\n'); //if the current character is a space, that is highlight
+			//if the current character is a space, that is highlight
+			boolean spaces = (now == ' ' || now == '\n'); 
 			while(true) {
-				if(si < 0 || (spaces ^ (message.charAt(si) == ' ' || message.charAt(si) == '\n'))) {
+				if(si < 0 || 
+						(spaces ^ (message.charAt(si) == ' ' || message.charAt(si) == '\n'))) {
 					si++;
 					break;
 				}
@@ -155,7 +163,8 @@ public class TextEditBox extends TextBox{
 			}
 			while(true) {
 				int length = message.length();
-				if(ei >= length || (spaces ^ (message.charAt(ei) == ' ' || message.charAt(ei) == '\n'))) {
+				if(ei >= length ||
+						(spaces ^ (message.charAt(ei) == ' ' || message.charAt(ei) == '\n'))) {
 					break;
 				}
 				ei++;
@@ -252,11 +261,13 @@ public class TextEditBox extends TextBox{
 	}
 	
 	@Override
-	protected void drawBlinker(Graphics g, int x, int y, int w, int h, int rowWidth, int blinkerX, int blinkerRow, int underscoreWidth, int textOffset) {
-		super.drawBlinker(g, x, y, w, h, rowWidth, blinkerX, blinkerRow, underscoreWidth, textOffset);
+	protected void drawBlinker(Graphics g, int x, int y, int w, int h, int rowWidth,
+			int blinkerX, int blinkerRow, int underscoreWidth, int textOffset) {
+		super.drawBlinker(g, x, y, w, h, rowWidth, blinkerX, blinkerRow,
+				underscoreWidth, textOffset);
 		
-		//we want to save where the blinker was drawn, so that when we use the up and down arrow keys, we can just
-		//use what is actually drawn above and below
+		//we want to save where the blinker was drawn, so that when we use the up and down arrow
+		// keys, we can justuse what is actually drawn above and below
 		FontMetrics fm = g.getFontMetrics();
 		hheight = fm.getHeight();
 		int decrease = hheight - fm.getDescent();

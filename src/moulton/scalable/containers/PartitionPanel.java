@@ -7,18 +7,21 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import moulton.scalable.utils.MenuComponent;
+import moulton.scalable.utils.MenuSolver.Expression;
 
 /**
- * PartitionPanel is a type of {@link Panel} with up to two partitions dividing up the space into four sectors:
- * left, right, bottom, and top. Components need to be added to their sector manually using {@link #setLeft(MenuComponent)},
- * {@link #setRight(MenuComponent)}, {@link #setTop(MenuComponent)}, and {@link #setBottom(MenuComponent)}. The
- * partitions can be set using {@link #setVerticalPartition(String)} and {@link #setHorizontalPartition(String)}.
+ * PartitionPanel is a type of {@link Panel} with up to two partitions dividing up the space into
+ * four sectors: left, right, bottom, and top. Components need to be added to their sector manually
+ * using {@link #setLeft(MenuComponent)}, {@link #setRight(MenuComponent)}, {@link
+ * #setTop(MenuComponent)}, and {@link #setBottom(MenuComponent)}. The partitions can be set using
+ * {@link #setVerticalPartition(String)} and {@link #setHorizontalPartition(String)}.
  * @author Matthew Moulton
  */
 public class PartitionPanel extends Panel {
-	/**The menu component drawn in the specified sector. There are four sectors that this panel will draw: left,
-	 * right, bottom, and top. The left and right sectors are divided by the {@link #verticalPartition} and the
-	 * top and bottom sectors by the {@link #horizontalPartition}.
+	/**The menu component drawn in the specified sector. There are four sectors that this panel
+	 * will draw: left, right, bottom, and top. The left and right sectors are divided by the
+	 * {@link #verticalPartition} and the top and bottom sectors by the
+	 * {@link #horizontalPartition}.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
 	 * @see #setTop(MenuComponent)
@@ -26,16 +29,17 @@ public class PartitionPanel extends Panel {
 	protected MenuComponent left, right, bottom, top;
 	/**The x-value divider between the {@link #left} and {@link #right} components.
 	 * @see #setVerticalPartition(String)*/
-	protected String verticalPartition;
+	protected Expression verticalPartition;
 	/**The y-value divider between the {@link #top} and {@link #bottom} components.
 	 * @see #setHorizontalPartition(String)*/
-	protected String horizontalPartition;
-	/**Determines how the corner is filled. If this is null and the horizontal component is set but the vertical
-	 * component is not, then the horizontal component will take the corner as well. If both horizontal and
-	 * vertical components are set but this is not, then the corner will be empty. If both the horizontal and
-	 * vertical components are set, and this is not null, it will determine which component takes the corner
-	 * (true is horizontal, false is vertical). Finally, if the horizontal component is set, the vertical
-	 * component is not, but this is set to true, then the corner will be empty.
+	protected Expression horizontalPartition;
+	/**Determines how the corner is filled. If this is null and the horizontal component is set but
+	 * the vertical component is not, then the horizontal component will take the corner as well.
+	 * If both horizontal and vertical components are set but this is not, then the corner will be
+	 * empty. If both the horizontal and vertical components are set, and this is not null, it will
+	 * determine which component takes the corner (true is horizontal, false is vertical). Finally,
+	 * if the horizontal component is set, the vertical component is not, but this is set to true,
+	 * then the corner will be empty.
 	 * @see #setTopLeftCorner(Boolean)
 	 * @see #setTopRightCorner(Boolean)
 	 * @see #setBottomLeftCorner(Boolean)
@@ -49,7 +53,8 @@ public class PartitionPanel extends Panel {
 	 * @param width the width of this panel as a string expression
 	 * @param height the height of this panel as a string expression
 	 * @param color this panel's color*/
-	public PartitionPanel(Panel parent, String x, String y, String width, String height, Color color) {
+	public PartitionPanel(Panel parent, String x, String y, String width, String height,
+			Color color) {
 		super(parent, x, y, width, height, color);
 	}
 	/**Creates a partition panel in grid form in the parent panel.
@@ -61,8 +66,9 @@ public class PartitionPanel extends Panel {
 		super(parent, x, y, color);
 	}
 	
-	/**This method is overridden and only returns false because PartitionPanel requires components to be added
-	 * in a very specific way. Each component held must be in the top, bottom, left, or right sector.
+	/**This method is overridden and only returns false because PartitionPanel requires components
+	 * to be added in a very specific way. Each component held must be in the top, bottom, left, or
+	 * right sector.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
 	 * @see #setTop(MenuComponent)
@@ -71,8 +77,9 @@ public class PartitionPanel extends Panel {
 	public boolean addToGrid(MenuComponent comp, int x, int y) {
 		return false;
 	}
-	/**This method is overridden and returns false because PartitionPanel cannot directly remove a component
-	 * from the grid. Each component held is in one of four sectors: top, bottom, left, or right.
+	/**This method is overridden and returns false because PartitionPanel cannot directly remove a
+	 * component from the grid. Each component held is in one of four sectors: top, bottom, left,
+	 * or right.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
 	 * @see #setTop(MenuComponent)
@@ -81,8 +88,9 @@ public class PartitionPanel extends Panel {
 	public boolean removeFromGrid(int x, int y, boolean resize) {
 		return false;
 	}
-	/**This method is overridden and only returns false because PartitionPanel requires components to be added
-	 * in a very specific way. Each component held must be in the top, bottom, left, or right sector.
+	/**This method is overridden and only returns false because PartitionPanel requires components
+	 * to be added in a very specific way. Each component held must be in the top, bottom, left, or
+	 * right sector.
 	 * @see #setLeft(MenuComponent)
 	 * @see #setRight(MenuComponent)
 	 * @see #setTop(MenuComponent)
@@ -134,27 +142,27 @@ public class PartitionPanel extends Panel {
 		this.bottomRightCorner = botRight;
 	}
 	
-	/**Sets the horizontal partition's y-value for the two vertical sectors, top and bottom. If the horizontal
-	 * partition has already been set, the partition is now moved.
+	/**Sets the horizontal partition's y-value for the two vertical sectors, top and bottom. If the
+	 * horizontal partition has already been set, the partition is now moved.
 	 * @param expression replaces {@link #horizontalPartition}*/
 	public void setHorizontalPartition(String expression) {
-		this.horizontalPartition = expression;
+		this.horizontalPartition = solve.parse(expression, true, false);
 	}
-	/**Sets the vertical partition's x-value for the two horizontal sectors, left and right. If the vertical
-	 * partition has already been set, it is now moved.
+	/**Sets the vertical partition's x-value for the two horizontal sectors, left and right. If the
+	 * vertical partition has already been set, it is now moved.
 	 * @param expression replaces {@link #verticalPartition}*/
 	public void setVerticalPartition(String expression) {
-		this.verticalPartition = expression;
+		this.verticalPartition = solve.parse(expression, true, false);
 	}
 	
-	/**Returns the string representing the x-value of the horizontal partition.
+	/**Returns the expression which determines the x-value of the horizontal partition.
 	 * @return the expression of {@link #horizontalPartition}*/
-	public String getHorizontalPartition() {
+	public Expression getHorizontalPartition() {
 		return horizontalPartition;
 	}
-	/**Returns the string representing the y-value of the vertical partition.
+	/**Returns the expression which determines the y-value of the vertical partition.
 	 * @return the expression of {@link #verticalPartition}*/
-	public String getVerticalPartition() {
+	public Expression getVerticalPartition() {
 		return verticalPartition;
 	}
 	
@@ -188,9 +196,9 @@ public class PartitionPanel extends Panel {
 		
 		int vertPartition = w/2, horizPartition = h/2;
 		if(verticalPartition != null)
-			vertPartition = solveString(verticalPartition, w, h);
+			vertPartition = solve.eval(this.verticalPartition);
 		if(horizontalPartition != null)
-			horizPartition = solveString(horizontalPartition, w, h);
+			horizPartition = solve.eval(this.horizontalPartition);
 		
 		try{
 			if(left != null && left.isVisible()) {

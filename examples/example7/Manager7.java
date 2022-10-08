@@ -70,8 +70,10 @@ public class Manager7 extends MenuManager{
 		saveButton.setEnabled(false);
 		addTouchComponent(saveButton);
 		addTouchComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
-		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height", font, new Color(0xe5e5e5));
-		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",Color.LIGHT_GRAY));
+		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height",
+				font, new Color(0xe5e5e5));
+		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",
+				Color.LIGHT_GRAY));
 		fileContents.acceptEnter(true);
 		setUndo(fileContents.getMessage());
 	}
@@ -138,14 +140,14 @@ public class Manager7 extends MenuManager{
 				
 				filePath = toPath; //just save it without loading stuff
 				saveButton.setEnabled(false);
-				setPopup(null);
+				setPopUp(null);
 				break;
 			case "doLoad":
 				setPath(((PathFinderPopup)popup).getPath());
 				setUndo(fileContents.getMessage());
 				//then fall through to cancel\quit
 			case "cancel":
-				setPopup(null);
+				setPopUp(null);
 				break;
 			case "directoryButton":
 				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
@@ -159,7 +161,7 @@ public class Manager7 extends MenuManager{
 	
 	private void createPopup(boolean shouldLoad) {
 		PathFinderPopup pop = new PathFinderPopup(shouldLoad, "350", "200");
-		setPopup(pop);
+		setPopUp(pop);
 	}
 	
 	private void setPath(String filePath) {
