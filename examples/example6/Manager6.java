@@ -67,7 +67,7 @@ public class Manager6 extends MenuManager implements AnimationListener {
 		BufferedImage[] flowers = new BufferedImage[9];
 		for(int i=0; i<flowers.length; i++) {
 			try {
-				flowers[i] = ImageIO.read(new File("flower_anim/flower"+i+".png"));
+				flowers[i] = ImageIO.read(new File("examples/flower_anim/flower"+i+".png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

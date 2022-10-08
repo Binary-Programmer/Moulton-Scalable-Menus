@@ -53,20 +53,23 @@ public class Manager4 extends MenuManager{
 		
 		BufferedImage folder1 = null, folder2 = null;
 		try {
-		    folder1 = ImageIO.read(new File("folder1.png"));
-		    folder2 = ImageIO.read(new File("folder2.png"));
-		}catch(IOException e) {}
+		    folder1 = ImageIO.read(new File("examples/folder1.png"));
+		    folder2 = ImageIO.read(new File("examples/folder2.png"));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 		ImageButton open = new ImageButton("open",folder1,menu,"0","height-height/3",
 				"width/3","?height",Color.CYAN);
 		open.setTouchedImage(folder2);
 		this.addTouchComponent(open);
 		
 		BufferedImage spin[] = new BufferedImage[16];
+		String prefix = "examples/spinning_anim/";
 		try {
-			BufferedImage deg0 = ImageIO.read(new File("spinning_anim/spin_top.png"));
-			BufferedImage deg22 = ImageIO.read(new File("spinning_anim/spin_topperright.png"));
-			BufferedImage deg45 = ImageIO.read(new File("spinning_anim/spin_topright.png"));
-			BufferedImage deg67 = ImageIO.read(new File("spinning_anim/spin_toprighter.png"));
+			BufferedImage deg0 = ImageIO.read(new File(prefix + "spin_top.png"));
+			BufferedImage deg22 = ImageIO.read(new File(prefix + "spin_topperright.png"));
+			BufferedImage deg45 = ImageIO.read(new File(prefix + "spin_topright.png"));
+			BufferedImage deg67 = ImageIO.read(new File(prefix + "spin_toprighter.png"));
 			
 			spin[0] = new BufferedImage(deg0.getWidth(), deg0.getHeight(),
 					BufferedImage.TYPE_INT_ARGB);

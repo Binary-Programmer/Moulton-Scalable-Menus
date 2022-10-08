@@ -57,8 +57,10 @@ public class Manager2 extends MenuManager{
 		addTouchComponent(vert);
 		BufferedImage img = null;
 		try {
-		    img = ImageIO.read(new File("fire rose-small.png"));
-		} catch (IOException e) {}
+		    img = ImageIO.read(new File("examples/fire rose-small.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		new View(img,grid,2,0);
 		new StaticTextBox("display", "This is a test example. You cannot modify this text, but you"
 				+ "can select and copy it.", grid, 1, 1, font, Color.CYAN);
