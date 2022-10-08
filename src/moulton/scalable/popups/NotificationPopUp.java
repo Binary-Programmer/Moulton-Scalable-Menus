@@ -60,12 +60,14 @@ public class NotificationPopUp extends CommonPopUp {
 		final String xxId = okId;
 		Button okButton = new Button(okId, "Ok", base, "centerx-"+okWidth,
 				"height-1-"+doubleHeight, ""+okWidth*2, ""+doubleHeight, font, Color.LIGHT_GRAY);
-		okButton.setClickAction(new EventAction() {
-			@Override public boolean onEvent() {
-				man.setPopUp(null);
-				return xxId != null;
-			}
-		});
+		if (man != null) {			
+			okButton.setClickAction(new EventAction() {
+				@Override public boolean onEvent() {
+					man.setPopUp(null);
+					return xxId != null;
+				}
+			});
+		}
 		addTouchComponent(okButton);
 	}
 	

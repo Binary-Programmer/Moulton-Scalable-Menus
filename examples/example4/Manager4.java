@@ -16,6 +16,7 @@ import moulton.scalable.clickables.RadioGroup;
 import moulton.scalable.containers.Container;
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
+import moulton.scalable.popups.ConfirmationPopUp;
 import moulton.scalable.texts.TextBox;
 import moulton.scalable.visuals.AnimatedButton;
 import moulton.scalable.visuals.Animation;
@@ -108,12 +109,23 @@ public class Manager4 extends MenuManager{
 
 	@Override
 	public void clickableAction(Clickable c) {
+		Font fnt = new Font("Arial", Font.PLAIN, 12);
 		if(c.getId().equals("toggle")) {
 			Button toggleButton = (Button)c;
 			if(toggleButton.getText().equals("ON"))
 				toggleButton.setText("OFF");
 			else
 				toggleButton.setText("ON");
+		}else if(c.getId().equals("X")) {
+			this.setPopUp(new ConfirmationPopUp("Are you sure you want to quit?", null, fnt,
+					"exit", "cancel", null, true));
+		}else if(c.getId().equals("exit")) {
+			this.popup.setPopUp(new ConfirmationPopUp("Are you really sure you want to quit?",
+					null, fnt, "EXIT", "cancel", null, true));
+		}else if(c.getId().equals("cancel")) {
+			this.popup = null;
+		}else if(c.getId().equals("EXIT")) {
+			System.exit(0);
 		}
 	}
 

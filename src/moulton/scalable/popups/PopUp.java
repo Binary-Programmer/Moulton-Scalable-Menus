@@ -112,6 +112,8 @@ public class PopUp {
 	 * @return {@link #touchCheckList}
 	 */
 	public LinkedList<TouchResponsiveComponent> getTouchCheckList() {
+		if (popup != null)
+			return popup.touchCheckList;
 		return touchCheckList;
 	}
 	
@@ -191,5 +193,13 @@ public class PopUp {
 	 */
 	public PopUp getPopup() {
 		return popup;
+	}
+	
+	/**
+	 * Sets the pop up as given.
+	 * @param popup the pop up to be used
+	 */
+	public void setPopUp(PopUp popup) {
+		this.popup = popup;
 	}
 }

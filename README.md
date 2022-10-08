@@ -11,7 +11,9 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 The project requires a Java version of at least 1.7 to compile. Pre-compiled jars are also available for download.
 
 ## Setup
-Download either the source .java files or select a version of the pre-compiled .jar files. Add Moulton Scalable Menus as a dependency to your intended project.
+It is recommended to download a .jar release from the GitHub page. Add that .jar as a dependency for your project.
+
+However, if that is not possible or desirable, the library can be built from source. After cloning, run the `script/setup` script with a Unix prompt or PowerShell for Windows. This will initialize all necessary dependencies and set up the project for use. 
 
 ## Use
 Moulton Scalable Menus *requires* two core features to be implemented by you to function properly. There must be a container (which implements the `moulton.scalable.containers.Container` interface) and a menu manager (which extends the abstract `moulton.scalable.containers.MenuManager` class).
@@ -74,7 +76,7 @@ Example 2 also shows how forms could be implemented (in the bottom right corner)
 Example 3 shows off the `moulton.scalable.texts.TextHistory`.
 
 ### Example 4
-Example 4 shows off radio buttons, image buttons, and animations.
+Example 4 shows off radio buttons, image buttons, animations, and recursive pop ups.
 
 ### Example 5
 Example 5 shows off text boxes with virtual space, scrolling vertically or horizontally.

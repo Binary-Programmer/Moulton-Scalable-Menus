@@ -111,12 +111,14 @@ public abstract class CommonPopUp extends PopUp {
 			final String xxId = xId;
 			Button exit = new Button(xId, "X", base, "width-"+(fm.stringWidth("X")*2), "0",
 					"?width", ""+doubleHeight, font, Color.RED);
-			exit.setClickAction(new EventAction() {
-				@Override public boolean onEvent() {
-					man.setPopUp(null);
-					return xxId != null;
-				}
-			});
+			if (man != null) {				
+				exit.setClickAction(new EventAction() {
+					@Override public boolean onEvent() {
+						man.setPopUp(null);
+						return xxId != null;
+					}
+				});
+			}
 			addTouchComponent(exit);
 		}
 		
