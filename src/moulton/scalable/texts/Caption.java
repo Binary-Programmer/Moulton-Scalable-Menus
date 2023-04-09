@@ -75,8 +75,6 @@ public class Caption extends MenuComponent{
 		this.text = text;
 		this.font = font;
 		this.alignment = alignment;
-		//not null so rendering will handle with width:
-		this.centerWidth = solve.parse("0", false, false); 
 	}
 
 	@Override
@@ -96,14 +94,13 @@ public class Caption extends MenuComponent{
 		int fontHeight = fm.getHeight();
 		
 		solve.updateValues(ww, hh);
-		int x, y, w = 0;
+		int x, y;
 		if(getGridLocation()==null){
 			x = xx + solve.eval(this.x);
 			y = yy + solve.eval(this.y);
 		}else{
 			x = xx;
 			y = yy + hh/2;
-			w = ww;
 		}
 		//center by texts length
 		if(yCentered)
@@ -119,22 +116,23 @@ public class Caption extends MenuComponent{
 				//check for x2 variant
 				if (centerWidth.prefaced) {
 					int x2 = solve.eval(centerWidth);
-					w = x2 - x;
+					ww = x2 - x;
 				}else
-					w = solve.eval(centerWidth);
+					ww = solve.eval(centerWidth);
 				//redefine center by using x and endBound as opposite edges to center by
-				x += w/2;
+				x += ww/2;
 				//continue on to draw the string based on redefined values
-			}
+			}else if (getGridLocation() != null)
+				x += ww/2; // use the width provided earlier
 			for(int i=0; i<texts.length; i++){
 				fontWidth = fm.stringWidth(texts[i]);
 				g.drawString(texts[i], x-fontWidth/2, y+(i*fontHeight));
 			}
 			break;
 		case RIGHT_ALIGNMENT:
-			//if there is a panel, w was already specified and the x pos needs to be moved over
-			if(parent != null)
-				x += w;
+			//if this is in a grid, align to given width
+			if(getGridLocation() != null)
+				x += ww;
 			
 			for(int i=0; i<texts.length; i++){
 				fontWidth = fm.stringWidth(texts[i]);
