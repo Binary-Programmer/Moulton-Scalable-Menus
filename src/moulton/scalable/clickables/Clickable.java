@@ -229,15 +229,17 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * Sets whether or not the clickable should be able to be used or just shown.
 	 * @param enabled {@link #enabled}
+	 * @return this
 	 */
-	public void setEnabled(boolean enabled) {
+	public Clickable setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		return this;
 	}
 	
 	/**Replaced by {@link #setEnabled(boolean)}.
 	 * @param enabled whether this component should be enabled.
 	 */
-	@Deprecated
+	@Deprecated(since="1.12")
 	public void setEditable(boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -253,7 +255,7 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**Replaced by {@link #isEnabled()}.
 	 * @return {@link #enabled}
 	 */
-	@Deprecated
+	@Deprecated(since="1.12")
 	public boolean isEditable() {
 		return enabled;
 	}
@@ -261,9 +263,11 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * Sets whether or not the clickable should display a black outline on its border.
 	 * @param outline {@link #outline}
+	 * @return this
 	 */
-	public void setOutline(boolean outline){
+	public Clickable setOutline(boolean outline){
 		this.outline = outline;
+		return this;
 	}
 	
 	/**
@@ -284,9 +288,11 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * Sets the clickable that should be next in the form chain.
 	 * @param formChain to replace {@link #formChain}
+	 * @return this
 	 */
-	public void setFormChain(Clickable formChain) {
+	public Clickable setFormChain(Clickable formChain) {
 		this.formChain = formChain;
+		return this;
 	}
 	
 	
@@ -316,22 +322,27 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * Sets the touch action that should execute when this class is first touched or loses touch.
 	 * @param action to replace {@link #touchAction}
+	 * @return this
 	 */
-	public void setTouchAction(EventAction action) {
+	public Clickable setTouchAction(EventAction action) {
 		this.touchAction = action;
+		return this;
 	}
 	/**
 	 * Sets the action that should execute on a successful click of this component.
 	 * @param action {@link #clickAction}
+	 * @return this
 	 */
-	public void setClickAction(EventAction action) {
+	public Clickable setClickAction(EventAction action) {
 		this.clickAction = action;
+		return this;
 	}
 	/**
 	 * Sets the action that should execute when the component loses focus.
 	 * @param action {@link #lostFocusAction}
 	 */
-	public void setLostFocusAction(EventAction action) {
+	public Clickable setLostFocusAction(EventAction action) {
 		this.lostFocusAction = action;
+		return this;
 	}
 }

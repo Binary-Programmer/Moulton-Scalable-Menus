@@ -6,10 +6,11 @@ import java.awt.Font;
 import moulton.scalable.containers.Panel;
 
 /**
- * In some instances, the user will find it useful to select and/or copy text from a text box, but should not be
- * able to edit its values. This class is made for that very purpose. If the contents of this text box need to
- * be modified, they can still be altered through {@link #setMessage(String)} but not through {@link #appendMessage(String)}
- * or {@link #removeMessage(int, boolean)}.
+ * In some instances, the user will find it useful to select and/or copy text from a text box, but
+ * should not be able to edit its values. This class is made for that very purpose. If the contents
+ * of this text box need to be modified, they can still be altered through
+ * {@link #setMessage(String)} but not through {@link #appendMessage(String)} or
+ * {@link #removeMessage(int, boolean)}.
  * @author Matthew Moulton
  */
 public class StaticTextBox extends TextBox {
@@ -38,29 +39,29 @@ public class StaticTextBox extends TextBox {
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
-	public StaticTextBox(String id, String message, Panel parent, String x, String y, String width, String height,
-			Font font, Color color) {
+	public StaticTextBox(String id, String message, Panel parent, String x, String y, String width,
+			String height, Font font, Color color) {
 		super(id, message, parent, x, y, width, height, font, color);
 		blinkTime = -1;
 	}
 	
 	/**
-	 * The user cannot modify the static text box by typing commands, so this method overrides the action of TextBox
-	 * and does nothing.
+	 * The user cannot modify the static text box by typing commands, so this method overrides the action of
+	 * TextBox and does nothing.
 	 */
 	@Override
 	public void removeMessage(int chars) {}
 	
 	/**
-	 * The user cannot modify the static text box by typing commands, so this method overrides the action of TextBox
-	 * and does nothing.
+	 * The user cannot modify the static text box by typing commands, so this method overrides the action of
+	 * TextBox and does nothing.
 	 */
 	@Override
 	public synchronized void appendMessage(String string) {}
 	
 	/**
-	 * The user cannot modify the static text box by typing commands, so this method overrides the action of TextBox
-	 * and does nothing.
+	 * The user cannot modify the static text box by typing commands, so this method overrides the action of
+	 * TextBox and does nothing.
 	 */
 	@Override
 	public void paste(String pasteText) {}

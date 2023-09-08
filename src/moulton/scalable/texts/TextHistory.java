@@ -22,7 +22,7 @@ import moulton.scalable.utils.MenuSolver.Expression;
  * A couple of optional features specific to text history include:<ul>
  * <li>{@link #addToTop} defines the view mode, or in other words, whether most recent messages should be displayed at the top or the bottom.
  * <li>{@link #maxMessages} limits how many messages the text history can hold at a time. If more are added, older lines are deleted.
- * <li>{@link #textDemarkation} decides whether each entry should be separated by a separating line similar to an outline.
+ * <li>{@link #textDemarcation} decides whether each entry should be separated by a separating line similar to an outline.
  * <li>{@link #wordSplitting} defines whether words can be split on ends of lines, or whether lines can only split on break characters.
  * </ul><p>
  * Although it is highly recommended to add entries to the text history by the provided method, if
@@ -58,7 +58,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**Whether each text displayed should be separated from other texts by a black line. Defaults to false.
 	 * @see #setTextDemarkation(boolean)
 	 * @see #getTextDemarkation()*/
-	protected boolean textDemarkation = false;
+	protected boolean textDemarcation = false;
 	/**Whether or not this component should render a black outline on the border of the component.
 	 * @see #setOutline(boolean)
 	 * @see #getOutline()*/
@@ -191,7 +191,7 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 					}if(textsFull) //we don't need to get any more text lines
 						break;
 					//set line demarkation
-					if(textDemarkation)
+					if(textDemarcation)
 						lineSeparate[i] = true;
 					//get the next text index
 					textIndex--;
@@ -301,19 +301,23 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 * Sets the scroll bar so the text history can show more than just recent messages. <br>
 	 * Will also call {@link #forceScrollBarMatch()} to coincide with {@link #addToTop}.
 	 * @param bar the scroll bar to replace {@link #bar}.
+	 * @return this
 	 */
-	public void setScrollBar(ScrollBar bar) {
+	public TextHistory setScrollBar(ScrollBar bar) {
 		this.bar = bar;
 		forceScrollBarMatch();
+		return this;
 	}
 	
 	/**
 	 * Sets whether this text history should display most recent additions at the top (true) or the bottom (false)
 	 * @param recentAtTop value to be saved as {@link #addToTop}
+	 * @return this
 	 */
-	public void setViewMode(boolean recentAtTop) {
+	public TextHistory setViewMode(boolean recentAtTop) {
 		addToTop = recentAtTop;
 		forceScrollBarMatch();
+		return this;
 	}
 	
 	/**
@@ -336,9 +340,11 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**
 	 * Sets the maximum number of messages that this text history will hold.
 	 * @param maxMessages {@link #maxMessages}
+	 * @return this
 	 */
-	public void setMaxMessages(int maxMessages) {
+	public TextHistory setMaxMessages(int maxMessages) {
 		this.maxMessages = maxMessages;
+		return this;
 	}
 	/**
 	 * Returns the maximum number of messages that this text history can hold.
@@ -351,9 +357,11 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
 	 * @param allowSplit sets {@link #wordSplitting}
+	 * @return this
 	 */
-	public void setWordSplitting(boolean allowSplit) {
+	public TextHistory setWordSplitting(boolean allowSplit) {
 		this.wordSplitting = allowSplit;
+		return this;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text history
@@ -374,24 +382,43 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	}
 	
 	/**Returns whether each text displayed should be separated by a black line.
-	 * @return {@link #textDemarkation}*/
+	 * @return {@link #textDemarcation}*/
+	@Deprecated(since="1.15", forRemoval=true)
 	public boolean getTextDemarkation() {
-		return textDemarkation;
+		return textDemarcation;
+	}
+	/**Returns whether each text displayed should be separated by a black line.
+	 * @return {@link #textDemarcation}*/
+	public boolean getTextDemarcation() {
+		return textDemarcation;
 	}
 	/**
 	 * Sets whether each text displayed should be separated by a black line.
-	 * @param textDemarkation sets the value of {@link #textDemarkation}
+	 * @param textDemarkation sets the value of {@link #textDemarcation}
+	 * @deprecated use {@link #setTextDemarcation(boolean)} instead
 	 */
+	@Deprecated(since="1.15", forRemoval=true)
 	public void setTextDemarkation(boolean textDemarkation) {
-		this.textDemarkation = textDemarkation;
+		this.textDemarcation = textDemarkation;
+	}
+	/**
+	 * Sets whether each text displayed should be separated by a black line.
+	 * @param textDemarkation sets the value of {@link #textDemarcation}
+	 * @return this
+	 */
+	public TextHistory setTextDemarcation(boolean textDemarcation) {
+		this.textDemarcation = textDemarcation;
+		return this;
 	}
 	
 	/**
 	 * Sets whether or not the clickable should display a black outline on its border.
 	 * @param outline {@link #outline}
+	 * @return this
 	 */
-	public void setOutline(boolean outline){
+	public TextHistory setOutline(boolean outline){
 		this.outline = outline;
+		return this;
 	}
 	/**
 	 * Returns whether or not the clickable is displaying a black outline on its border
@@ -405,8 +432,9 @@ public class TextHistory extends MenuComponent implements ScrollableComponent{
 	 * Sets the color that messages are printed with in {@link #render(Graphics, int, int, int, int)}.
 	 * @param color the color to replace {@link #textColor}
 	 */
-	public void setTextColor(Color color) {
+	public TextHistory setTextColor(Color color) {
 		textColor = color;
+		return this;
 	}
 	
 	@Override

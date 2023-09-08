@@ -90,9 +90,11 @@ public class View extends MenuComponent {
 	/**
 	 * Sets the image that this view will draw when rendered.
 	 * @param img {@link #image}.
+	 * @return this
 	 */
-	public void setImage(BufferedImage img){
+	public View setImage(BufferedImage img){
 		this.image = img;
+		return this;
 	}
 	/**
 	 * Gets the image that this view will draw when rendered. By default this method returns
@@ -106,9 +108,11 @@ public class View extends MenuComponent {
 	/**
 	 * Sets whether this view should maintain the aspect ratio of width:height when rendering.
 	 * @param mar to replace {@link #maintainAspectRatio}
+	 * @return this
 	 */
-	public void setMaintainAspectRatio(boolean mar){
+	public View setMaintainAspectRatio(boolean mar){
 		maintainAspectRatio = mar;
+		return this;
 	}
 	/**
 	 * Returns whether this view maintains the aspect ratio of width:height in drawing the picture
@@ -121,9 +125,11 @@ public class View extends MenuComponent {
 	/**
 	 * Sets whether or not the clickable should display a black outline on its border.
 	 * @param outline {@link #outline}
+	 * @return this
 	 */
-	public void setOutline(boolean outline){
+	public View setOutline(boolean outline){
 		this.outline = outline;
+		return this;
 	}
 	/**
 	 * Returns whether or not the clickable is displaying a black outline on its border

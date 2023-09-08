@@ -17,13 +17,11 @@ import moulton.scalable.containers.Container;
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
 import moulton.scalable.popups.ConfirmationPopUp;
-import moulton.scalable.texts.TextBox;
 import moulton.scalable.visuals.AnimatedButton;
 import moulton.scalable.visuals.Animation;
 import moulton.scalable.visuals.ImageButton;
 
 public class Manager4 extends MenuManager{
-	TextBox box;
 
 	public Manager4(Container cont) {
 		super(cont);
@@ -36,21 +34,20 @@ public class Manager4 extends MenuManager{
 		Font font = new Font("Arial", Font.PLAIN, 12);
 		this.addTouchComponent(new Button("toggle","ON",menu,"0","0","width/3","height/3",
 				font,Color.CYAN));
-		Button xButton = new Button("X", "X", menu, "width-width/3", "0", "?width", "height/3",
-				font, Color.WHITE);
-		xButton.setTouchedColor(Color.RED);
-		this.addTouchComponent(xButton);
+		this.addTouchComponent(new Button("X", "X", menu, "width-width/3", "0", "?width", "height/3",
+				font, Color.WHITE)
+			.setTouchedColor(Color.RED));
 		
-		Button[] radios = new Button[4];
-		radios[0] = new Button("up","^",menu,"centerx-width/6","0","?2width/3","height/3",
-				font,Color.YELLOW);
-		radios[1] = new Button("down","v",menu,"centerx-width/6","centery+height/6","width/3",
-				"?height",font,Color.YELLOW);
-		radios[2] = new Button("left","<",menu,"0","centery-height/6","width/3","height/3",
-				font,Color.YELLOW);
-		radios[3] = new Button("right",">",menu,"width-width/3","centery-height/6",
-				"?width","height/3",font,Color.YELLOW);
-		new RadioGroup(radios);
+		new RadioGroup(
+				new Button("up","^",menu,"centerx-width/6","0","?2width/3","height/3",
+						font,Color.YELLOW),
+				new Button("down","v",menu,"centerx-width/6","centery+height/6","width/3",
+						"?height",font,Color.YELLOW),
+				new Button("left","<",menu,"0","centery-height/6","width/3","height/3",
+						font,Color.YELLOW),
+				new Button("right",">",menu,"width-width/3","centery-height/6",
+						"?width","height/3",font,Color.YELLOW)
+		);
 		
 		BufferedImage folder1 = null, folder2 = null;
 		try {
@@ -59,10 +56,9 @@ public class Manager4 extends MenuManager{
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
-		ImageButton open = new ImageButton("open",folder1,menu,"0","height-height/3",
-				"width/3","?height",Color.CYAN);
-		open.setTouchedImage(folder2);
-		this.addTouchComponent(open);
+		this.addTouchComponent(new ImageButton("open",folder1,menu,"0","height-height/3",
+				"width/3","?height",Color.CYAN)
+				.setTouchedImage(folder2));
 		
 		BufferedImage spin[] = new BufferedImage[16];
 		String prefix = "examples/spinning_anim/";
@@ -100,8 +96,7 @@ public class Manager4 extends MenuManager{
 				spin[i] = rotateImage(spin[i%4], i/4);
 			}
 		}catch(IOException e) {}
-		Animation spinning = new Animation(150, spin);
-		spinning.setLoop(-1);
+		Animation spinning = new Animation(150, spin).setLoop(-1);
 		spinning.startAnimation();
 		new AnimatedButton("spin", spinning, menu, "centerx-width/6","centery-height/6",
 				"width/3","height/3",Color.WHITE);

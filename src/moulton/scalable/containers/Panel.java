@@ -259,16 +259,16 @@ public class Panel extends MenuComponent {
 
 	/**
 	 * Sets the background color of this panel.
-	 * 
 	 * @param color {@link #color}
+	 * @return this
 	 */
-	public void setColor(Color color) {
+	public Panel setColor(Color color) {
 		this.color = color;
+		return this;
 	}
 
 	/**
 	 * Returns the color of this panel's background.
-	 * 
 	 * @return {@link #color}
 	 */
 	public Color getColor() {
@@ -277,11 +277,12 @@ public class Panel extends MenuComponent {
 
 	/**
 	 * Sets whether or not the panel should draw a black outline on its boundary.
-	 * 
 	 * @param outline {@link #outline}
+	 * @return this
 	 */
-	public void setOutline(boolean outline) {
+	public Panel setOutline(boolean outline) {
 		this.outline = outline;
+		return this;
 	}
 
 	/**
@@ -295,12 +296,12 @@ public class Panel extends MenuComponent {
 
 	/**
 	 * Overwrites the value of {@link #textResize}.
-	 * 
-	 * @param resize Sets whether or not this panel and its descendants should resize text by
-	 *               height.
+	 * @param resize Sets whether or not this panel and its descendants should resize text by height.
+	 * @return this
 	 */
-	public void setTextResize(Boolean resize) {
+	public Panel setTextResize(Boolean resize) {
 		this.textResize = resize;
+		return this;
 	}
 
 	/**

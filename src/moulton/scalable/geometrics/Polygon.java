@@ -104,9 +104,11 @@ public class Polygon extends MenuComponent {
 	 * Sets the outline color for this polygon. If no outline color is set, or if it is set to
 	 * null, no outline will be drawn.
 	 * @param outlineColor the color for the {@link #outlineColor}
+	 * @return this
 	 */
-	public void setOutline(Color outlineColor) {
+	public Polygon setOutline(Color outlineColor) {
 		this.outlineColor = outlineColor;
+		return this;
 	}
 	/**
 	 * Returns the outline color for the polygon.
@@ -119,9 +121,11 @@ public class Polygon extends MenuComponent {
 	/**
 	 * Sets the fill color for the polygon.
 	 * @param fillColor the new color saved as {@link Polygon#fillColor}
+	 * @return this
 	 */
-	public void setFillColor(Color fillColor) {
+	public Polygon setFillColor(Color fillColor) {
 		this.fillColor = fillColor;
+		return this;
 	}
 	/**
 	 * Returns the fill color for the polygon.

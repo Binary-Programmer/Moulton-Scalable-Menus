@@ -26,7 +26,9 @@ public class Manager3 extends MenuManager {
 		menu = Panel.createRoot(Color.CYAN);
 		Panel main = new Panel(menu,"0","0","width","height-50",Color.ORANGE);
 		Font font = new Font("Arial",Font.PLAIN,20);
-		hist = new TextHistory(main,"0","0","?width-width/10","height",font,false,50);
+		hist = new TextHistory(main,"0","0","?width-width/10","height",font,false,50)
+				.setWordSplitting(false)
+				.setTextDemarcation(true);
 		ScrollBar bar = new ScrollBar(true, main, "width-width/10", "0",
 				"?width", "height", Color.LIGHT_GRAY);
 		hist.setScrollBar(bar);
@@ -41,7 +43,7 @@ public class Manager3 extends MenuManager {
 		ok = new Button("ok","Ok",menu,"width-width/10","height-50","?width","50",
 				font,Color.GREEN);
 		hist.setWordSplitting(false);
-		hist.setTextDemarkation(true);
+		hist.setTextDemarcation(true);
 	}
 
 	@Override

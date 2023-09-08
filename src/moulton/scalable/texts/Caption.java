@@ -145,9 +145,11 @@ public class Caption extends MenuComponent{
 	/**
 	 * Sets the text that will be displayed when rendered
 	 * @param text the text saved as {@link #text}
+	 * @return this
 	 */
-	public void setText(String text){
+	public Caption setText(String text){
 		this.text = text;
+		return this;
 	}
 	/**
 	 * Returns the text that is printed on the panel when rendered
@@ -163,20 +165,22 @@ public class Caption extends MenuComponent{
 	public Color getTextColor() {
 		return textColor;
 	}
-	/**Use {@link #getTextColor()} instead. */
-	@Deprecated
+	/**@deprecated Use {@link #getTextColor()} instead. */
+	@Deprecated(since="1.14")
 	public Color getColor() {
 		return getTextColor();
 	}
 	/**
 	 * Sets the color of the text drawn
 	 * @param color replaces {@link #textColor}.
+	 * @return this
 	 */
-	public void setTextColor(Color color) {
+	public Caption setTextColor(Color color) {
 		this.textColor = color;
+		return this;
 	}
-	/**Use {@link #setTextColor(Color)} instead. */
-	@Deprecated
+	/**@deprecated Use {@link #setTextColor(Color)} instead. */
+	@Deprecated(since="1.14")
 	public void setColor(Color color) {
 		setTextColor(color);
 	}
@@ -191,8 +195,10 @@ public class Caption extends MenuComponent{
 	/**
 	 * Sets whether the text rendered should be centered vertically on the y-point.
 	 * @param yCentered to replace {@link Caption#yCentered}
+	 * @return this
 	 */
-	public void setYCentered(boolean yCentered){
+	public Caption setYCentered(boolean yCentered){
 		this.yCentered = yCentered;
+		return this;
 	}
 }

@@ -202,17 +202,21 @@ public class VirtualPanel extends Panel implements ScrollableComponent{
 
 	/**
 	 * @param bar the scroll bar to replace {@link #widthBar}.
+	 * @return this
 	 */
-	public void setWidthScrollBar(ScrollBar bar) {
+	public VirtualPanel setWidthScrollBar(ScrollBar bar) {
 		widthBar = bar;
 		widthBar.setScrollRate(5);
+		return this;
 	}
 	/**
 	 * @param bar the scroll bar to replace {@link #heightBar}.
+	 * @return this
 	 */
-	public void setHeightScrollBar(ScrollBar bar) {
+	public VirtualPanel setHeightScrollBar(ScrollBar bar) {
 		heightBar = bar;
 		heightBar.setScrollRate(5);
+		return this;
 	}
 	/**
 	 * At render time, VirtualPanel changes {@link ScrollBar#totalOffs} and {@link

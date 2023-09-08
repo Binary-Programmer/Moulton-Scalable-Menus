@@ -66,28 +66,33 @@ public class AnimatedButton extends RadioButton {
 	/**
 	 * Sets the animation that this button will display on its face.
 	 * @param animation {@link #mainAnimation}
+	 * @return this
 	 */
-	public void setAnimation(Animation animation){
+	public AnimatedButton setAnimation(Animation animation){
 		mainAnimation = animation;
+		return this;
 	}
 	/**
 	 * Sets the animation that this button will display on its face when touched.
 	 * @param animation {@link #touchedAnimation}
 	 */
-	public void setTouchedAnimation(Animation animation) {
+	public AnimatedButton setTouchedAnimation(Animation animation) {
 		//if it was relying on the outline toggle right now
 		if(animation != null && touched && touchedAnimation==null && colorTouched==null) {
 			//Therefore, the outline should go back to the original state
 			setOutline(!getOutline());
 		}
 		touchedAnimation = animation;
+		return this;
 	}
 	/**
 	 * Sets the animation that this button will display on its face when clicked
 	 * @param animation {@link #clickedAnimation}
+	 * @return this
 	 */
-	public void setClickedAnimation(Animation animation) {
+	public AnimatedButton setClickedAnimation(Animation animation) {
 		clickedAnimation = animation;
+		return this;
 	}
 
 	/**
@@ -175,8 +180,9 @@ public class AnimatedButton extends RadioButton {
 	 * If touchedColor is null and the touchedImage is null, the outline toggle will be used to
 	 * show touch.
 	 * @param touchedColor the new touched color
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public AnimatedButton setTouchedColor(Color touchedColor) {
 		if(touchedColor != null) {
 			if(touchedAnimation==null && colorTouched==null) {
 				/* if the button is touched presently and the toggle is used, that means that the
@@ -194,5 +200,6 @@ public class AnimatedButton extends RadioButton {
 			colorDark = color.darker();
 		}	
 		this.colorTouched = touchedColor;
+		return this;
 	}
 }

@@ -162,9 +162,11 @@ public class Button extends RadioButton {
 	/**
 	 * Sets the text that appears on the button face to the new text.
 	 * @param text the String text to replace {@link #text}.
+	 * @return this
 	 */
-	public void setText(String text) {
+	public Button setText(String text) {
 		this.text = text;
+		return this;
 	}
 	/**
 	 * Returns the text that the button uses on its button face in rendering
@@ -177,17 +179,20 @@ public class Button extends RadioButton {
 	/**
 	 * Sets the alignment for the button's text.
 	 * @param newAlignment the alignment to replace {@link #alignment}
+	 * @return this
 	 */
-	public void setAlignment(Alignment newAlignment) {
+	public Button setAlignment(Alignment newAlignment) {
 		alignment = newAlignment;
+		return this;
 	}
 	
 	/**
 	 * Sets the color of the text on the button's face.
 	 * @param color to replace {@link #textColor}
 	 */
-	public void setTextColor(Color color) {
+	public Button setTextColor(Color color) {
 		this.textColor = color;
+		return this;
 	}
 	/**
 	 * Returns the color of the text on the button's face.

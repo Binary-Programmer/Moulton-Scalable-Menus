@@ -176,11 +176,13 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * or uneditable when necessary, but will not provide any other function.
 	 * @param scrollNeg a button which moves the attached scroll bar in the negative direction.
 	 * @param scrollPos a button which moves the attached scroll bar in the positive direction.
+	 * @return this
 	 */
-	public void setScrollButtons(RadioButton scrollNeg, RadioButton scrollPos) {
+	public ScrollBar setScrollButtons(RadioButton scrollNeg, RadioButton scrollPos) {
 		this.scrollNeg = scrollNeg;
 		this.scrollPos = scrollPos;
 		updateScrollButtons();
+		return this;
 	}
 	
 	/**
@@ -193,12 +195,14 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * @see #setTotalOffs(int, boolean)
 	 * @see #setBarOffs(int)
 	 * @see #setOffset(int)
+	 * @return this
 	 */
-	public void setOffsets(int totalOffs, int barOffs, int offset) {
+	public ScrollBar setOffsets(int totalOffs, int barOffs, int offset) {
 		setTotalOffs(totalOffs);
 		setBarOffs(barOffs);
 		setOffset(offset);
 		updateScrollButtons();
+		return this;
 	}
 
 	/**
@@ -216,14 +220,16 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * to provided will be used. Additionally, this will update the editability of
 	 * {@link #scrollNeg} and {@link #scrollPos} if they are not null.
 	 * @param offset the new value for {@link #offset}
+	 * @return this
 	 */
-	public void setOffset(int offset) {
+	public ScrollBar setOffset(int offset) {
 		if(offset<0)
 			offset = 0;
 		if(offset+barOffs > totalOffs)
 			offset = totalOffs-barOffs;
 		this.offset = offset;
 		updateScrollButtons();
+		return this;
 	}
 
 	/**
@@ -239,14 +245,16 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * workings of the scroll bar. It will set the new {@link #totalOffs}, decrease {@link #offset}
 	 * if it is too high, then {@link #updateScrollButtons()}.
 	 * @param total the new variable to be {@link #totalOffs}. Must be greater than 0.
+	 * @return this
 	 */
-	public void setTotalOffs(int total) {
+	public ScrollBar setTotalOffs(int total) {
 		if(total > -1) {
 			totalOffs = total;
 			if(offset > totalOffs)
 				offset = totalOffs-1;
 			updateScrollButtons();
 		}
+		return this;
 	}
 	
 	/**
@@ -267,8 +275,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * offset will thus increase to match that change.<br>
 	 * However, if data is being added to the maximum value side, then no offset change needs to
 	 * occur.
+	 * @return this
 	 */
-	public void setTotalOffs(int total, boolean pullPositive) {
+	public ScrollBar setTotalOffs(int total, boolean pullPositive) {
 		if(total > -1) {
 			if(offset>0 && pullPositive) { //then stick with the current
 				offset += total - totalOffs;
@@ -280,13 +289,15 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 				offset = totalOffs-1;
 			updateScrollButtons();
 		}
+		return this;
 	}
 
 	/**
 	 * Sets the number of offset ticks the bar occupies.
 	 * @param offs sets {@link #barOffs}
+	 * @return this
 	 */
-	public void setBarOffs(int offs) {
+	public ScrollBar setBarOffs(int offs) {
 		if(offs > -1){
 			barOffs = offs;
 			if(offset+barOffs>totalOffs) {
@@ -296,6 +307,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			}
 			updateScrollButtons();
 		}
+		return this;
 	}
 	/**
 	 * Returns the number of offsets the button on the bar takes up.
@@ -364,8 +376,9 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	/**
 	 * If the touched color is null, then the toggle outline effect will be used instead
 	 * @param touchedColor to replace {@link #colorTouched}
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public ScrollBar setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
 			/* if the button is touched presently and the new color is not null, that means that
 			 * the component will show touch through the new color instead of toggling outline.
@@ -381,6 +394,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 			colorDark = colorButton.darker();
 		}	
 		this.colorTouched = touchedColor;
+		return this;
 	}
 	
 	/**
@@ -405,9 +419,11 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * Sets the number of offsets that this scroll bar should be shifted for each unit of mouse
 	 * scrolling applied.
 	 * @param offsetRate sets the value of {@link #scrollRate}
+	 * @return this
 	 */
-	public void setScrollRate(int offsetRate) {
+	public ScrollBar setScrollRate(int offsetRate) {
 		scrollRate = offsetRate;
+		return this;
 	}
 	/**
 	 * Returns the number of offsets that this scroll bar should be shifted for each unit of mouse

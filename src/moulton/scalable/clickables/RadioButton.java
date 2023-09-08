@@ -71,9 +71,11 @@ public abstract class RadioButton extends Clickable {
 	/**
 	 * Sets the {@link group} of this button.
 	 * @param rg the new group.
+	 * @return this
 	 */
-	public void setGroup(RadioGroup rg){
+	public RadioButton setGroup(RadioGroup rg){
 		group = rg;
+		return this;
 	}
 	
 	/**
@@ -117,8 +119,9 @@ public abstract class RadioButton extends Clickable {
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
 	 * @param touchedColor the color to be set as {@link #colorTouched}
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public RadioButton setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
 			/* if the button is touched presently and the new color is not null, that means that
 			 * the component will show touch through the new color instead of toggling outline.
@@ -134,6 +137,7 @@ public abstract class RadioButton extends Clickable {
 			colorDark = color.darker();
 		}	
 		this.colorTouched = touchedColor;
+		return this;
 	}
 	
 	/**

@@ -206,9 +206,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * Sets the text format for this box. The text format determines which characters are valid for
 	 * {@link #message}.
 	 * @param tf the new text format, saved as {@link #format}.
+	 * @return this
 	 */
-	public void setTextFormat(TextFormat tf){
+	public TextBox setTextFormat(TextFormat tf){
 		this.format = tf;
+		return this;
 	}
 	/**
 	 * Returns the current text format.
@@ -229,17 +231,21 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets the hint of the text box.
 	 * @param hint the string to replace {@link #hint}.
+	 * @return this
 	 */
-	public void setHint(String hint){
+	public TextBox setHint(String hint){
 		this.hint = hint;
+		return this;
 	}
 	
 	/**
 	 * Sets the maximum number of characters that this text box can hold. A charMax of -1 means no limit.
 	 * @param charMax {@link #charMax}.
+	 * @return this
 	 */
-	public void setCharLimit(int charMax) {
+	public TextBox setCharLimit(int charMax) {
 		this.charMax = charMax;
+		return this;
 	}
 	
 	/**
@@ -906,7 +912,59 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * Clears the {@link #message}.
 	 */
 	public void clearMessage() {
-		this.message = "";
+		if (format != null) {
+			this.message = format.emptyText();
+			if (charMax>-1 && message.length()>charMax)
+				message = message.substring(0, charMax);
+		}else
+			this.message = "";
+	}
+	
+	/**
+	 * Parses the new text and combines before + new + after, which is set as {@link #message}
+	 * after applying length restrictions (if any).
+	 * @param before the before text, which already existed in the message (does not need to be
+	 * checked for validity) and is set before parsing out middle (and re-parsing end).
+	 * @param newText the new segment of text to be included
+	 * @param after text in the message after newText, if any (if not, use "")
+	 * @return the length of newText after parsing and constraints (may be used to shift index)
+	 */
+	protected int parseText(String before, String newText, String after) {
+		int newKept, afterKept;
+		if (this.format != null) {
+			this.message = before; // pre-existing, does not need to be checked for validity by format
+			String toCheck = newText + after;
+			newKept = 0;
+			afterKept = 0;
+			for (int i = 0; i < toCheck.length(); i++) {
+				char c = toCheck.charAt(i);
+				if (format.isValidChar(c)) {
+					if (i < newText.length())
+						newKept++;
+					else
+						afterKept++;
+					this.message += c;
+				}
+			}
+			if (!message.isEmpty())
+				message = format.emptyText();
+		}else {
+			StringBuilder buf = new StringBuilder(before);
+			buf.append(newText);
+			buf.append(after);
+			message = buf.toString();
+			newKept = newText.length();
+			afterKept = after.length();
+		}
+		
+		if (charMax>-1 && message.length()>charMax) {
+			int diff = message.length() - charMax;
+			afterKept -= diff;
+			if (afterKept < 0)
+				newKept += afterKept;
+			message = message.substring(0, charMax);
+		}
+		return newKept;
 	}
 	
 	/**
@@ -919,16 +977,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	public void setMessage(String string) {
 		if(string == null)
 			string = "";
-		if(format != null)
-			message = format.parseText(string);
-		else
-			message = string;
-		if(charMax>-1 && message.length()>charMax)
-			message = message.substring(0, charMax);
+		parseText("", string, "");
 		
-		if(index > message.length())
+		if (index > message.length())
 			index = message.length();
-		if(message.length()<1) {
+		if (message.isEmpty()) {
 			startShift = 0;
 			if(textScroller != null) //the scroll bar should be unset
 				textScroller.setTotalOffs(0);
@@ -948,8 +1001,8 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 		if(!acceptEnter && string.indexOf('\n')!=-1) {
 			String[] sections = string.split("\n");
 			string = "";
-			if(sections.length > 0) {
-				for(int i=0; i<sections.length; i++)
+			if (sections.length > 0) {
+				for (int i=0; i<sections.length; i++)
 					string += sections[i];
 			}
 		}
@@ -958,15 +1011,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 		if(selection)
 			deleteSelection(null);
 		
-		if(format != null)
-			string = format.parseText(string);
-		String fixed = message.substring(0, index) + string;
-		if(index < message.length())
-			fixed += message.substring(index);
-		message = fixed;
-		if(charMax>-1 && message.length()>charMax)
-			message = message.substring(0, charMax);
-		shiftIndex(string.length());
+		String after = "";
+		if (index < message.length())
+			after = message.substring(index);
+		shiftIndex(parseText(message.substring(0, index), string, after));
 	}
 	/**
 	 * Deletes the selection then removes characters from {@link #message} starting at {@link #index}.
@@ -991,7 +1039,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 		//then removes the commanded characters
 		if(chars>0) { //if there is still something to delete
 			int left, right;
-			if(leftDelete) {
+			if (leftDelete) {
 				left = index - chars;
 				right = index;
 			}else {
@@ -999,42 +1047,44 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 				right = index + chars;
 			}
 			
-			if(left<0) left = 0;
-			if(right<0) right = 0;
-			if(left>message.length()) left = message.length();
-			if(right>message.length()) right = message.length();
+			if (left<0) left = 0;
+			if (right<0) right = 0;
+			if (left>message.length()) left = message.length();
+			if (right>message.length()) right = message.length();
 			
-			if(leftDelete) {
+			if (leftDelete) {
 				index -= chars;
 				if(index < 0)
 					index = 0;
 			}
 			
-			if(left != right) {
-				String temp = "";
-				if(left>0){
-					temp += message.substring(0, left);
-				}if(right<message.length())
-					temp += message.substring(right);
-				message = temp;
+			if (left != right) {
+				StringBuilder temp = new StringBuilder();
+				if (left > 0)
+					temp.append(message.substring(0, left));
+				if (right < message.length())
+					temp.append(message.substring(right));
+				if (format != null)
+					message = format.deleteAction(temp.toString());
+				else
+					message = temp.toString();
 			}
 		}
 		
-		//verify that the message isn't empty
-		if(message.length()<1) {
+		if (message.isEmpty()) {
 			startShift = 0;
-			if(textScroller != null) //the scroll bar should be unset
+			if (textScroller != null) //the scroll bar should be unset
 				textScroller.setTotalOffs(0);
 		}
 		
 		refreshBlinker();
 	}
 	/**
-	 * Replaced by {@link #removeMessage(int)}
 	 * @param chars the number of characters to delete
 	 * @param leftDelete whether the delete should occur from the left (otherwise from right)
+	 * @deprecated use {@link #removeMessage(int)} instead
 	 */
-	@Deprecated
+	@Deprecated(since="1.11")
 	public void removeMessage(int chars, boolean leftDelete) {
 		removeMessage((leftDelete? 1:-1) * chars);
 	}
@@ -1247,9 +1297,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets the color to be used in drawing text in the text box.
 	 * @param color to replace {@link #textColor}
+	 * @return this
 	 */
-	public void setTextColor(Color color) {
+	public TextBox setTextColor(Color color) {
 		textColor = color;
+		return this;
 	}
 	
 	/**
@@ -1268,8 +1320,9 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
 	 * @param touchedColor saved as {@link #colorTouched}
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public TextBox setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
 			/* if the button is touched presently and the new color is not null, that means that the component will
 			 * show touch through the new color instead of toggling outline. Therefore, the outline should go back
@@ -1279,6 +1332,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 				setOutline(!getOutline());
 		}	
 		this.colorTouched = touchedColor;
+		return this;
 	}
 	
 	/**
@@ -1293,21 +1347,24 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets whether the hotkey commands, copy, cut, paste, should work on this text box.
 	 * @param hotkeys {@link #hotkeyEnabled}
+	 * @return this
 	 */
-	public void setHotkeyEnabled(boolean hotkeys) {
+	public TextBox setHotkeyEnabled(boolean hotkeys) {
 		this.hotkeyEnabled = hotkeys;
+		return this;
 	}
 	
 	/**
 	 * Sets whether this text box should allow for text scrolling in the text box (true) or treat the borders
 	 * as limits for the text length (false).
 	 * @param allow sets {@link #hasVirtualSpace}
+	 * @return this
 	 */
-	public void setHasVirtualSpace(boolean allow) {
+	public TextBox setHasVirtualSpace(boolean allow) {
 		this.hasVirtualSpace = allow;
-		if(!allow) { //reset the shift so everything can be deleted properly
+		if (!allow) //reset the shift so everything can be deleted properly
 			setStartShift(0);
-		}
+		return this;
 	}
 	
 	/**
@@ -1322,9 +1379,20 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets whether this text box should be deselected by the enter or return key.
 	 * @param toDeselect sets {@link #deselectOnEnter}
+	 * @deprecated use {@link #setDeselectOnEnter(boolean)} instead
 	 */
+	@Deprecated(since="1.15")
 	public void deselectOnEnter(boolean toDeselect) {
 		deselectOnEnter = toDeselect;
+	}
+	/**
+	 * Sets whether this text box should be deselected by the enter or return key.
+	 * @param toDeselect sets {@link #deselectOnEnter}
+	 * @return this
+	 */
+	public TextBox setDeselectOnEnter(boolean toDeselect) {
+		deselectOnEnter = toDeselect;
+		return this;
 	}
 	
 	/**
@@ -1339,11 +1407,25 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * Sets whether this box should accept the new line character from user input.<p>
 	 * Accepting enter sets {@link #deselectOnEnter} to false
 	 * @param acceptEnter sets {@link #acceptEnter}
+	 * @deprecated use {@link #setAcceptEnter(boolean)} instead
 	 */
+	@Deprecated(since="1.15")
 	public void acceptEnter(boolean acceptEnter) {
 		if(acceptEnter)
-			deselectOnEnter(false);
+			setDeselectOnEnter(false);
 		this.acceptEnter = acceptEnter;
+	}
+	/**
+	 * Sets whether this box should accept the new line character from user input.<p>
+	 * Accepting enter sets {@link #deselectOnEnter} to false
+	 * @param acceptEnter sets {@link #acceptEnter}
+	 * @return this
+	 */
+	public TextBox setAcceptEnter(boolean acceptEnter) {
+		if(acceptEnter)
+			setDeselectOnEnter(false);
+		this.acceptEnter = acceptEnter;
+		return this;
 	}
 	
 	/**
@@ -1365,9 +1447,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * Sets the scroll bar that will be used to view text hidden in virtual space if such is allowed by
 	 * {@link #hasVirtualSpace}.
 	 * @param textScroller the scroll bar to be saved as {@link #textScroller}
+	 * @return this
 	 */
-	public void setTextScroller(ScrollBar textScroller) {
+	public TextBox setTextScroller(ScrollBar textScroller) {
 		this.textScroller = textScroller;
+		return this;
 	}
 	
 	/**
@@ -1383,9 +1467,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets whether word splitting on ends of lines is allowed
 	 * @param allowSplit sets {@link #wordSplitting}
+	 * @return this
 	 */
-	public void setWordSplitting(boolean allowSplit) {
+	public TextBox setWordSplitting(boolean allowSplit) {
 		this.wordSplitting = allowSplit;
+		return this;
 	}
 	/**
 	 * Returns whether word splitting is allowed for this text box
@@ -1407,9 +1493,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets whether the cut off mark should be shown.
 	 * @param shown the value to replace {@link #cutOffMark}
+	 * @return this
 	 */
-	public void setCutOffMark(boolean shown) {
+	public TextBox setCutOffMark(boolean shown) {
 		this.cutOffMark = shown;
+		return this;
 	}
 	/**
 	 * Returns whether the cut off mark is shown
@@ -1422,9 +1510,11 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	/**
 	 * Sets whether all the text box's contents should be selected when it is first clicked.
 	 * @param clickSelects the value to replace {@link #clickSelectsAll}
+	 * @return this
 	 */
-	public void setClickSelectsAll(boolean clickSelects) {
+	public TextBox setClickSelectsAll(boolean clickSelects) {
 		this.clickSelectsAll = clickSelects;
+		return this;
 	}
 	/**
 	 * Returns whether all the characters in the text box are selected when this box is first clicked.
@@ -1444,8 +1534,10 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * but the mask will be repeated the number of times equal to the message length. The char mask can be set to
 	 * null to have no mask used.
 	 * @param charMask to replace the value of {@link #charMask}
+	 * @return this
 	 */
-	public void setCharMask(Character charMask) {
+	public TextBox setCharMask(Character charMask) {
 		this.charMask = charMask;
+		return this;
 	}
 }

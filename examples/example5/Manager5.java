@@ -25,7 +25,7 @@ public class Manager5 extends MenuManager{
 		main = new TextBox("top","",menu,"0","0","?7width/8","?3height/4+1",
 				font,Color.LIGHT_GRAY);
 		main.setOutline(true);
-		main.acceptEnter(true);
+		main.setAcceptEnter(true);
 		bottom = new TextBox("bottom","",menu,"0","3height/4","?7width/8","?height-height/8",
 				font,Color.LIGHT_GRAY);
 		bottom.setOutline(true);

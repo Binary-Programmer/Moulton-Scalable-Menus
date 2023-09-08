@@ -62,14 +62,16 @@ public class Animation {
 	 * @param startIndex the index where the first time is defined
 	 * @param times the times that should replace the previously saved times. These times will be a
 	 * measurement in milliseconds that the animation should pause on the corresponding frames
-	 * before continuing.*/
-	public void setTimeLimits(int startIndex, int ...times) {
+	 * before continuing.
+	 * @return this*/
+	public Animation setTimeLimits(int startIndex, int ...times) {
 		for(int i=0; i<times.length; i++) {
 			if(startIndex+i>=timeList.size())
 				break;
 			
 			timeList.set(startIndex+i, times[i]);
 		}
+		return this;
 	}
 	
 	/**Starts the animation by setting {@link #showIndex} to 0 and setting the play state to true
@@ -81,8 +83,8 @@ public class Animation {
 		lastTime = System.currentTimeMillis();
 	}
 	
-	/**Pauses or plays the animation again. If the animation is paused, the timer for the current
-	 * index will be reset. For example, if the first frame should wait for 1000 ms and 900 ms have
+	/**Pauses or plays the animation. If the animation is paused, the timer for the current index
+	 * will be reset. For example, if the first frame should wait for 1000 ms and 900 ms have
 	 * elapsed before the animation is paused, once the animation plays again, another 1000 ms
 	 * needs to elapse before the next frame is shown.
 	 * @param playState whether the animation should be played (true) or paused (false)*/
@@ -133,14 +135,18 @@ public class Animation {
 	
 	/**Sets the loop value for the animation.
 	 * @param loop {@link #loop}*/
-	public void setLoop(int loop) {
+	public Animation setLoop(int loop) {
 		this.loop = loop;
+		return this;
 	}
 	
 	/**Sets the animation listener that will be notified when important events occur.
-	 * @param listener the animation listener that will replace {@link #listener}*/
-	public void setAnimationListener(AnimationListener listener) {
+	 * @param listener the animation listener that will replace {@link #listener}
+	 * return this 
+	 */
+	public Animation setAnimationListener(AnimationListener listener) {
 		this.listener = listener;
+		return this;
 	}
 
 }

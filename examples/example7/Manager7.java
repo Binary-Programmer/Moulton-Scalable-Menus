@@ -74,7 +74,7 @@ public class Manager7 extends MenuManager{
 				font, new Color(0xe5e5e5));
 		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",
 				Color.LIGHT_GRAY));
-		fileContents.acceptEnter(true);
+		fileContents.setAcceptEnter(true);
 		setUndo(fileContents.getMessage());
 	}
 	

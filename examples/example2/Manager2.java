@@ -67,12 +67,12 @@ public class Manager2 extends MenuManager{
 		
 		//Here we can show off text chaining
 		Panel formPanel = new Panel(grid, 2, 1, Color.WHITE);
-		nameField = new TextBox("", "", formPanel, 0, 0, font, Color.RED);
-		nameField.setHint("Enter your name... Hit tab to continue");
-		ageField = new TextBox("", "", formPanel, 0, 1, font, Color.ORANGE);
-		ageField.setHint("Enter your age... Hit tab to continue");
-		interestsField = new TextBox("", "", formPanel, 0, 2, font, Color.YELLOW);
-		interestsField.setHint("Enter your interests... Hit tab then enter");
+		nameField = new TextBox("", "", formPanel, 0, 0, font, Color.RED)
+				.setHint("Enter your name... Hit tab to continue");
+		ageField = new TextBox("", "", formPanel, 0, 1, font, Color.ORANGE)
+				.setHint("Enter your age... Hit tab to continue");
+		interestsField = new TextBox("", "", formPanel, 0, 2, font, Color.YELLOW)
+				.setHint("Enter your interests... Hit tab then enter");
 		FormButton send = new FormButton("accept", "Send", this, formPanel, 0, 3,
 				font, Color.GREEN);
 		nameField.setFormChain(ageField);

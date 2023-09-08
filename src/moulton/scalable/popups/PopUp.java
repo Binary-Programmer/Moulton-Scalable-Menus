@@ -100,9 +100,11 @@ public class PopUp {
 	 * Sets the color used to draw over the other components outside of the pop up.
 	 * @param background to set {@link #blanketBackground}
 	 * @see #getBlanketBackground()
+	 * @return this
 	 */
-	public void setBlanketBackground(Color background) {
+	public PopUp setBlanketBackground(Color background) {
 		this.blanketBackground = background;
+		return this;
 	}
 
 	/**
@@ -117,8 +119,8 @@ public class PopUp {
 		return touchCheckList;
 	}
 	
-	/**Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
-	@Deprecated
+	/**@deprecated Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated(since="1.14")
 	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
 	}
@@ -132,8 +134,8 @@ public class PopUp {
 	public void addTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
 	}
-	/**Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
-	@Deprecated
+	/**@deprecated Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated(since="1.14")
 	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
 		touchCheckList.remove(comp);
 	}
@@ -198,8 +200,10 @@ public class PopUp {
 	/**
 	 * Sets the pop up as given.
 	 * @param popup the pop up to be used
+	 * @return this
 	 */
-	public void setPopUp(PopUp popup) {
+	public PopUp setPopUp(PopUp popup) {
 		this.popup = popup;
+		return this;
 	}
 }

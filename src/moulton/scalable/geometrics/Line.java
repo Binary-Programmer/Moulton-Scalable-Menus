@@ -104,8 +104,10 @@ public class Line extends MenuComponent{
 	 * Sets the thickness of the line for drawing. A null thickness will be 1 pixel thick.
 	 * @param thickness the thickness that this line will draw perpendicular to the slope of its
 	 * line from start and end points
+	 * @return this
 	 */
-	public void setThickness(String thickness){
+	public Line setThickness(String thickness){
 		this.thickness = solve.parse(thickness, false, false);
+		return this;
 	}
 }

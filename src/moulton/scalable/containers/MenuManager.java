@@ -78,7 +78,7 @@ public abstract class MenuManager {
 	 * deselection.*/
 	public static final Clickable FORM_END = new Clickable(null, null, 0, 0) {
 		public void render(Graphics g, int xx, int yy, int ww, int hh) {}
-		public void setFormChain(Clickable formChain) {
+		public Clickable setFormChain(Clickable formChain) {
 			throw new RuntimeException("You may not set a next form to Form End!");
 		}
 	};
@@ -493,8 +493,8 @@ public abstract class MenuManager {
 		return clicked;
 	}
 	
-	/**Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
-	@Deprecated
+	/**@deprecated Use {@link #addTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated(since="1.14")
 	public void addTouchResponsiveComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
 	}
@@ -509,8 +509,8 @@ public abstract class MenuManager {
 	public void addTouchComponent(TouchResponsiveComponent comp) {
 		touchCheckList.add(comp);
 	}
-	/**Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
-	@Deprecated
+	/**@deprecated Use {@link #removeTouchComponent(TouchResponsiveComponent)} instead*/
+	@Deprecated(since="1.14")
 	public void removeTouchResponsiveComponent(TouchResponsiveComponent comp) {
 		touchCheckList.remove(comp);
 	}

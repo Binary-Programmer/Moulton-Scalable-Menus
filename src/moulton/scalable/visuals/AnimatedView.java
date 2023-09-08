@@ -91,9 +91,11 @@ public class AnimatedView extends MenuComponent {
 	/**
 	 * Sets the Animation that this view will draw when rendered.
 	 * @param animation {@link #animation}.
+	 * @return this
 	 */
-	public void setAnimation(Animation animation){
+	public AnimatedView setAnimation(Animation animation){
 		this.animation = animation;
+		return this;
 	}
 	/**
 	 * Gets the animation to be drawn. By default this method returns {@link #animation}.
@@ -107,9 +109,11 @@ public class AnimatedView extends MenuComponent {
 	 * Sets whether this view should keep the aspect ratio of the {@link Animation} that it
 	 * displays.
 	 * @param mar sets the value of {@link #maintainAspectRatio}
+	 * @return this
 	 */
-	public void setMaintainAspectRatio(boolean mar){
+	public AnimatedView setMaintainAspectRatio(boolean mar){
 		maintainAspectRatio = mar;
+		return this;
 	}
 	/**
 	 * Returns whether this view will keep the aspect ratio of the {@link Animation} it displays.
@@ -122,9 +126,11 @@ public class AnimatedView extends MenuComponent {
 	/**
 	 * Sets whether or not the clickable should display a black outline on its border.
 	 * @param outline {@link #outline}
+	 * @return this
 	 */
-	public void setOutline(boolean outline){
+	public AnimatedView setOutline(boolean outline){
 		this.outline = outline;
+		return this;
 	}
 	/**
 	 * Returns whether or not the clickable is displaying a black outline on its border

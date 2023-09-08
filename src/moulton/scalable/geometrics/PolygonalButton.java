@@ -110,8 +110,9 @@ public class PolygonalButton extends RadioButton {
 	/**
 	 * If touchedColor is null, then the toggle outline effect will be used instead
 	 * @param touchedColor the color to set as {@link RadioButton#colorTouched}
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public PolygonalButton setTouchedColor(Color touchedColor) {
 		if(colorTouched==null && touchedColor != null) {
 			// If the button is touched presently and the new color is not null, that means that
 			// the component will show touch through the new color instead of toggling outline.
@@ -124,7 +125,8 @@ public class PolygonalButton extends RadioButton {
 		}else {
 			//resets to the old darker color
 			colorDark = color.darker();
-		}	
+		}
 		this.colorTouched = touchedColor;
+		return this;
 	}
 }

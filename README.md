@@ -8,7 +8,7 @@ A Java library for scalable menus. Essentially replaces Java AWT and Java Swing.
 * [Examples](#examples)
 
 ## Technologies
-The project requires a Java version of at least 1.7 to compile. Pre-compiled jars are also available for download.
+The project requires at least Java 9 to compile. Pre-compiled jars are also available for download.
 
 ## Setup
 It is recommended to download a .jar release from the GitHub page. Add that .jar as a dependency for your project.

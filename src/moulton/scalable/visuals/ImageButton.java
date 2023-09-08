@@ -69,28 +69,34 @@ public class ImageButton extends RadioButton {
 	/**
 	 * Sets the image that this button will display on its face.
 	 * @param img {@link image}
+	 * @return this
 	 */
-	public void setImage(BufferedImage img){
+	public ImageButton setImage(BufferedImage img){
 		image = img;
+		return this;
 	}
 	/**
 	 * Sets the image that this button will display on its face when touched.
 	 * @param img {@link #touchedImage}
+	 * @return this
 	 */
-	public void setTouchedImage(BufferedImage img) {
+	public ImageButton setTouchedImage(BufferedImage img) {
 		//if it was relying on the outline toggle right now
 		if(img != null && touched && touchedImage==null && colorTouched==null) {
 			//Therefore, the outline should go back to the original state
 			setOutline(!getOutline());
 		}
 		touchedImage = img;
+		return this;
 	}
 	/**
 	 * Sets the image that this button will display on its face when clicked
 	 * @param img {@link #clickedImage}
+	 * @return this
 	 */
-	public void setClickedImage(BufferedImage img) {
+	public ImageButton setClickedImage(BufferedImage img) {
 		clickedImage = img;
+		return this;
 	}
 
 	/**
@@ -190,8 +196,9 @@ public class ImageButton extends RadioButton {
 	 * If touchedColor is null and the touchedImage is null, the outline toggle will be used to
 	 * show touch.
 	 * @param touchedColor the new touched color
+	 * @return this
 	 */
-	public void setTouchedColor(Color touchedColor) {
+	public ImageButton setTouchedColor(Color touchedColor) {
 		if(touchedColor != null) {
 			if(touchedImage==null && colorTouched==null) {
 				/* if the button is touched presently and the toggle is used, that means that the
@@ -209,6 +216,7 @@ public class ImageButton extends RadioButton {
 			colorDark = color.darker();
 		}	
 		this.colorTouched = touchedColor;
+		return this;
 	}
 	
 	/**
@@ -218,9 +226,11 @@ public class ImageButton extends RadioButton {
 	 * Sets {@link #vertPadding}.
 	 * @param horizPadding A string expression to represent the amount of horizontal padding
 	 * desired. Sets {@link #horizPadding}.
+	 * @return this
 	 */
-	public void setPadding(String vertPadding, String horizPadding) {
+	public ImageButton setPadding(String vertPadding, String horizPadding) {
 		this.vertPadding = (vertPadding == null)? null : solve.parse(vertPadding, false, false);
 		this.horizPadding = (horizPadding == null)? null : solve.parse(horizPadding, false, false);
+		return this;
 	}
 }
