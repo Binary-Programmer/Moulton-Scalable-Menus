@@ -25,33 +25,33 @@ public class PathFinderPopup extends PopUp {
 		
 		blanketBackground = new Color(0x33dddddd, true);
 		Font font = new Font("Arial", Font.PLAIN, 15);
-		Button xButton = new Button("cancel","X",base,"width-20","0","20","20",font,Color.WHITE);
-		xButton.setTouchedColor(Color.RED);
-		addTouchComponent(xButton);
+		addTouchComponent(new Button("X",base,"width-20","0","20","20",font,Color.WHITE)
+			.setTouchedColor(Color.RED)
+			.setId("cancel"));
 		new Caption(load?"Load":"Save", base, "5", "18", font,
 				Alignment.LEFT_ALIGNMENT).setYCentered(false);
 		
 		smallFont = new Font("Arial", Font.PLAIN, 12);
-		pathDisplay = new TextBox("path", "", base, "25", "30", "?width", "20", smallFont,
+		pathDisplay = new TextBox("", base, "25", "30", "?width", "20", smallFont,
 				Color.WHITE);
 		pathDisplay.setOutline(true);
 		addTouchComponent(pathDisplay);
 		pathDisplay.setTouchedColor(Color.WHITE);
 		
-		Button pathUp = new Button("pathUp","^",base, "0","30","20","20",font,Color.LIGHT_GRAY);
-		pathUp.setClickAction(() -> {
+		addTouchComponent(new Button("^",base, "0","30","20","20",font,Color.LIGHT_GRAY)
+		.setClickAction(() -> {
 			goUpDirectory();
 			return true;
-		});
-		addTouchComponent(pathUp);
-		fileName = new TextBox("fileName","",base,"5","height-25","width*.75-5","20",
+		}));
+		fileName = new TextBox("",base,"5","height-25","width*.75-5","20",
 				font,Color.WHITE);
+		fileName.setId("fileName");
 		fileName.setOutline(true);
 		fileName.setHint("file name");
 		addTouchComponent(fileName);
 		fileName.setTouchedColor(Color.WHITE);
-		okButton = new Button(load?"doLoad":"doSave","Ok",base,"width*.75+5","height-25",
-				"width*.25-10","20",font,Color.LIGHT_GRAY);
+		okButton = new Button("Ok",base,"width*.75+5","height-25","width*.25-10","20",font,Color.LIGHT_GRAY);
+		okButton.setId(load?"doLoad":"doSave");
 		okButton.setEnabled(false);
 		addTouchComponent(okButton);
 		
@@ -106,13 +106,10 @@ public class PathFinderPopup extends PopUp {
 				pathName = pathName.substring(lastSlash+1);
 			Button dirButton;
 			if(file.isDirectory())
-				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i,
-						italic, Color.YELLOW);
+				dirButton = new Button("  "+pathName, contents, 0, i, italic, Color.YELLOW);
 			else
-				dirButton = new Button("directoryButton", "  "+pathName, contents, 0, i,
-						smallFont, Color.WHITE);
+				dirButton = new Button("  "+pathName, contents, 0, i, smallFont, Color.WHITE);
 			dirButton.setAlignment(Alignment.LEFT_ALIGNMENT);
-			
 			dirButton.setClickAction(() -> {
 				select(dirButton.getText().substring(2));
 				return true;

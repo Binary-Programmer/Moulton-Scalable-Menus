@@ -157,7 +157,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	protected FontMetrics fontMetrics;
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param message the string displayed in the box
 	 * @param parent the panel that this text box will reside upon
 	 * @param x the x coordinate on the screen, given in menu component value format
@@ -167,14 +166,25 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
-	public TextBox(String id, String message, Panel parent, String x, String y, String width, String height, Font font, Color color) {
-		super(id, parent, x, y);
+	public TextBox(String message, Panel parent, String x, String y, String width, String height, Font font, Color color) {
+		super(parent, x, y);
 		this.width = solve.parse(width, true, false);
 		this.height = solve.parse(height, true, false);
 		init(message, color, font);
 	}
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
+	 * @deprecated Use {@link #TextBox(String, Panel, String, String, String, String, Font, Color)} and
+	 * {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
+	public TextBox(String id, String message, Panel parent, String x, String y, String width, String height, Font font, Color color) {
+		super(parent, x, y);
+		this.id = id;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
+		init(message, color, font);
+	}
+	/**
 	 * @param message the string displayed in the box
 	 * @param parent the panel that this text box will reside upon
 	 * @param x the x coordinate of this text box in its parent's grid
@@ -182,8 +192,17 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
+	public TextBox(String message, Panel parent, int x, int y, Font font, Color color) {
+		super(parent,x,y);
+		init(message, color, font);
+	}
+	/**
+	 * @deprecated use {@link #TextBox(String, Panel, int, int, Font, Color)} and {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
 	public TextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
-		super(id,parent,x,y);
+		super(parent,x,y);
+		this.id = id;
 		init(message, color, font);
 	}
 	

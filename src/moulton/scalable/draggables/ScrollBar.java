@@ -75,7 +75,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 * and the button turns one shade darker when pressed.
 	 */
 	public ScrollBar(boolean vertical, Panel parent, int x, int y,  Color colorButton) {
-		super("", parent, x, y);
+		super(parent, x, y);
 		this.vertical = vertical;
 		this.colorButton = colorButton;
 		color = colorButton.brighter();
@@ -95,7 +95,7 @@ public class ScrollBar extends Clickable implements DraggableComponent {
 	 */
 	public ScrollBar(boolean vertical, Panel parent, String x, String y, String w, String h,
 			Color colorButton) {
-		super("",parent, x, y);
+		super(parent, x, y);
 		width = solve.parse(w, true, false);
 		height = solve.parse(h, true, false);
 		this.vertical = vertical;

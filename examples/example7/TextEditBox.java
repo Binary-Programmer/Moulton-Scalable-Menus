@@ -15,14 +15,13 @@ public class TextEditBox extends TextBox{
 	private int lastBlinkerY;
 	private int hheight;
 	
-	public TextEditBox(String id, String message, Panel parent, String x, String y,
+	public TextEditBox(String message, Panel parent, String x, String y,
 			String width, String height, Font font, Color color) {
-		super(id, message, parent, x, y, width, height, font, color);
+		super(message, parent, x, y, width, height, font, color);
 	}
 	
-	public TextEditBox(String id, String message, Panel parent, int x, int y,
-			Font font, Color color) {
-		super(id, message, parent, x, y, font, color);
+	public TextEditBox(String message, Panel parent, int x, int y, Font font, Color color) {
+		super(message, parent, x, y, font, color);
 	}
 	
 	public void removeSelection() {

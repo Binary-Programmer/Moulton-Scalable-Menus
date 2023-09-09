@@ -58,8 +58,9 @@ public class NotificationPopUp extends CommonPopUp {
 		int okWidth = fm.stringWidth("Ok");
 		final MenuManager man = manager;
 		final String xxId = okId;
-		Button okButton = new Button(okId, "Ok", base, "centerx-"+okWidth,
+		Button okButton = new Button("Ok", base, "centerx-"+okWidth,
 				"height-1-"+doubleHeight, ""+okWidth*2, ""+doubleHeight, font, Color.LIGHT_GRAY);
+		okButton.setId(okId);
 		if (man != null) {			
 			okButton.setClickAction(new EventAction() {
 				@Override public boolean onEvent() {

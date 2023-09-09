@@ -49,7 +49,7 @@ public class Manager6 extends MenuManager implements AnimationListener {
 		menu.setTextResize(true);
 		part = new PartitionPanel(menu,"0","0","width","height/1.2",Color.GREEN);
 		Font font = new Font("Arial", Font.PLAIN, 40);
-		box = new TextBox("box","",part,0,0,font,Color.LIGHT_GRAY);
+		box = new TextBox("",part,0,0,font,Color.LIGHT_GRAY);
 		box.setHint("Type here, or consider pressing the buttons.");
 		part.setLeft(box);
 		Panel rightPanel = new Panel(part,0,0,Color.RED);
@@ -57,10 +57,10 @@ public class Manager6 extends MenuManager implements AnimationListener {
 		bar = new ScrollBar(true, rightPanel, "0", "height/8","width","3height/4",
 				Color.GRAY);
 		box.setTextScroller(bar);
-		scrollButtons[0] = new Button("up","^",rightPanel,"0","0","width","height/8",
-				font,Color.GRAY);
-		scrollButtons[1] = new Button("down","v",rightPanel,"0","height-height/8",
-				"width","?height",font,Color.GRAY);
+		scrollButtons[0] = (Button)new Button("^",rightPanel,"0","0","width","height/8",
+				font,Color.GRAY).setId("up");
+		scrollButtons[1] = (Button)new Button("v",rightPanel,"0","height-height/8",
+				"width","?height",font,Color.GRAY).setId("down");
 		bar.setScrollButtons(scrollButtons[0],scrollButtons[1]);
 		
 		Panel bottom = new Panel(menu, "0", "height/1.2","width","?height", Color.MAGENTA);
@@ -76,13 +76,15 @@ public class Manager6 extends MenuManager implements AnimationListener {
 		flower.setAnimationListener(this);
 		flowerButton = new AnimatedButton("flower", flower, bottom, 0, 0, Color.WHITE);
 		addTouchComponent(flowerButton);
-		addTouchComponent(new Button("reappear","Redo",bottom, 1,0, font, Color.RED));
-		addTouchComponent(new Button("clear","CE",bottom, 2,0, font, Color.GREEN));
-		addTouchComponent(new Button("add","+",bottom, 3,0, font, Color.BLUE));
+		addTouchComponent(new Button("Redo",bottom, 1,0, font, Color.RED).setId("reappear"));
+		addTouchComponent(new Button("CE",bottom, 2,0, font, Color.GREEN).setId("clear"));
+		addTouchComponent(new Button("+",bottom, 3,0, font, Color.BLUE).setId("add"));
 	}
 
 	@Override
 	public void clickableAction(Clickable c) {
+		if (c.getId() == null)
+			return;
 		if(c.getId().equals("flower")) {
 			flower.setAnimationPlay(true);
 		}else if(c.getId().equals("reappear")) {
@@ -104,9 +106,6 @@ public class Manager6 extends MenuManager implements AnimationListener {
 			bar.setOffset(bar.getOffset()+1);
 		}
 	}
-
-	@Override
-	public void lostFocusAction(Clickable c) {}
 
 	@Override
 	public void animationEndEvent(Animation animation) {

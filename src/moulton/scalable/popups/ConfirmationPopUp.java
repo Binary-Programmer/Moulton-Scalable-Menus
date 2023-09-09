@@ -86,12 +86,14 @@ public class ConfirmationPopUp extends CommonPopUp {
 				return xxId != null;
 			}
 		};
-		Button acceptButton = new Button(okId, accept, optButtons, 0, 0, font, Color.LIGHT_GRAY);
+		Button acceptButton = new Button(accept, optButtons, 0, 0, font, Color.LIGHT_GRAY);
+		acceptButton.setId(okId);
 		if (man != null)
 			acceptButton.setClickAction(quitPopup);
 		addTouchComponent(acceptButton);
-		Button rejectButton = new Button(cancelId, cancel, optButtons, 1, 0,
+		Button rejectButton = new Button(cancel, optButtons, 1, 0,
 				font, Color.LIGHT_GRAY);
+		rejectButton.setId(cancelId);
 		if (man != null)
 			rejectButton.setClickAction(quitPopup);
 		addTouchComponent(rejectButton);

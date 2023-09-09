@@ -36,14 +36,29 @@ public abstract class RadioButton extends Clickable {
 	/**
 	 * Creates a radio button, which must have some basic features. Initializes the
 	 * location of this button with string expressions.
-	 * @param id the identification string of the button
 	 * @param parent the panel in which this button resides
 	 * @param x the left-most x position of this button
 	 * @param y the top-most y position of this button
 	 * @param color the color of this button's face
 	 */
+	public RadioButton(Panel parent, String x, String y, Color color) {
+		super(parent, x, y);
+		this.color = color;
+		if(color != null) {
+			colorDark = color.darker();
+			colorLight = color.brighter();
+		}
+	}
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button with string expressions.
+	 * @deprecated use {@link #RadioButton(Panel, String, String, Color)} and
+	 * {@link #setId(String)}.
+	 */
+	@Deprecated(since="1.15")
 	public RadioButton(String id, Panel parent, String x, String y, Color color) {
-		super(id, parent, x, y);
+		super(parent, x, y);
+		this.id = id;
 		this.color = color;
 		if(color != null) {
 			colorDark = color.darker();
@@ -53,14 +68,28 @@ public abstract class RadioButton extends Clickable {
 	/**
 	 * Creates a radio button, which must have some basic features. Initializes the
 	 * location of this button to reside in a grid at the int coordinates.
-	 * @param id the identification string of the button
 	 * @param parent the panel in which this button resides
 	 * @param x the x grid index of this component
 	 * @param y the y grid index of this component
 	 * @param color the color of this button's face
 	 */
+	public RadioButton(Panel parent, int x, int y, Color color) {
+		super(parent, x, y);
+		this.color = color;
+		if(color != null) {
+			colorDark = color.darker();
+			colorLight = color.brighter();
+		}
+	}
+	/**
+	 * Creates a radio button, which must have some basic features. Initializes the
+	 * location of this button to reside in a grid at the int coordinates.
+	 * @deprecated use {@link #RadioButton(Panel, int, int, Color)} and
+	 * {@link #setId(String)}
+	 */
 	public RadioButton(String id, Panel parent, int x, int y, Color color) {
-		super(id, parent, x, y);
+		super(parent, x, y);
+		this.id = id;
 		this.color = color;
 		if(color != null) {
 			colorDark = color.darker();

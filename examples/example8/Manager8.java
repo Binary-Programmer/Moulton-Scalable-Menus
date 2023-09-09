@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 
 import moulton.scalable.clickables.Button;
-import moulton.scalable.clickables.Clickable;
 import moulton.scalable.containers.Container;
 import moulton.scalable.containers.MenuManager;
 import moulton.scalable.containers.Panel;
@@ -29,7 +28,7 @@ public class Manager8 extends MenuManager {
 		vp.setWidthScrollBar(horizBar);
 		vp.setHeightScrollBar(vertBar);
 		Font font = new Font("Arial", Font.PLAIN, 12);
-		Button b = new Button("", "HELLO", vp, "width/2", "height/2", "?width", "?height",
+		Button b = new Button("HELLO", vp, "width/2", "height/2", "?width", "?height",
 				font, Color.ORANGE);
 		addTouchComponent(b);
 		VirtualPanel vp2 = new VirtualPanel(vp, "0", "0", "width/2", "height/2", "500", "500",
@@ -40,14 +39,14 @@ public class Manager8 extends MenuManager {
 				Color.LIGHT_GRAY);
 		vp2.setWidthScrollBar(horizBar);
 		vp2.setHeightScrollBar(vertBar);
-		addTouchComponent(new Button("", "A", vp2, 0, 0, font, Color.CYAN));
+		addTouchComponent(new Button("A", vp2, 0, 0, font, Color.CYAN));
 		TouchPanel B = new TouchPanel(vp2, 1, 0, Color.BLUE);
 		B.setTouchAction(() -> { B.setOutline(B.isTouched());  return false;});
 		addTouchComponent(B);
 		TouchPanel C = new TouchPanel(vp2, 0, 1, Color.MAGENTA);
 		C.setTouchAction(() -> { C.setOutline(C.isTouched());  return false;});
 		addTouchComponent(C);
-		addTouchComponent(new Button("", "D", vp2, 1, 1, font, Color.PINK));
+		addTouchComponent(new Button("D", vp2, 1, 1, font, Color.PINK));
 		/*
 		addTouchComponent(new Button("", "B", vp2, 1, 0, font, Color.BLUE));
 		addTouchComponent(new Button("", "C", vp2, 0, 1, font, Color.MAGENTA));
@@ -55,14 +54,8 @@ public class Manager8 extends MenuManager {
 		*/
 		
 		//add a centered button in b
-		addTouchComponent(new Button("centered", "Centered!", B, "CENTERX", "CENTERY",
+		addTouchComponent(new Button("Centered!", B, "CENTERX", "CENTERY",
 				"width/3", "height/3", font, Color.YELLOW));
 	}
-
-	@Override
-	public void clickableAction(Clickable c) {}
-
-	@Override
-	public void lostFocusAction(Clickable c) {}
 
 }

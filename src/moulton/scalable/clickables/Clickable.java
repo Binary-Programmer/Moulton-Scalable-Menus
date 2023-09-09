@@ -76,16 +76,24 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	/**
 	 * This is for use of creating a clickable that will reside on the panel in a free-floating
 	 * manner.
-	 * @param id a unique string designed to identify this component when an event occurs
+	 * @deprecated use {@link #Clickable(Panel, String, String)} and {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
+	public Clickable(String id, Panel parent, String x, String y) {
+		super(parent, x, y);
+		this.id = id;
+	}
+	/**
+	 * This is for use of creating a clickable that will reside on the panel in a free-floating
+	 * manner.
 	 * @param parent the parent panel for this component. Components on a menu at base-level have a
 	 * parent panel of {@link MenuManager#menu}.
 	 * @param x the string equation dictating where on the parent panel this component should go.
 	 * @param y the string equation dictating where on the parent panel this component should go.
 	 * @see MenuComponent#solveString(String, int, int)
 	 */
-	public Clickable(String id, Panel parent, String x, String y) {
+	public Clickable(Panel parent, String x, String y) {
 		super(parent, x, y);
-		this.id = id;
 	}
 	/**
 	 * This is for use of creating a clickable that will reside on the panel in a grid
@@ -94,12 +102,23 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	 * parent panel of {@link MenuManager#menu}.
 	 * @param x the x coordinate of this clickable in its parent's grid
 	 * @param y the y coordinate of this clickable in its parent's grid
+	 * @deprecated use {@link #Clickable(Panel, int, int)} and {@link #setId(String)}
 	 */
+	@Deprecated(since="1.15")
 	public Clickable(String id, Panel parent, int x, int y) {
 		super(parent, x, y);
 		this.id = id;
 	}
-	
+	/**
+	 * This is for use of creating a clickable that will reside on the panel in a grid
+	 * @param parent the parent panel for this component. Components on a menu at base-level have a
+	 * parent panel of {@link MenuManager#menu}.
+	 * @param x the x coordinate of this clickable in its parent's grid
+	 * @param y the y coordinate of this clickable in its parent's grid
+	 */
+	public Clickable(Panel parent, int x, int y) {
+		super(parent, x, y);
+	}
 	
 	//CLICK ACTIONS
 	/**
@@ -163,12 +182,21 @@ public abstract class Clickable extends MenuComponent implements TouchResponsive
 	
 	//CORE BEHAVIOR
 	/**
-	 * Returns the id of this component. The id is a unique string designed to identify this
+	 * Returns the id of this component. The id is intended as a unique string to identify this
 	 * component when an event occurs.
 	 * @return {@link #id}
 	 */
 	public String getId(){
 		return id;
+	}
+	/**
+	 * Sets the id of this component
+	 * @param id sets {@link #id}
+	 * @return this
+	 */
+	public Clickable setId(String id) {
+		this.id = id;
+		return this;
 	}
 	
 	public String toString() {

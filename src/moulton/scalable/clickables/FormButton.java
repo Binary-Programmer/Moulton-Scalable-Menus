@@ -19,7 +19,6 @@ public class FormButton extends Button implements TextInputComponent {
 	protected MenuManager manager;
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param text the string displayed on the button
 	 * @param menu the menu manager to be saved to {@link #manager}. This is needed for the button
 	 * to call phantom internal click events on itself.
@@ -29,14 +28,24 @@ public class FormButton extends Button implements TextInputComponent {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
+	public FormButton(String text, MenuManager menu, Panel parent, int x, int y,
+			Font font, Color color) {
+		super(text, parent, x, y, font, color);
+		this.manager = menu;
+	}
+	/**
+	 * @deprecated use {@link #FormButton(String, MenuManager, Panel, int, int, Font, Color)}
+	 * and {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
 	public FormButton(String id, String text, MenuManager menu, Panel parent, int x, int y,
 			Font font, Color color) {
-		super(id, text, parent, x, y, font, color);
+		super(text, parent, x, y, font, color);
+		this.id = id;
 		this.manager = menu;
 	}
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param text the string displayed on the button
 	 * @param menu the menu manager to be saved to {@link #manager}. This is needed for the button
 	 * to call phantom internal click events on itself.
@@ -48,9 +57,19 @@ public class FormButton extends Button implements TextInputComponent {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
+	public FormButton(String text, MenuManager menu, Panel parent, String x, String y,
+			String width, String height, Font font, Color color) {
+		super(text, parent, x, y, width, height, font, color);
+		this.manager = menu;
+	}
+	/**
+	 * @deprecated use {@link #FormButton(String, MenuManager, Panel, String, String, String, String, Font, Color)}
+	 * and {@link #setId(String)}
+	 */
 	public FormButton(String id, String text, MenuManager menu, Panel parent, String x, String y,
 			String width, String height, Font font, Color color) {
-		super(id, text, parent, x, y, width, height, font, color);
+		super(text, parent, x, y, width, height, font, color);
+		this.id = id;
 		this.manager = menu;
 	}
 

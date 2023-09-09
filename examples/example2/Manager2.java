@@ -38,17 +38,18 @@ public class Manager2 extends MenuManager{
 		VirtualPanel grid = new VirtualPanel(menu,"width/10","height/10","?width","?height",
 				"800","600",Color.CYAN);
 		Font font = new Font("Arial",Font.PLAIN,20);
-		box = new TextBox("box","",grid,0,0,font,Color.LIGHT_GRAY);
+		box = new TextBox("",grid,0,0,font,Color.LIGHT_GRAY);
 		box.setMessage("Here is an unenabled text box. Click the button to enable it.");
 		box.setEnabled(false);
 		addTouchComponent(box);
 		
 		Panel here = new Panel(grid,1,0,Color.GREEN);
-		addTouchComponent(new Button("invisible",null,here, 1, 0, font, Color.GREEN));
-		addTouchComponent(new Button("button","Click Me",here, 0, 1, font, Color.ORANGE));
-		addTouchComponent(new PolygonalButton("circle",grid,0,1,
+		addTouchComponent(new Button(null,here, 1, 0, font, Color.GREEN).setId("invisible"));
+		addTouchComponent(new Button("Click Me",here, 0, 1, font, Color.ORANGE).setId("button"));
+		addTouchComponent(new PolygonalButton(grid,0,1,
 				ShapeResources.generateCircleXCoords("centerx", "width", 10),
-				ShapeResources.generateCircleYCoords("centery", "height", 10), Color.YELLOW));
+				ShapeResources.generateCircleYCoords("centery", "height", 10), Color.YELLOW)
+				.setId("circle"));
 		ScrollBar horiz = new ScrollBar(false,menu,"width/10","0","?width","height/10",Color.GRAY);
 		grid.setWidthScrollBar(horiz);
 		addTouchComponent(horiz);
@@ -62,19 +63,20 @@ public class Manager2 extends MenuManager{
 			e.printStackTrace();
 		}
 		new View(img,grid,2,0);
-		new StaticTextBox("display", "This is a test example. You cannot modify this text, but you"
+		new StaticTextBox("This is a test example. You cannot modify this text, but you"
 				+ "can select and copy it.", grid, 1, 1, font, Color.CYAN);
 		
 		//Here we can show off text chaining
 		Panel formPanel = new Panel(grid, 2, 1, Color.WHITE);
-		nameField = new TextBox("", "", formPanel, 0, 0, font, Color.RED)
+		nameField = new TextBox("", formPanel, 0, 0, font, Color.RED)
 				.setHint("Enter your name... Hit tab to continue");
-		ageField = new TextBox("", "", formPanel, 0, 1, font, Color.ORANGE)
+		ageField = new TextBox("", formPanel, 0, 1, font, Color.ORANGE)
 				.setHint("Enter your age... Hit tab to continue");
-		interestsField = new TextBox("", "", formPanel, 0, 2, font, Color.YELLOW)
+		interestsField = new TextBox("", formPanel, 0, 2, font, Color.YELLOW)
 				.setHint("Enter your interests... Hit tab then enter");
-		FormButton send = new FormButton("accept", "Send", this, formPanel, 0, 3,
+		FormButton send = new FormButton("Send", this, formPanel, 0, 3,
 				font, Color.GREEN);
+		send.setId("accept");
 		nameField.setFormChain(ageField);
 		ageField.setFormChain(interestsField);
 		interestsField.setFormChain(send);
@@ -86,14 +88,21 @@ public class Manager2 extends MenuManager{
 
 	@Override
 	public void clickableAction(Clickable c) {
-		if(c.getId().equals("button")) {
+		String id = c.getId();
+		if (id == null)
+			return;
+		switch (id) {
+		case "button":
 			box.setEnabled(!box.isEnabled());
-		}else if(c.getId().equals("invisible")) {
+			break;
+		case "invisible":
 			setPopUp(new NotificationPopUp("You pressed the invisible button!", null,
 					new Font("Arial",Font.PLAIN,12), "ok", this));
-		}else if(c.getId().equals("ok")) {
+			break;
+		case "ok":			
 			setPopUp(null);
-		}else if(c.getId().equals("accept")) {
+			break;
+		case "accept":
 			//the form was accepted
 			String name = nameField.getMessage();
 			String age = ageField.getMessage();
@@ -105,12 +114,8 @@ public class Manager2 extends MenuManager{
 			interestsField.clearMessage();
 			System.out.println("Hello, "+name+"! You seem like a nice person with some "
 					+ "cool interests.");
+			break;
 		}
-	}
-
-	@Override
-	public void lostFocusAction(Clickable c) {
-		
 	}
 
 }

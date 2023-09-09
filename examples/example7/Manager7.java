@@ -64,13 +64,14 @@ public class Manager7 extends MenuManager{
 		format.setMargin("10", "10");
 		format.setFrame("10", "10");
 		Font font = new Font("Arial", Font.PLAIN, 15);
-		addTouchComponent(new Button("new", "New", controlPanel, 0, 0, font, Color.WHITE));
-		addTouchComponent(new Button("load", "Load", controlPanel, 1, 0, font, Color.WHITE));
-		saveButton = new Button("save", "Save", controlPanel, 2, 0, font, Color.WHITE);
+		addTouchComponent(new Button("New", controlPanel, 0, 0, font, Color.WHITE).setId("new"));
+		addTouchComponent(new Button("Load", controlPanel, 1, 0, font, Color.WHITE).setId("load"));
+		saveButton = new Button("Save", controlPanel, 2, 0, font, Color.WHITE);
 		saveButton.setEnabled(false);
+		saveButton.setId("save");
 		addTouchComponent(saveButton);
-		addTouchComponent(new Button("saveAs", "Save As", controlPanel, 3, 0, font, Color.WHITE));
-		fileContents = new TextEditBox("fileContents","", menu, "0", "40", "width-20", "?height",
+		addTouchComponent(new Button("Save As", controlPanel, 3, 0, font, Color.WHITE).setId("saveAs"));
+		fileContents = new TextEditBox("", menu, "0", "40", "width-20", "?height",
 				font, new Color(0xe5e5e5));
 		fileContents.setTextScroller(new ScrollBar(true, menu, "width-20", "40", "20", "?height",
 				Color.LIGHT_GRAY));
@@ -85,44 +86,59 @@ public class Manager7 extends MenuManager{
 		else
 			super.setClicked(clicked, x, y);
 	}
+	
+	private void cancelSave() {
+		setPopUp(null);
+	}
+	private void newSave() {
+		setPath(null);
+		addUndoEntry(fileContents.getMessage()); //allow undo from new
+	}
+	private void load() {
+		createPopup(true);
+	}
+	private void save() {
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(new File(filePath));
+			fw.write(fileContents.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(fw != null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		saveButton.setEnabled(false);
+	}
+	private void saveAs() {
+		createPopup(false);
+	}
 
 	@Override
 	public void clickableAction(Clickable c) {
 		if(c.getId() != null) {
 			switch(c.getId()) {
 			case "new":
-				setPath(null);
-				addUndoEntry(fileContents.getMessage()); //allow undo from new
+				newSave();
 				break;
 			case "load":
-				createPopup(true);
+				load();
 				break;
 			case "saveAs":
-				createPopup(false);
+				saveAs();
 				break;
 			case "save":
-				FileWriter fw = null;
-				try {
-					fw = new FileWriter(new File(filePath));
-					fw.write(fileContents.getMessage());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if(fw != null) {
-						try {
-							fw.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				saveButton.setEnabled(false);
+				save();
 				break;
-				
 			//Path Finder Pop up actions
 			case "doSave":
 				String toPath = ((PathFinderPopup)popup).getPath();
-				fw = null;
+				FileWriter fw = null;
 				try {
 					fw = new FileWriter(new File(toPath));
 					fw.write(fileContents.getMessage());
@@ -147,7 +163,7 @@ public class Manager7 extends MenuManager{
 				setUndo(fileContents.getMessage());
 				//then fall through to cancel\quit
 			case "cancel":
-				setPopUp(null);
+				cancelSave();
 				break;
 			case "directoryButton":
 				((PathFinderPopup)popup).select(((Button)c).getText().substring(2));
@@ -216,7 +232,7 @@ public class Manager7 extends MenuManager{
 		if(key == KeyEvent.VK_ESCAPE) { //Esc
 			//We will use the escape key to cancel any popups
 			if(this.popup != null)
-				clickableAction(new Button("cancel", null, null, 0, 0, null, null));
+				cancelSave();
 		}if(clicked instanceof TextEditBox) {
 			TextEditBox box = (TextEditBox)clicked;
 			if(!shiftOn && (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT ||
@@ -265,21 +281,21 @@ public class Manager7 extends MenuManager{
 		if(controlOn) {
 			if(shiftOn) {
 				if(key == KeyEvent.VK_S) //save as
-					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
+					saveAs();
 			}
 			switch(key) {
 			case KeyEvent.VK_O: //ctr-O
 			case KeyEvent.VK_L: //ctr-L
-				clickableAction(new Button("load", null, null, 0, 0, null, null));
+				load();
 				break;
 			case KeyEvent.VK_N: //ctr-N
-				clickableAction(new Button("new", null, null, 0, 0, null, null));
+				newSave();
 				break;
 			case KeyEvent.VK_S: //ctr-S
 				if(saveButton.isEnabled())
-					clickableAction(new Button("save", null, null, 0, 0, null, null));
+					save();
 				else
-					clickableAction(new Button("saveAs", null, null, 0, 0, null, null));
+					saveAs();
 				break;
 			case KeyEvent.VK_Y: //ctr-Y
 				//redo

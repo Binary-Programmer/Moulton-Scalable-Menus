@@ -42,20 +42,29 @@ public class PolygonalButton extends RadioButton {
 	
 	/**
 	 * Creates a new button in the shape of a polygon with arbitrary point number.
-	 * @param id a unique string designed to identify this component when an event occurs
 	 * @param parent the parent panel for this component.
 	 * @param xs string expressions defining this component's horizontal locations.
 	 * @param ys string expressions defining this component's vertical locations.
 	 * @param color the color of the button when not pressed. By default, the pressed color will be
 	 * one shade darker and the not enabled color will be one shade lighter.
 	 */
-	public PolygonalButton(String id, Panel parent, String [] xs, String [] ys, Color color) {
-		super(id, parent, null, null, color);
+	public PolygonalButton(Panel parent, String [] xs, String [] ys, Color color) {
+		super(parent, null, null, color);
 		init(xs, ys);
 	}
 	/**
 	 * Creates a new button in the shape of a polygon with arbitrary point number.
-	 * @param id a unique string designed to identify this component when an event occurs
+	 * @deprecated use {@link #PolygonalButton(Panel, String[], String[], Color)} and
+	 * {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
+	public PolygonalButton(String id, Panel parent, String [] xs, String [] ys, Color color) {
+		super(parent, null, null, color);
+		this.id = id;
+		init(xs, ys);
+	}
+	/**
+	 * Creates a new button in the shape of a polygon with arbitrary point number.
 	 * @param parent the parent panel for this component.
 	 * @param x the integer x coordinate this button should appear on its panel
 	 * @param y the integer y coordinate this button should appear on its panel
@@ -64,9 +73,20 @@ public class PolygonalButton extends RadioButton {
 	 * @param color the color of the button when not pressed. By default, the pressed color will be
 	 * one shade darker and the not enabled color will be one shade lighter.
 	 */
+	public PolygonalButton(Panel parent, int x, int y,
+			String [] xs, String [] ys, Color color) {
+		super(parent, x, y, color);
+		init(xs, ys);
+	}
+	/**
+	 * Creates a new button in the shape of a polygon with arbitrary point number.
+	 * @deprecated Use {@link #PolygonalButton(Panel, int, int, String[], String[], Color)} and
+	 * {@link #setId(String)}
+	 */
 	public PolygonalButton(String id, Panel parent, int x, int y,
 			String [] xs, String [] ys, Color color) {
-		super(id, parent, x, y, color);
+		super(parent, x, y, color);
+		this.id = id;
 		init(xs, ys);
 	}
 

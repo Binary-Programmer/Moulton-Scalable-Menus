@@ -32,21 +32,22 @@ public class Manager4 extends MenuManager{
 		this.menu = Panel.createRoot(Color.WHITE);
 		menu.setTextResize(true);
 		Font font = new Font("Arial", Font.PLAIN, 12);
-		this.addTouchComponent(new Button("toggle","ON",menu,"0","0","width/3","height/3",
-				font,Color.CYAN));
-		this.addTouchComponent(new Button("X", "X", menu, "width-width/3", "0", "?width", "height/3",
+		this.addTouchComponent(new Button("ON",menu,"0","0","width/3","height/3",
+				font,Color.CYAN).setId("toggle"));
+		this.addTouchComponent(new Button("X", menu, "width-width/3", "0", "?width", "height/3",
 				font, Color.WHITE)
-			.setTouchedColor(Color.RED));
+			.setTouchedColor(Color.RED)
+			.setId("X"));
 		
 		new RadioGroup(
-				new Button("up","^",menu,"centerx-width/6","0","?2width/3","height/3",
-						font,Color.YELLOW),
-				new Button("down","v",menu,"centerx-width/6","centery+height/6","width/3",
-						"?height",font,Color.YELLOW),
-				new Button("left","<",menu,"0","centery-height/6","width/3","height/3",
-						font,Color.YELLOW),
-				new Button("right",">",menu,"width-width/3","centery-height/6",
-						"?width","height/3",font,Color.YELLOW)
+				(Button)new Button("^",menu,"centerx-width/6","0","?2width/3","height/3",
+						font,Color.YELLOW).setId("up"),
+				(Button)new Button("v",menu,"centerx-width/6","centery+height/6","width/3",
+						"?height",font,Color.YELLOW).setId("down"),
+				(Button)new Button("<",menu,"0","centery-height/6","width/3","height/3",
+						font,Color.YELLOW).setId("left"),
+				(Button)new Button(">",menu,"width-width/3","centery-height/6",
+						"?width","height/3",font,Color.YELLOW).setId("right")
 		);
 		
 		BufferedImage folder1 = null, folder2 = null;
@@ -56,9 +57,10 @@ public class Manager4 extends MenuManager{
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
-		this.addTouchComponent(new ImageButton("open",folder1,menu,"0","height-height/3",
+		this.addTouchComponent(new ImageButton(folder1,menu,"0","height-height/3",
 				"width/3","?height",Color.CYAN)
-				.setTouchedImage(folder2));
+				.setTouchedImage(folder2)
+				.setId("open"));
 		
 		BufferedImage spin[] = new BufferedImage[16];
 		String prefix = "examples/spinning_anim/";
@@ -98,12 +100,15 @@ public class Manager4 extends MenuManager{
 		}catch(IOException e) {}
 		Animation spinning = new Animation(150, spin).setLoop(-1);
 		spinning.startAnimation();
-		new AnimatedButton("spin", spinning, menu, "centerx-width/6","centery-height/6",
-				"width/3","height/3",Color.WHITE);
+		new AnimatedButton(spinning, menu, "centerx-width/6","centery-height/6",
+				"width/3","height/3",Color.WHITE)
+			.setId("spin");
 	}
 
 	@Override
 	public void clickableAction(Clickable c) {
+		if (c.getId() == null)
+			return;
 		Font fnt = new Font("Arial", Font.PLAIN, 12);
 		if(c.getId().equals("toggle")) {
 			Button toggleButton = (Button)c;
@@ -123,9 +128,6 @@ public class Manager4 extends MenuManager{
 			System.exit(0);
 		}
 	}
-
-	@Override
-	public void lostFocusAction(Clickable c) {}
 	
 	private BufferedImage rotateImage(BufferedImage image, int factorOf90Deg) {
 		//somehow you have changed the contents of image...

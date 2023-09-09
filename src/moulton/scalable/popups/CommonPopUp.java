@@ -109,8 +109,9 @@ public abstract class CommonPopUp extends PopUp {
 		if(exitButton) {
 			final MenuManager man = manager;
 			final String xxId = xId;
-			Button exit = new Button(xId, "X", base, "width-"+(fm.stringWidth("X")*2), "0",
+			Button exit = new Button("X", base, "width-"+(fm.stringWidth("X")*2), "0",
 					"?width", ""+doubleHeight, font, Color.RED);
+			exit.setId(xId);
 			if (man != null) {				
 				exit.setClickAction(new EventAction() {
 					@Override public boolean onEvent() {

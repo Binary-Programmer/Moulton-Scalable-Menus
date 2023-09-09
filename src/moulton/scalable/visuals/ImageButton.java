@@ -35,7 +35,6 @@ public class ImageButton extends RadioButton {
 	protected Expression vertPadding, horizPadding;
 
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param img the image to draw as the face of the button
 	 * @param parent the panel that this image button will reside upon.
 	 * @param x the x coordinate on the screen, given in menu component value format
@@ -45,6 +44,17 @@ public class ImageButton extends RadioButton {
 	 * @param background if the image does not fill up the entire button face, this fill color is
 	 * used for the rest
 	 */
+	public ImageButton(BufferedImage img, Panel parent, String x, String y,
+			String width, String height, Color background) {
+		super(parent, x, y, background);
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
+		this.image = img;
+	}
+	/**
+	 * @deprecated use {@link #ImageButton(BufferedImage, Panel, String, String, String, String, Color)}
+	 * and {@link #setId(String)}
+	 */
 	public ImageButton(String id, BufferedImage img, Panel parent, String x, String y,
 			String width, String height, Color background) {
 		super(id, parent, x, y, background);
@@ -53,12 +63,20 @@ public class ImageButton extends RadioButton {
 		this.image = img;
 	}
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param img the BufferedImage to draw
 	 * @param parent the panel that this button will reside upon
 	 * @param x the integer x coordinate this button should appear on its panel
 	 * @param y the integer y coordinate this button should appear on its panel
 	 * @param background the background color for the box when editable
+	 */
+	public ImageButton(BufferedImage img, Panel parent,  int x, int y,
+			Color background) {
+		super(parent, x, y, background);
+		this.image = img;
+	}
+	/**
+	 * @deprecated use {@link #ImageButton(BufferedImage, Panel, int, int, Color) and
+	 * {@link #setId(String)}
 	 */
 	public ImageButton(String id, BufferedImage img, Panel parent,  int x, int y,
 			Color background) {

@@ -28,25 +28,25 @@ public class Manager1 extends MenuManager {
 		format.specifyColumnWeight(0, 1.5);
 		format.specifyRowWeight(2, 2.0/3);
 		
-		new Button("red",null,menu,0,0,null,new Color(255,0,0));
-		new Button("orange",null,menu,1,0,null,new Color(255,128,0));
-		new Button("yellow",null,menu,2,0,null,new Color(255,255,0));
-		new Button("green",null,menu,3,0,null,new Color(128,255,0));
+		new Button(null,menu,0,0,null,new Color(255,0,0)).setId("red");
+		new Button(null,menu,1,0,null,new Color(255,128,0)).setId("orange");
+		new Button(null,menu,2,0,null,new Color(255,255,0)).setId("yellow");
+		new Button(null,menu,3,0,null,new Color(128,255,0)).setId("green");
 		
-		new Button(null,null,menu,0,1,null,new Color(255,64,64));
-		new Button(null,null,menu,1,1,null,new Color(255,160,64));
-		new Button(null,null,menu,2,1,null,new Color(255,255,64));
-		new Button(null,null,menu,3,1,null,new Color(160,255,64));
+		new Button(null,menu,0,1,null,new Color(255,64,64));
+		new Button(null,menu,1,1,null,new Color(255,160,64));
+		new Button(null,menu,2,1,null,new Color(255,255,64));
+		new Button(null,menu,3,1,null,new Color(160,255,64));
 		
-		new Button(null,null,menu,0,2,null,new Color(255,128,128));
-		new Button("secret",null,menu,1,2,null,new Color(255,192,128));
-		new Button(null,null,menu,2,2,null,new Color(255,255,128));
-		new Button(null,null,menu,3,2,null,new Color(192,255,128));
+		new Button(null,menu,0,2,null,new Color(255,128,128));
+		new Button(null,menu,1,2,null,new Color(255,192,128)).setId("secret");
+		new Button(null,menu,2,2,null,new Color(255,255,128));
+		new Button(null,menu,3,2,null,new Color(192,255,128));
 		
-		new Button(null,null,menu,0,3,null,new Color(255,192,192));
-		new Button(null,null,menu,1,3,null,new Color(255,224,192));
-		new Button(null,null,menu,2,3,null,new Color(255,255,192));
-		new Button("exit",null,menu,3,3,null,new Color(224,255,192));
+		new Button(null,menu,0,3,null,new Color(255,192,192));
+		new Button(null,menu,1,3,null,new Color(255,224,192));
+		new Button(null,menu,2,3,null,new Color(255,255,192));
+		new Button(null,menu,3,3,null,new Color(224,255,192)).setId("exit");
 	}
 
 	@Override
@@ -83,8 +83,5 @@ public class Manager1 extends MenuManager {
 			}
 		}
 	}
-
-	@Override
-	public void lostFocusAction(Clickable c) {}
 
 }

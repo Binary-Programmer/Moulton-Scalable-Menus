@@ -16,7 +16,6 @@ import moulton.scalable.containers.Panel;
 public class StaticTextBox extends TextBox {
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param message the string displayed in the box
 	 * @param parent the panel that this text box will reside upon
 	 * @param x the x coordinate of this text box in its parent's grid
@@ -24,12 +23,21 @@ public class StaticTextBox extends TextBox {
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
-	public StaticTextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
-		super(id, message, parent, x, y, font, color);
+	public StaticTextBox(String message, Panel parent, int x, int y, Font font, Color color) {
+		super(message, parent, x, y, font, color);
 		blinkTime = -1;
 	}
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
+	 * @deprecated Use {@link #StaticTextBox(String, Panel, int, int, Font, Color)} and
+	 * {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
+	public StaticTextBox(String id, String message, Panel parent, int x, int y, Font font, Color color) {
+		super(message, parent, x, y, font, color);
+		this.id = id;
+		blinkTime = -1;
+	}
+	/**
 	 * @param message the string displayed in the box
 	 * @param parent the panel that this text box will reside upon
 	 * @param x the x coordinate on the screen, given in menu component value format
@@ -39,9 +47,19 @@ public class StaticTextBox extends TextBox {
 	 * @param font the font for the box
 	 * @param color the background color for the box when editable
 	 */
+	public StaticTextBox(String message, Panel parent, String x, String y, String width,
+			String height, Font font, Color color) {
+		super(message, parent, x, y, width, height, font, color);
+		blinkTime = -1;
+	}
+	/**
+	 * @deprecated use {@link #StaticTextBox(String, Panel, String, String, String, String, Font, Color)}
+	 * and {@link #setId(String)}
+	 */
 	public StaticTextBox(String id, String message, Panel parent, String x, String y, String width,
 			String height, Font font, Color color) {
-		super(id, message, parent, x, y, width, height, font, color);
+		super(message, parent, x, y, width, height, font, color);
+		this.id = id;
 		blinkTime = -1;
 	}
 	

@@ -44,7 +44,6 @@ public class Button extends RadioButton {
 	protected Color textColor = null;
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param text the string displayed on the button
 	 * @param parent the panel that this button will reside upon
 	 * @param x the x coordinate on the parent, given in menu component value format
@@ -54,9 +53,23 @@ public class Button extends RadioButton {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
+	public Button(String text, Panel parent, String x, String y,
+			String width, String height, Font font, Color color) {
+		super(parent, x, y, color);
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
+		this.text = text;
+		this.font = font;
+	}
+	/**
+	 * @deprecated use {@link #Button(String, String, Panel, int, int, Font, Color)} and
+	 * {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
 	public Button(String id, String text, Panel parent, String x, String y,
 			String width, String height, Font font, Color color) {
-		super(id, parent, x, y, color);
+		super(parent, x, y, color);
+		this.id = id;
 		this.width = solve.parse(width, true, false);
 		this.height = solve.parse(height, true, false);
 		this.text = text;
@@ -64,7 +77,6 @@ public class Button extends RadioButton {
 	}
 	
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param text the string displayed on the button
 	 * @param parent the panel that this button will reside upon
 	 * @param x the integer x coordinate this button should appear on its panel
@@ -72,6 +84,16 @@ public class Button extends RadioButton {
 	 * @param font the font for the box
 	 * @param color the background color for the button when enabled
 	 */
+	public Button(String text, Panel parent, int x, int y, Font font, Color color) {
+		super(parent, x, y, color);
+		this.text = text;
+		this.font = font;
+	}
+	/**
+	 * @deprecated use {@link #Button(String, Panel, int, int, Font, Color)
+	 * and {@link #setId(String)}
+	 */
+	@Deprecated(since="1.15")
 	public Button(String id, String text, Panel parent, int x, int y, Font font, Color color) {
 		super(id, parent, x, y, color);
 		this.text = text;

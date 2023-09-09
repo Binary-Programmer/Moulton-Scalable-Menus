@@ -32,7 +32,6 @@ public class AnimatedButton extends RadioButton {
 	protected Expression width, height;
 
 	/**
-	 * @param id a unique string designed to identify this component when an event occurs.
 	 * @param animation the animation to draw on the face of the button
 	 * @param parent the panel that this image button will reside upon.
 	 * @param x the x coordinate on the screen, given in menu component value format
@@ -42,11 +41,35 @@ public class AnimatedButton extends RadioButton {
 	 * @param background if the image does not fill up the entire button face, this fill color is
 	 * used for the rest.
 	 */
-	public AnimatedButton(String id, Animation animation, Panel parent, String x, String y,
+	public AnimatedButton(Animation animation, Panel parent, String x, String y,
 			String width, String height, Color background) {
-		super(id, parent, x, y, background);
+		super(parent, x, y, background);
 		this.width = solve.parse(width, true, false);
 		this.height = solve.parse(height, true, false);
+		this.mainAnimation = animation;
+	}
+	/**
+	 * @deprecated use {@link #AnimatedButton(Animation, Panel, String, String, String, String, Color)}
+	 * and {@link #setId(String)}
+	 */
+	public AnimatedButton(String id, Animation animation, Panel parent, String x, String y,
+			String width, String height, Color background) {
+		super(parent, x, y, background);
+		this.id = id;
+		this.width = solve.parse(width, true, false);
+		this.height = solve.parse(height, true, false);
+		this.mainAnimation = animation;
+	}
+	/**
+	 * @param animation the animation to draw on the face of the button
+	 * @param parent the panel that this button will reside upon
+	 * @param x the integer x coordinate this button should appear on its panel
+	 * @param y the integer y coordinate this button should appear on its panel
+	 * @param background the background color for the box when editable
+	 */
+	public AnimatedButton(Animation animation, Panel parent,  int x, int y,
+			Color background) {
+		super(parent, x, y, background);
 		this.mainAnimation = animation;
 	}
 	/**
@@ -59,7 +82,8 @@ public class AnimatedButton extends RadioButton {
 	 */
 	public AnimatedButton(String id, Animation animation, Panel parent,  int x, int y,
 			Color background) {
-		super(id, parent, x, y, background);
+		super(parent, x, y, background);
+		this.id = id;
 		this.mainAnimation = animation;
 	}
 	

@@ -22,24 +22,24 @@ public class Manager5 extends MenuManager{
 	public void createMenu() {
 		this.menu = Panel.createRoot(Color.WHITE);
 		Font font = new Font("Arial", Font.PLAIN, 30);
-		main = new TextBox("top","",menu,"0","0","?7width/8","?3height/4+1",
+		main = new TextBox("",menu,"0","0","?7width/8","?3height/4+1",
 				font,Color.LIGHT_GRAY);
 		main.setOutline(true);
 		main.setAcceptEnter(true);
-		bottom = new TextBox("bottom","",menu,"0","3height/4","?7width/8","?height-height/8",
+		bottom = new TextBox("",menu,"0","3height/4","?7width/8","?height-height/8",
 				font,Color.LIGHT_GRAY);
 		bottom.setOutline(true);
 		main.setTextScroller(new ScrollBar(true,menu,"7width/8","0","?width","?3height/4",
 				Color.GRAY));
 		bottom.setTextScroller(new ScrollBar(false,menu,"0","7height/8","?7width/8","?height",
 				Color.GRAY));
-		new Button("virtuality","!",menu,"7width/8","3height/4","?width","?height",
-				font,Color.RED);
+		new Button("!",menu,"7width/8","3height/4","?width","?height",
+				font,Color.RED).setId("virtuality");
 	}
 
 	@Override
 	public void clickableAction(Clickable c) {
-		if(c.getId().equals("virtuality")) {
+		if(c.getId() != null && c.getId().equals("virtuality")) {
 			//do stuff here
 			Button b = (Button)c;
 			if(b.getText().equals("!")) {
@@ -54,8 +54,5 @@ public class Manager5 extends MenuManager{
 			}
 		}
 	}
-
-	@Override
-	public void lostFocusAction(Clickable c) {}
 
 }

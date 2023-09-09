@@ -76,7 +76,7 @@ public abstract class MenuManager {
 	
 	/**A clickable that can be set to the next in a form chain if the next should just be a
 	 * deselection.*/
-	public static final Clickable FORM_END = new Clickable(null, null, 0, 0) {
+	public static final Clickable FORM_END = new Clickable(null, 0, 0) {
 		public void render(Graphics g, int xx, int yy, int ww, int hh) {}
 		public Clickable setFormChain(Clickable formChain) {
 			throw new RuntimeException("You may not set a next form to Form End!");
@@ -103,7 +103,7 @@ public abstract class MenuManager {
 	 * to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
-	public abstract void clickableAction(Clickable c);
+	public void clickableAction(Clickable c) {}
 	
 	/**
 	 * Implement to add functionality to any clickable components in the menu managed once they
@@ -112,7 +112,7 @@ public abstract class MenuManager {
 	 * clicked. A good way to check for component identity is by using {@link Clickable#getId()}.
 	 * @param c the clickable that is being activated, the action will start
 	 */
-	public abstract void lostFocusAction(Clickable c);
+	public void lostFocusAction(Clickable c) {}
 	
 	/**
 	 * The Moulton Scalable Menus handles the mouse press once this method has been called by a
