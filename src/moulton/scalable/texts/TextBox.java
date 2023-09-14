@@ -965,8 +965,6 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 					this.message += c;
 				}
 			}
-			if (!message.isEmpty())
-				message = format.emptyText();
 		}else {
 			StringBuilder buf = new StringBuilder(before);
 			buf.append(newText);
@@ -1110,7 +1108,7 @@ public class TextBox extends Clickable implements DraggableComponent, HotKeyText
 	
 	/**
 	 * Deletes the selection for the text box. Assumes that there is a selection to delete. Checks whether
-	 * the text box is editable before the action is performed. Uses {@link #setMessage(String)}, so the
+	 * the text box is enabled before the action is performed. Uses {@link #setMessage(String)}, so the
 	 * text must follow text box constraints of length and filters.
 	 * @param replace the text to replace the deleted selection with. Keep null for a normal deletion.
 	 */

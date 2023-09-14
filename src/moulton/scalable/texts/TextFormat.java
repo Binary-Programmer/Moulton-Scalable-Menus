@@ -32,15 +32,11 @@ public abstract class TextFormat {
 	 * Should be called when any amount of the text is deleted to guarantee that the format is
 	 * maintained.
 	 * <p>
-	 * Default behavior returns the call of {@link #emptyText()} if newText.isEmpty(). If this
-	 * method is overridden, it is the <i>responsibility of the implementor</i> to guarantee
-	 * {@link #emptyText()} is called when necessary!
+	 * Default behavior returns the unchanged input.
 	 * @param newText the intended new text value
 	 * @return the text value which should be used (may or may not be the same as newText)
 	 */
 	public String deleteAction(String newText) {
-		if (newText.isEmpty())
-			return emptyText();
 		return newText;
 	}
 	
